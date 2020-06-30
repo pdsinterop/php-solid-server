@@ -1,0 +1,7 @@
+# Directories to ignore
+/build
+/vendor
+
+# Files to ignore
+/.env
+/phpunit.xml
