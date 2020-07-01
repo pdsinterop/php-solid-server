@@ -131,7 +131,7 @@ HOST='solid.local' PORT=8080 composer serve
 This command can also be run through a docker container, for instance:
 
 ```
-PORT=8080               \
+export PORT=8080 &&     \
 docker run              \
    --env "PORT=${PORT}" \
    --expose "${PORT}"   \
