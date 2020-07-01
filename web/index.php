@@ -2,7 +2,7 @@
 
 namespace Pdsinterop\Solid;
 
-require __DIR__ . './../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
