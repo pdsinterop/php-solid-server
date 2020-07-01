@@ -91,7 +91,7 @@ to wherever it will be hosted by the Docker container.
 For instance:
 
 ```
-PORT=80                    \
+export PORT=80 &&          \
 docker run                 \
    --env "PORT=${PORT}"    \
    --expose "${PORT}"      \
