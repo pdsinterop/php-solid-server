@@ -91,7 +91,7 @@ to wherever it will be hosted by the Docker container.
 For instance:
 
 ```
-PORT=80                    \
+export PORT=80 &&          \
 docker run                 \
    --env "PORT=${PORT}"    \
    --expose "${PORT}"      \
@@ -131,7 +131,7 @@ HOST='solid.local' PORT=8080 composer serve
 This command can also be run through a docker container, for instance:
 
 ```
-PORT=8080               \
+export PORT=8080 &&     \
 docker run              \
    --env "PORT=${PORT}" \
    --expose "${PORT}"   \
