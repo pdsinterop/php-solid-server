@@ -14,8 +14,11 @@ use League\Container\ReflectionContainer;
 use League\Route\Http\Exception as HttpException;
 use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
+use Pdsinterop\Solid\Controller\AddSlashToPathController;
 use Pdsinterop\Solid\Controller\HelloWorldController;
 use Pdsinterop\Solid\Controller\HttpToHttpsController;
+use Pdsinterop\Solid\Controller\Profile\CardController;
+use Pdsinterop\Solid\Controller\Profile\ProfileController;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -35,14 +38,27 @@ $container->delegate(new ReflectionContainer());
 $container->share(ServerRequestInterface::class, Request::class);
 $container->share(ResponseInterface::class, Response::class);
 
+$adapter = new \League\Flysystem\Adapter\Local(__DIR__ . '/../tests/fixtures');
+$filesystem = new \League\Flysystem\Filesystem($adapter);
+$graph = new \EasyRdf_Graph();
+$plugin = new \Pdsinterop\Rdf\Flysystem\Plugin\ReadRdf($graph);
+$filesystem->addPlugin($plugin);
+
 $controllers = [
+    AddSlashToPathController::class,
     HelloWorldController::class,
     HttpToHttpsController::class,
+    ProfileController::class,
 ];
 
 array_walk($controllers, function ($controller) use ($container) {
     $container->add($controller)->addArgument(ResponseInterface::class);
 });
+
+$container->add(CardController::class)
+    ->addArgument(ResponseInterface::class)
+    ->addArgument($filesystem)
+;
 
 $strategy->setContainer($container);
 
@@ -57,6 +73,12 @@ if (getenv('ENVIRONMENT') !== 'development') {
 }
 
 $router->map('GET', '/', HelloWorldController::class)->setScheme($scheme);
+
+/*/ Create URI groups /*/
+$router->map('GET', '/profile', AddSlashToPathController::class)->setScheme($scheme);
+$router->map('GET', '/profile/', ProfileController::class)->setScheme($scheme);
+$router->map('GET', '/profile/card', CardController::class)->setScheme($scheme);
+$router->map('GET', '/profile/card{extension}', CardController::class)->setScheme($scheme);
 
 try {
     $response = $router->dispatch($request);
