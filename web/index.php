@@ -4,6 +4,7 @@ namespace Pdsinterop\Solid;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use Laminas\Diactoros\Response\HtmlResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -31,7 +32,30 @@ $router->map('GET', '/', function (ServerRequestInterface $request) : ResponseIn
     return $response;
 });
 
-$response = $router->dispatch($request);
+try {
+    $response = $router->dispatch($request);
+} catch (\League\Route\Http\Exception $exception) {
+    $status = $exception->getStatusCode();
+
+    $html = "<h1>Yeah, that's an error.</h1><p>{$exception->getMessage()} ({$status})</p>";
+
+    if (getenv('ENVIRONMENT') === 'development') {
+        $html .= "<pre>{$exception->getTraceAsString()}</pre>";
+    }
+
+    $response = new HtmlResponse($html, $status, $exception->getHeaders());
+} catch (\Exception $exception) {
+    $html = "<h1>Oh-no! The developers messed up!</h1><p>{$exception->getMessage()}</p>";
+
+    if (getenv('ENVIRONMENT') === 'development') {
+        $html .=
+            "<p>{$exception->getFile()}:{$exception->getLine()}</p>" .
+            "<pre>{$exception->getTraceAsString()}</pre>"
+        ;
+    }
+
+    $response = new HtmlResponse($html, 500, []);
+}
 
 // send the response to the browser
 $emitter->emit($response);
