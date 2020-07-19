@@ -15,6 +15,7 @@ use League\Route\Http\Exception as HttpException;
 use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
 use Pdsinterop\Solid\Controller\HelloWorldController;
+use Pdsinterop\Solid\Controller\HttpToHttpsController;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -36,6 +37,7 @@ $container->share(ResponseInterface::class, Response::class);
 
 $controllers = [
     HelloWorldController::class,
+    HttpToHttpsController::class,
 ];
 
 array_walk($controllers, function ($controller) use ($container) {
@@ -47,7 +49,14 @@ $strategy->setContainer($container);
 /*/ Default output is HTML, should return a Response object /*/
 $router->setStrategy($strategy);
 
-$router->map('GET', '/', HelloWorldController::class);
+/*/ Make sure HTTPS is always used in production /*/
+$scheme = 'http';
+if (getenv('ENVIRONMENT') !== 'development') {
+    $router->map('GET', '/{page:(?:.|/)*}', HttpToHttpsController::class)->setScheme($scheme);
+    $scheme = 'https';
+}
+
+$router->map('GET', '/', HelloWorldController::class)->setScheme($scheme);
 
 try {
     $response = $router->dispatch($request);
