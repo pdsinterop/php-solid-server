@@ -12,6 +12,7 @@ use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use League\Container\Container;
 use League\Container\ReflectionContainer;
 use League\Route\Http\Exception as HttpException;
+use League\Route\Http\Exception\NotFoundException;
 use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
 use Pdsinterop\Solid\Controller\AddSlashToPathController;
@@ -85,7 +86,12 @@ try {
 } catch (HttpException $exception) {
     $status = $exception->getStatusCode();
 
-    $html = "<h1>Yeah, that's an error.</h1><p>{$exception->getMessage()} ({$status})</p>";
+    $message = 'Yeah, that\'s an error.';
+    if ($exception instanceof  NotFoundException) {
+        $message = 'No such page.';
+    }
+
+    $html = "<h1>{$message}</h1><p>{$exception->getMessage()} ({$status})</p>";
 
     if (getenv('ENVIRONMENT') === 'development') {
         $html .= "<pre>{$exception->getTraceAsString()}</pre>";
