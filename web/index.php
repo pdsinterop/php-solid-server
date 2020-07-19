@@ -4,22 +4,30 @@ namespace Pdsinterop\Solid;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\ServerRequestFactory;
+use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
+use League\Container\Container;
+use League\Container\ReflectionContainer;
+use League\Route\Http\Exception as HttpException;
+use League\Route\Router;
+use League\Route\Strategy\ApplicationStrategy;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /*/ Create objects /*/
-$container = new \League\Container\Container();
-$emitter = new \Laminas\HttpHandlerRunner\Emitter\SapiEmitter();
-$request = \Laminas\Diactoros\ServerRequestFactory::fromGlobals(
+$container = new Container();
+$emitter = new SapiEmitter();
+$request = ServerRequestFactory::fromGlobals(
     $_SERVER, $_GET, $_POST, $_COOKIE, $_FILES
 );
-$strategy = new \League\Route\Strategy\ApplicationStrategy();
+$strategy = new ApplicationStrategy();
 
-$router = new \League\Route\Router();
+$router = new Router();
 
 /*/ Wire objects together /*/
-$container->delegate(new \League\Container\ReflectionContainer);
+$container->delegate(new ReflectionContainer());
 
 $strategy->setContainer($container);
 
@@ -27,14 +35,14 @@ $strategy->setContainer($container);
 $router->setStrategy($strategy);
 
 $router->map('GET', '/', function (ServerRequestInterface $request) : ResponseInterface {
-    $response = new \Laminas\Diactoros\Response;
+    $response = new Response();
     $response->getBody()->write('<h1>Hello, World!</h1>');
     return $response;
 });
 
 try {
     $response = $router->dispatch($request);
-} catch (\League\Route\Http\Exception $exception) {
+} catch (HttpException $exception) {
     $status = $exception->getStatusCode();
 
     $html = "<h1>Yeah, that's an error.</h1><p>{$exception->getMessage()} ({$status})</p>";
