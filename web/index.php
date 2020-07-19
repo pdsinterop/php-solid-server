@@ -4,6 +4,7 @@ namespace Pdsinterop\Solid;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\ServerRequestFactory;
@@ -13,6 +14,7 @@ use League\Container\ReflectionContainer;
 use League\Route\Http\Exception as HttpException;
 use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
+use Pdsinterop\Solid\Controller\HelloWorldController;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -29,16 +31,23 @@ $router = new Router();
 /*/ Wire objects together /*/
 $container->delegate(new ReflectionContainer());
 
+$container->share(ServerRequestInterface::class, Request::class);
+$container->share(ResponseInterface::class, Response::class);
+
+$controllers = [
+    HelloWorldController::class,
+];
+
+array_walk($controllers, function ($controller) use ($container) {
+    $container->add($controller)->addArgument(ResponseInterface::class);
+});
+
 $strategy->setContainer($container);
 
 /*/ Default output is HTML, should return a Response object /*/
 $router->setStrategy($strategy);
 
-$router->map('GET', '/', function (ServerRequestInterface $request) : ResponseInterface {
-    $response = new Response();
-    $response->getBody()->write('<h1>Hello, World!</h1>');
-    return $response;
-});
+$router->map('GET', '/', HelloWorldController::class);
 
 try {
     $response = $router->dispatch($request);
