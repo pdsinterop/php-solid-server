@@ -11,6 +11,7 @@ use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use League\Container\Container;
 use League\Container\ReflectionContainer;
+use League\Flysystem\FilesystemInterface;
 use League\Route\Http\Exception as HttpException;
 use League\Route\Http\Exception\NotFoundException;
 use League\Route\Router;
@@ -45,21 +46,34 @@ $graph = new \EasyRdf_Graph();
 $plugin = new \Pdsinterop\Rdf\Flysystem\Plugin\ReadRdf($graph);
 $filesystem->addPlugin($plugin);
 
+$container->add(FilesystemInterface::class, $filesystem);
+
 $controllers = [
     AddSlashToPathController::class,
+    CardController::class,
     HelloWorldController::class,
     HttpToHttpsController::class,
     ProfileController::class,
 ];
 
-array_walk($controllers, function ($controller) use ($container) {
-    $container->add($controller)->addArgument(ResponseInterface::class);
-});
+$traits = [
+    'setFilesystem' => [FilesystemInterface::class],
+    'setResponse' => [ResponseInterface::class],
+];
 
-$container->add(CardController::class)
-    ->addArgument(ResponseInterface::class)
-    ->addArgument($filesystem)
-;
+$traitMethods = array_keys($traits);
+
+array_walk($controllers, function ($controller) use ($container, $traits, $traitMethods) {
+    $definition = $container->add($controller);
+
+    $methods = get_class_methods($controller);
+
+    array_walk ($methods, function ($method) use ($definition, $traitMethods, $traits) {
+        if (in_array($method, $traitMethods, true)) {
+            $definition->addMethodCall($method, $traits[$method]);
+        }
+    });
+});
 
 $strategy->setContainer($container);
 
