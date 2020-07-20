@@ -59,6 +59,7 @@ $controllers = [
 $traits = [
     'setFilesystem' => [FilesystemInterface::class],
     'setResponse' => [ResponseInterface::class],
+    'setTemplate' => [\PHPTAL::class],
 ];
 
 $traitMethods = array_keys($traits);
