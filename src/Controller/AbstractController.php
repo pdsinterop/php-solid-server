@@ -3,6 +3,7 @@
 namespace Pdsinterop\Solid\Controller;
 
 use Pdsinterop\Solid\Traits\HasResponseTrait;
+use Pdsinterop\Solid\Traits\HasTemplateTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -11,6 +12,7 @@ abstract class AbstractController
     ////////////////////////////// CLASS PROPERTIES \\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
     use HasResponseTrait;
+    use HasTemplateTrait;
 
     //////////////////////////////// PUBLIC API \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -22,6 +24,13 @@ abstract class AbstractController
             ->withHeader('location', $url)
             ->withStatus($status)
         ;
+    }
+
+    final public function createTemplateResponse(string $template, array $context = []) : ResponseInterface
+    {
+        $response = $this->buildTemplate($template, $context);
+
+        return $this->createTextResponse($response);
     }
 
     final public function createTextResponse(string $message, int $status = 200) : ResponseInterface
