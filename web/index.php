@@ -48,6 +48,12 @@ $filesystem->addPlugin($plugin);
 
 $container->add(FilesystemInterface::class, $filesystem);
 
+$container->share(\PHPTAL::class, function () {
+    $template = new \PHPTAL();
+    $template->setTemplateRepository(__DIR__.'/../src/Template');
+    return $template;
+});
+
 $controllers = [
     AddSlashToPathController::class,
     CardController::class,
