@@ -3,6 +3,7 @@
 namespace Pdsinterop\Solid\Service;
 
 use League\Container\Container;
+use League\Route\RouteGroup;
 use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
 use Pdsinterop\Solid\Controller\AddSlashToPathController;
@@ -47,18 +48,20 @@ class RouterService
 
         /*/ Map routes and groups /*/
         $router->map('GET', '/', HelloWorldController::class)->setScheme($scheme);
-        $this->mapProfile($router, $scheme);
+        $router->group('/profile', $this->createProfileGroup())->setScheme($scheme);
 
         return $router;
     }
 
     ////////////////////////////// UTILITY METHODS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-    private function mapProfile(Router $router, string $scheme) : void
+    private function createProfileGroup() : Callable
     {
-        $router->map('GET', '/profile', AddSlashToPathController::class)->setScheme($scheme);
-        $router->map('GET', '/profile/', ProfileController::class)->setScheme($scheme);
-        $router->map('GET', '/profile/card', CardController::class)->setScheme($scheme);
-        $router->map('GET', '/profile/card{extension}', CardController::class)->setScheme($scheme);
+        return static function (RouteGroup $group) {
+            $group->map('GET', '/', AddSlashToPathController::class);
+            $group->map('GET', '', ProfileController::class);
+            $group->map('GET', '/card', CardController::class);
+            $group->map('GET', '/card{extension}', CardController::class);
+        };
     }
 }
