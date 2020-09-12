@@ -1,8 +1,20 @@
 # Standalone PHP Solid Server
 
-> Standalone Solid Server written in PHP by PDS Interop
+[![PDS Interop][pdsinterop-shield]][pdsinterop-site]
+[![Project stage: Development][project-stage-badge: Development]][project-stage-page]
+[![License][license-shield]][license-link]
+[![Latest Version][version-shield]][version-link]
+[![standard-readme compliant][standard-readme-shield]][standard-readme-link]
+![Maintained][maintained-shield]
 
-## Solid Server
+_Standalone Solid Server written in PHP by PDS Interop_
+
+## Table of Contents
+
+<!-- toc -->
+<!-- tocstop -->
+
+## Background
 
 The Solid specifications defines what makes a "Solid Server". Parts of
 those specifications are still likely to change, but at the time of this writing,
@@ -20,29 +32,6 @@ they define:
 To read more about Solid, and which IETF and W3C specifications are used, visit: https://pdsinterop.org/solid-specs-overview/
 -->
 
-## Available Features
-
-Based on the specifications, the following features are available:
-
-1. User
-   - [ ] Authentication
-   - [ ] Identity
-   - [ ] Profiles
-2. Data storage
-   - [ ] Content representation
-   - [ ] Resource API
-     - [ ] HTTP REST API
-     - [ ] Websocket API
-3. Web Acces Control List
-   - [ ] Authorization (and Access Control)
-4. Social web apps
-   - [ ] Calendar
-   - [ ] Contacts
-   - [ ] Friends Lists (Followers, Following)
-   - [ ] Notifications
-
-The checkboxes show which features are available, and which ones are not.
-
 ### Installation
 
 To install the project, clone it from GitHub and install the PHP dependencies
@@ -59,28 +48,20 @@ At this point, the application is ready to run.
 
 The PHP Solid server can be run in several different ways.
 
-<!-- @TODO: Add local Dockerfile
+<!-- @TODO: Add local Dockerfile  -->
 
-The easiest is using the provided `Dockerfile`.
-
-If a different environment is desired, the application can be run with the
-Docker image of your choice.
-
-Lastly, the application can be run on a local environment, using Apache, NginX,
-or PHP's internal HTTP server. The latter is only advised in development.
- -->
-
-The application can be run with a Docker image of your choice or on a local environment, using Apache, NginX, or PHP's internal HTTP server. The latter is
+The application can be run with a Docker image of your choice or on a local
+environment, using Apache, NginX, or PHP's internal HTTP server. The latter is
 only advised in development.
+
+For security reasons, the server expects to run on HTTPS (also known as HTTP+TLS).
+
+To run insecure, set the environment variable `ENVIRONMENT` to `develop`. This
+will prohibit the application from running in production mode.
 
 <!--
    @TODO: Add single-button deploy scripts/config for Heroku, Glitch, and other
           popular playgrounds/developer oriented service providers.
--->
-<!--
-### Provided Dockerfile
-
-In the project root, run: `docker run`
 -->
 
 ### Docker images
@@ -91,7 +72,7 @@ to wherever it will be hosted by the Docker container.
 For instance:
 
 ```
-export PORT=80 &&          \
+export PORT=8080 &&        \
 docker run                 \
    --env "PORT=${PORT}"    \
    --expose "${PORT}"      \
@@ -100,7 +81,7 @@ docker run                 \
    --volume "$PWD:/app"    \
    -it                     \
    php:7.1                 \
-   php -S "localhost:${PORT}" -t /app/web/ /app/web/index.php
+   php --docroot /app/web/ --server "localhost:${PORT}" /app/web/index.php
 ```
 
 ### Local environment
@@ -151,18 +132,29 @@ If you discover any security related issues, please email <security@pdsinterop.o
 
 -->
 
-## Contributing
+## Available Features
 
-Contributions are welcomed. Read the [contribution guidelines](CONTRIBUTING.md) for
-details.
+Based on the specifications, the following features are available:
 
-## Change Log
+1. User
+   - [ ] Authentication
+   - [ ] Identity
+   - [ ] Profiles
+2. Data storage
+   - [ ] Content representation
+   - [ ] Resource API
+     - [ ] HTTP REST API
+     - [ ] Websocket API
+3. Web Acces Control List
+   - [ ] Authorization (and Access Control)
+4. Social web apps
+   - [ ] Calendar
+   - [ ] Contacts
+   - [ ] Friends Lists (Followers, Following)
+   - [ ] Notifications
 
-Please see [CHANGELOG](CHANGELOG.md) for details.
+The checkboxes show which features are available, and which ones are not.
 
-## License
-
-All code created by PDS Interop is licensed under the [MIT License][LICENSE].
 
 ## Development
 
@@ -210,3 +202,35 @@ The PHPUnit version to be used is the one installed as a `dev-` dependency via c
 $ ./vendor/bin/phpunit
 ```
 -->
+
+## Contributing
+
+Questions or feedback can be given by [opening an issue on GitHub](https://github.com/pdsinterop/flysystem-rdf/issues).
+
+All PDS Interop projects are open source and community-friendly. 
+Any contribution is welcome!
+For more details read the [contribution guidelines](contributing.md).
+
+All PDS Interop projects adhere to [the Code Manifesto](http://codemanifesto.com)
+as its [code-of-conduct](CODE_OF_CONDUCT.md). Contributors are expected to abide by its terms.
+
+There is [a list of all contributors on GitHub][contributors-page].
+
+For a list of changes see the [CHANGELOG](CHANGELOG.md) or the GitHub releases page.
+
+## License
+
+All code created by PDS Interop is licensed under the [MIT License][license-link].
+
+[contributors-page]:  https://github.com/pdsinterop/flysystem-rdf/contributors
+[license-link]: ./LICENSE
+[license-shield]: https://img.shields.io/github/license/pdsinterop/flysystem-rdf.svg
+[maintained-shield]: https://img.shields.io/maintenance/yes/2020
+[pdsinterop-shield]: https://img.shields.io/badge/-PDS%20Interop-gray.svg?logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii01IC01IDExMCAxMTAiIGZpbGw9IiNGRkYiIHN0cm9rZS13aWR0aD0iMCI+CiAgICA8cGF0aCBkPSJNLTEgNTJoMTdhMzcuNSAzNC41IDAgMDAyNS41IDMxLjE1di0xMy43NWEyMC43NSAyMSAwIDAxOC41LTQwLjI1IDIwLjc1IDIxIDAgMDE4LjUgNDAuMjV2MTMuNzVhMzcgMzQuNSAwIDAwMjUuNS0zMS4xNWgxN2EyMiAyMS4xNSAwIDAxLTEwMiAweiIvPgogICAgPHBhdGggZD0iTSAxMDEgNDhhMi43NyAyLjY3IDAgMDAtMTAyIDBoIDE3YTIuOTcgMi44IDAgMDE2OCAweiIvPgo8L3N2Zz4K
+[pdsinterop-site]: https://pdsinterop.org/
+[project-stage-badge: Development]: https://img.shields.io/badge/Project%20Stage-Development-yellowgreen.svg
+[project-stage-page]: https://blog.pother.ca/project-stages/
+[standard-readme-link]: https://github.com/RichardLitt/standard-readme
+[standard-readme-shield]: https://img.shields.io/badge/readme%20style-standard-brightgreen.svg
+[version-link]: https://packagist.org/packages/pdsinterop/flysystem-rdf
+[version-shield]: https://img.shields.io/github/v/release/pdsinterop/flysystem-rdf?sort=semver

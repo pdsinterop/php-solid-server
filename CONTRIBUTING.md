@@ -1,8 +1,3 @@
----
-title: Contributing
-permalink: /contributing/
----
-
 # Contributing to the PHP standalone Solid Server
 
 Thank you for your interest in contributing!
