@@ -11,6 +11,7 @@ use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use League\Container\Container;
 use League\Container\ReflectionContainer;
+use League\Flysystem\FilesystemInterface;
 use League\Route\Http\Exception as HttpException;
 use League\Route\Http\Exception\NotFoundException;
 use League\Route\Router;
@@ -36,8 +37,8 @@ $router = new Router();
 /*/ Wire objects together /*/
 $container->delegate(new ReflectionContainer());
 
-$container->share(ServerRequestInterface::class, Request::class);
-$container->share(ResponseInterface::class, Response::class);
+$container->add(ServerRequestInterface::class, Request::class);
+$container->add(ResponseInterface::class, Response::class);
 
 $adapter = new \League\Flysystem\Adapter\Local(__DIR__ . '/../tests/fixtures');
 $filesystem = new \League\Flysystem\Filesystem($adapter);
@@ -45,21 +46,54 @@ $graph = new \EasyRdf_Graph();
 $plugin = new \Pdsinterop\Rdf\Flysystem\Plugin\ReadRdf($graph);
 $filesystem->addPlugin($plugin);
 
+$container->share(FilesystemInterface::class, function () {
+    // @FIXME: Filesystem root and the $adapter should be configurable.
+    //         Implement this with `$filesystem = \MJRider\FlysystemFactory\create(getenv('STORAGE_ENDPOINT'));`
+    $filesystemRoot = __DIR__ . '/../tests/fixtures';
+
+    $adapter = new \League\Flysystem\Adapter\Local($filesystemRoot);
+
+    $filesystem = new \League\Flysystem\Filesystem($adapter);
+    $graph = new \EasyRdf_Graph();
+    $plugin = new \Pdsinterop\Rdf\Flysystem\Plugin\ReadRdf($graph);
+    $filesystem->addPlugin($plugin);
+
+    return $filesystem;
+});
+
+$container->share(\PHPTAL::class, function () {
+    $template = new \PHPTAL();
+    $template->setTemplateRepository(__DIR__.'/../src/Template');
+    return $template;
+});
+
 $controllers = [
     AddSlashToPathController::class,
+    CardController::class,
     HelloWorldController::class,
     HttpToHttpsController::class,
     ProfileController::class,
 ];
 
-array_walk($controllers, function ($controller) use ($container) {
-    $container->add($controller)->addArgument(ResponseInterface::class);
-});
+$traits = [
+    'setFilesystem' => [FilesystemInterface::class],
+    'setResponse' => [ResponseInterface::class],
+    'setTemplate' => [\PHPTAL::class],
+];
 
-$container->add(CardController::class)
-    ->addArgument(ResponseInterface::class)
-    ->addArgument($filesystem)
-;
+$traitMethods = array_keys($traits);
+
+array_walk($controllers, function ($controller) use ($container, $traits, $traitMethods) {
+    $definition = $container->add($controller);
+
+    $methods = get_class_methods($controller);
+
+    array_walk ($methods, function ($method) use ($definition, $traitMethods, $traits) {
+        if (in_array($method, $traitMethods, true)) {
+            $definition->addMethodCall($method, $traits[$method]);
+        }
+    });
+});
 
 $strategy->setContainer($container);
 

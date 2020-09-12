@@ -2,10 +2,10 @@
 
 namespace Pdsinterop\Solid\Controller\Profile;
 
-use League\Flysystem\FilesystemInterface;
 use League\Route\Http\Exception\NotFoundException;
 use Pdsinterop\Rdf\Enum\Format;
 use Pdsinterop\Solid\Controller\AbstractController;
+use Pdsinterop\Solid\Traits\HasFilesystemTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -13,27 +13,9 @@ class CardController extends AbstractController
 {
     ////////////////////////////// CLASS PROPERTIES \\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-    /** @var FilesystemInterface $filesystem */
-    private $filesystem;
-
-    //////////////////////////// GETTERS AND SETTERS \\\\\\\\\\\\\\\\\\\\\\\\\\\
+    use HasFilesystemTrait;
 
     //////////////////////////////// PUBLIC API \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-    /**
-     * CardController constructor.
-     *
-     * @param ResponseInterface $response
-     * @param FilesystemInterface $filesystem
-     */
-    final public function __construct(
-        ResponseInterface $response,
-        FilesystemInterface $filesystem
-    ) {
-        $this->filesystem = $filesystem;
-
-        parent::__construct($response);
-    }
 
     /**
      * @param ServerRequestInterface $request
@@ -45,7 +27,13 @@ class CardController extends AbstractController
      */
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
     {
+        // @FIXME: Target file is hard-coded for not, replace with path from $request->getRequestTarget()
+        $filePath = '/foaf.rdf';
+        $filesystem = $this->getFilesystem();
         $extension = '.ttl';
+
+        // @TODO: Content negotiation from Accept headers
+        //$format = $request->getHeader('Accept');
 
         if (array_key_exists('extension', $args)) {
             $extension = $args['extension'];
@@ -59,11 +47,8 @@ class CardController extends AbstractController
 
         $contentType = $this->getContentTypeForFormat($format);
 
-        // @FIXME: Target file is hard-coded for not, replace with path from $request->getRequestTarget()
-        $filePath = '/foaf.rdf';
-
         /** @noinspection PhpUndefinedMethodInspection */ // Method `readRdf` is defined by plugin
-        $content = $this->filesystem->readRdf($filePath, $format);
+        $content = $filesystem->readRdf($filePath, $format);
 
         return $this->createTextResponse($content)->withHeader('Content-Type', $contentType);
     }

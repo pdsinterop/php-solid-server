@@ -2,6 +2,8 @@
 
 namespace Pdsinterop\Solid\Controller;
 
+use Pdsinterop\Solid\Traits\HasResponseTrait;
+use Pdsinterop\Solid\Traits\HasTemplateTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -9,36 +11,36 @@ abstract class AbstractController
 {
     ////////////////////////////// CLASS PROPERTIES \\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-    /** @var ResponseInterface */
-    private $response;
-
-    //////////////////////////// GETTERS AND SETTERS \\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-    final public function getResponse() : ResponseInterface
-    {
-        return $this->response;
-    }
+    use HasResponseTrait;
+    use HasTemplateTrait;
 
     //////////////////////////////// PUBLIC API \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-    public function __construct(ResponseInterface $response)
-    {
-        $this->response = $response;
-    }
 
     abstract public function __invoke(ServerRequestInterface $request, array $args) : ResponseInterface;
 
     final public function createRedirectResponse(string $url, int $status = 302) : ResponseInterface
     {
-        return $this->response->withHeader('location', $url)->withStatus($status);
+        return $this->getResponse()
+            ->withHeader('location', $url)
+            ->withStatus($status)
+        ;
+    }
+
+    final public function createTemplateResponse(string $template, array $context = []) : ResponseInterface
+    {
+        $response = $this->buildTemplate($template, $context);
+
+        return $this->createTextResponse($response);
     }
 
     final public function createTextResponse(string $message, int $status = 200) : ResponseInterface
     {
-        $body = $this->response->getBody();
+        $response = $this->getResponse();
+
+        $body = $response->getBody();
 
         $body->write($message);
 
-        return $this->response->withBody($body)->withStatus($status);
+        return $response->withBody($body)->withStatus($status);
     }
 }
