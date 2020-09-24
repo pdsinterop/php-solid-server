@@ -14,6 +14,7 @@
         <solid:privateTypeIndex rdf:resource="/settings/privateTypeIndex.ttl"/>
         <solid:publicTypeIndex rdf:resource="/settings/publicTypeIndex.ttl"/>
         <space:preferencesFile rdf:resource="/settings/preferencesFile.ttl"/>
+        <rdf:type rdf:resource="http://schema.org/Person"/>
         <foaf:depiction rdf:resource="https://www.gravatar.com/avatar/f8d7c4a4899736c59ec1e40c7021d477?s=1024"/>
         <foaf:family_name>Peachey</foaf:family_name>
         <foaf:givenname>Ben</foaf:givenname>
