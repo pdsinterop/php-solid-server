@@ -8,34 +8,27 @@ use Psr\Http\Message\ServerRequestInterface;
 class OpenidController extends AbstractController
 {    
     private $keys;
-		private $openIdConfiguration;
-		private $authServerConfig;
-		private $authServerFactory;
 	
     public function __construct(){
         // parent::__construct();
         require_once(__DIR__.'/../../vendor/autoload.php');
 
         $this->keys = $this->getKeys();
-				$this->openIdConfiguration = $this->getOpenIdConfiguration();
-				
-				$this->authServerConfig = $this->createConfig();
-				$this->authServerFactory = (new \Pdsinterop\Solid\Auth\Factory\AuthorizationServerFactory($this->authServerConfig))->create();
     }
     private function linkToRoute($route) {
-        return '/some/route';
+        return "/$route";
     }
-    private function getBaseUrl() {
-        return 'http://localhost/';
+    private function getBaseUrl($httpHost) {
+        return "http://$httpHost";
     }
-    private function getAbsoluteUrl($relativeUrl) {
-        return 'http://localhost/some/route';
+    private function getAbsoluteUrl($relativeUrl, $baseUrl) {
+        return "$baseUrl$relativeUrl";
     }
-    private function getOpenIdConfiguration() {
+    private function getOpenIdConfiguration($baseUrl) {
 				return array(
-					'issuer' => $this->getBaseUrl(),
-					'authorization_endpoint' => $this->getAbsoluteUrl($this->linkToRoute("solid.server.authorize")),
-					'jwks_uri' => $this->getAbsoluteUrl($this->linkToRoute("solid.server.jwks")),
+					'issuer' => $baseUrl,
+					'authorization_endpoint' => $this->getAbsoluteUrl($this->linkToRoute("authorize"), $baseUrl),
+					'jwks_uri' => $this->getAbsoluteUrl($this->linkToRoute("jwks"), $baseUrl),
 					"response_types_supported" => array("code","code token","code id_token","id_token code","id_token","id_token token","code id_token token","none"),
 					"token_types_supported" => array("legacyPop","dpop"),
 					"response_modes_supported" => array("query","fragment"),
@@ -51,12 +44,12 @@ class OpenidController extends AbstractController
 					"request_parameter_supported" => true,
 					"request_uri_parameter_supported" => false,
 					"require_request_uri_registration" => false,
-					"check_session_iframe" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.session")),
-					"end_session_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.logout")),
-					"token_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.token")),
-					"userinfo_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.userinfo")),
-					"registration_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.register")),
-			//		"sharing_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.sharing"))
+					"check_session_iframe" => $this->getAbsoluteUrl($this->linkToRoute("session"), $baseUrl),
+					"end_session_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("logout"), $baseUrl),
+					"token_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("token"), $baseUrl),
+					"userinfo_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("userinfo"), $baseUrl),
+					"registration_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("register"), $baseUrl),
+			//		"sharing_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("sharing"), $baseUrl)
 				);
     }
     private function getKeys() {
@@ -104,7 +97,7 @@ EOF;
     private function getClientId() {
         return "CoolApp";
     }
-    private function getClient($clientId) {
+    private function getClient($clientId, $baseUrl) {
         if (!$clientId) {
             $clientId = $this->getClientId(); // FIXME: only continue if a clientId is set;
         }
@@ -114,7 +107,7 @@ EOF;
             
             // FIXME: use the redirect URIs as indicated by the client;
             $clientRedirectUris = array(
-                $this->getAbsoluteURL($this->linkToRoute("solid.server.token")),
+                $this->getAbsoluteURL($this->linkToRoute("token"), $baseUrl),
                 'https://solid.community/.well-known/solid/login',
                 'http://localhost:3001/redirect'
             );
@@ -131,10 +124,10 @@ EOF;
         }
     }
 
-	  private function createConfig() {
+	  private function createConfig($baseUrl) {
 				// if (isset($_GET['client_id'])) {
 				$clientId = $_GET['client_id'];
-				$client = $this->getClient($clientId);
+				$client = $this->getClient($clientId, $baseUrl);
 				// }
 				try {
 						$config = (new \Pdsinterop\Solid\Auth\Factory\ConfigFactory(
@@ -152,6 +145,13 @@ EOF;
 
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
     {
+				$httpHost = $request->getServerParams()['HTTP_HOST'];
+				$baseUrl = $this->getBaseUrl($httpHost);
+				$this->openIdConfiguration = $this->getOpenIdConfiguration($baseUrl);
+				
+				$this->authServerConfig = $this->createConfig($baseUrl);
+				$this->authServerFactory = (new \Pdsinterop\Solid\Auth\Factory\AuthorizationServerFactory($this->authServerConfig))->create();
+
         $response = $this->getResponse();
 				$server	= new \Pdsinterop\Solid\Auth\Server($this->authServerFactory, $this->authServerConfig, $response);
 				return $server->respondToOpenIdMetadataRequest();
