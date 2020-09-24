@@ -10,6 +10,7 @@
     <foaf:Person rdf:ID="me">
         <ldp:inbox rdf:resource="/inbox/"/>
         <solid:account rdf:resource="/"/>
+        <space:storage rdf:resource="/"/>
         <solid:privateTypeIndex rdf:resource="/settings/privateTypeIndex.ttl"/>
         <solid:publicTypeIndex rdf:resource="/settings/publicTypeIndex.ttl"/>
         <space:preferencesFile rdf:resource="/settings/preferencesFile.ttl"/>
