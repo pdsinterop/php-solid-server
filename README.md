@@ -67,7 +67,7 @@ will prohibit the application from running in production mode.
 ### Docker images
 
 When running with your own Docker image, make sure to mount the project folder
-to wherever it will be hosted by the Docker container.
+to wherever the image expects it to be, e.g. `/app` or `/var/www`.
 
 For instance:
 
@@ -83,6 +83,20 @@ docker run                 \
    php:7.1                 \
    php --docroot /app/web/ --server "localhost:${PORT}" /app/web/index.php
 ```
+Or on Mac:
+```
+export PORT=8080 &&        \
+docker run                 \
+   --env "PORT=${PORT}"    \
+   --expose "${PORT}"      \
+   -p "${PORT}:${PORT}"    \
+   --rm                    \
+   --volume "$PWD:/app"    \
+   -it                     \
+   php:7.1                 \
+   php --docroot /app/web/ --server "localhost:${PORT}" /app/web/index.php
+```
+
 
 ### Local environment
 
@@ -91,12 +105,12 @@ falls outside the scope of this project.
 
 For development purposes, the internal PHP HTTP server _is_ explained below.
 
-#### Build-in PHP HTTP server
+#### Built-in PHP HTTP server
 
-For development purposes a Composer `serve` command has been provided. This will
+For development purposes a Composer `serve-dev` command has been provided. This will
 run the application using PHP internal HTTP server.
 
-To use it, run `composer serve` in the project root.
+To use it, run `composer serve-dev` in the project root.
 
 **!!! FOR SECURITY REASONS, DO NOT USE THIS METHOD IN PRODUCTION !!!**
 
