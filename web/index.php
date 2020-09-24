@@ -21,6 +21,7 @@ use Pdsinterop\Solid\Controller\HelloWorldController;
 use Pdsinterop\Solid\Controller\HttpToHttpsController;
 use Pdsinterop\Solid\Controller\Profile\CardController;
 use Pdsinterop\Solid\Controller\Profile\ProfileController;
+use Pdsinterop\Solid\Controller\OpenidController;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -73,6 +74,7 @@ $controllers = [
     HelloWorldController::class,
     HttpToHttpsController::class,
     ProfileController::class,
+    OpenidController::class
 ];
 
 $traits = [
@@ -114,6 +116,7 @@ $router->map('GET', '/profile', AddSlashToPathController::class)->setScheme($sch
 $router->map('GET', '/profile/', ProfileController::class)->setScheme($scheme);
 $router->map('GET', '/profile/card', CardController::class)->setScheme($scheme);
 $router->map('GET', '/profile/card{extension}', CardController::class)->setScheme($scheme);
+$router->map('GET', '/.well-known/openid-configuration', OpenidController::class)->setScheme($scheme);
 
 try {
     $response = $router->dispatch($request);
