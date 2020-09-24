@@ -3,8 +3,16 @@
     xmlns:foaf="http://xmlns.com/foaf/0.1/"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:ldp="http://www.w3.org/ns/ldp#"
+    xmlns:solid="http://www.w3.org/ns/solid/terms#"
+    xmlns:space="http://www.w3.org/ns/pim/space#"
 >
     <foaf:Person rdf:ID="me">
+        <ldp:inbox rdf:resource="/inbox/"/>
+        <solid:account rdf:resource="/"/>
+        <solid:privateTypeIndex rdf:resource="/settings/privateTypeIndex.ttl"/>
+        <solid:publicTypeIndex rdf:resource="/settings/publicTypeIndex.ttl"/>
+        <space:preferencesFile rdf:resource="/settings/preferencesFile.ttl"/>
         <foaf:depiction rdf:resource="https://www.gravatar.com/avatar/f8d7c4a4899736c59ec1e40c7021d477?s=1024"/>
         <foaf:family_name>Peachey</foaf:family_name>
         <foaf:givenname>Ben</foaf:givenname>
