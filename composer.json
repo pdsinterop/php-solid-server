@@ -37,7 +37,7 @@
     },
     "scripts": {
         "lint":"",
-        "serve-dev":"ENVIRONMENT=development php -S \"${HOST:-localhost}:${PORT:-80}\" -t web/ web/index.php",
+        "serve-dev":"ENVIRONMENT=development php -S \"${HOST:-localhost}:${PORT:-8080}\" -t web/ web/index.php",
         "serve-dev-docker":"bash ./bin/serve-docker-dev.sh",
         "test":"phpunit"
     },

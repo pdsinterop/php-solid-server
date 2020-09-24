@@ -114,13 +114,14 @@ To use it, run `composer serve-dev` in the project root.
 
 **!!! FOR SECURITY REASONS, DO NOT USE THIS METHOD IN PRODUCTION !!!**
 
-By default, the application is hosted on `localhost` port `80`.
+By default, the application is hosted on `localhost` port `8080`.
+So if you visit http://localhost:8080/ with your browser, you should see "Hello, World!".
 
 Both the `HOST` and `PORT` can be configured before running the command by
 setting them in the environment, for instance:
 
 ```sh
-HOST='solid.local' PORT=8080 composer serve
+HOST='solid.local' PORT=1234 composer serve-dev
 ```
 
 This command can also be run through a docker container, for instance:
