@@ -8,19 +8,19 @@ use Psr\Http\Message\ServerRequestInterface;
 class OpenidController extends AbstractController
 {    
     private $keys;
-	private $openIdConfiguration;
-	private $authServerConfig;
-	private $authServerFactory;
+		private $openIdConfiguration;
+		private $authServerConfig;
+		private $authServerFactory;
 	
     public function __construct(){
         // parent::__construct();
         require_once(__DIR__.'/../../vendor/autoload.php');
 
         $this->keys = $this->getKeys();
-		$this->openIdConfiguration = $this->getOpenIdConfiguration();
-		
-		$this->authServerConfig = $this->createConfig();
-		$this->authServerFactory = (new \Pdsinterop\Solid\Auth\Factory\AuthorizationServerFactory($this->authServerConfig))->create();
+				$this->openIdConfiguration = $this->getOpenIdConfiguration();
+				
+				$this->authServerConfig = $this->createConfig();
+				$this->authServerFactory = (new \Pdsinterop\Solid\Auth\Factory\AuthorizationServerFactory($this->authServerConfig))->create();
     }
     private function linkToRoute($route) {
         return '/some/route';
@@ -32,37 +32,37 @@ class OpenidController extends AbstractController
         return 'http://localhost/some/route';
     }
     private function getOpenIdConfiguration() {
-		return array(
-			'issuer' => $this->getBaseUrl(),
-			'authorization_endpoint' => $this->getAbsoluteUrl($this->linkToRoute("solid.server.authorize")),
-			'jwks_uri' => $this->getAbsoluteUrl($this->linkToRoute("solid.server.jwks")),
-			"response_types_supported" => array("code","code token","code id_token","id_token code","id_token","id_token token","code id_token token","none"),
-			"token_types_supported" => array("legacyPop","dpop"),
-			"response_modes_supported" => array("query","fragment"),
-			"grant_types_supported" => array("authorization_code","implicit","refresh_token","client_credentials"),
-			"subject_types_supported" => ["public"],
-			"id_token_signing_alg_values_supported" => ["RS256"],
-			"token_endpoint_auth_methods_supported" => "client_secret_basic",
-			"token_endpoint_auth_signing_alg_values_supported" => ["RS256"],
-			"display_values_supported" => [],
-			"claim_types_supported" => ["normal"],
-			"claims_supported" => [],
-			"claims_parameter_supported" => false,
-			"request_parameter_supported" => true,
-			"request_uri_parameter_supported" => false,
-			"require_request_uri_registration" => false,
-			"check_session_iframe" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.session")),
-			"end_session_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.logout")),
-			"token_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.token")),
-			"userinfo_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.userinfo")),
-			"registration_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.register")),
-	//		"sharing_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.sharing"))
-		);
+				return array(
+					'issuer' => $this->getBaseUrl(),
+					'authorization_endpoint' => $this->getAbsoluteUrl($this->linkToRoute("solid.server.authorize")),
+					'jwks_uri' => $this->getAbsoluteUrl($this->linkToRoute("solid.server.jwks")),
+					"response_types_supported" => array("code","code token","code id_token","id_token code","id_token","id_token token","code id_token token","none"),
+					"token_types_supported" => array("legacyPop","dpop"),
+					"response_modes_supported" => array("query","fragment"),
+					"grant_types_supported" => array("authorization_code","implicit","refresh_token","client_credentials"),
+					"subject_types_supported" => ["public"],
+					"id_token_signing_alg_values_supported" => ["RS256"],
+					"token_endpoint_auth_methods_supported" => "client_secret_basic",
+					"token_endpoint_auth_signing_alg_values_supported" => ["RS256"],
+					"display_values_supported" => [],
+					"claim_types_supported" => ["normal"],
+					"claims_supported" => [],
+					"claims_parameter_supported" => false,
+					"request_parameter_supported" => true,
+					"request_uri_parameter_supported" => false,
+					"require_request_uri_registration" => false,
+					"check_session_iframe" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.session")),
+					"end_session_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.logout")),
+					"token_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.token")),
+					"userinfo_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.userinfo")),
+					"registration_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.register")),
+			//		"sharing_endpoint" => $this->getAbsoluteUrl($this->linkToRoute("solid.server.sharing"))
+				);
     }
     private function getKeys() {
-		// FIXME: read these from the solid config in nextcloud;
-		$encryptionKey = 'P76gcBVeXsVzrHiYp4IIwore5rQz4cotdZ2j9GV5V04=';
-		$privateKey = <<<EOF
+				// FIXME: read these from the solid config in nextcloud;
+				$encryptionKey = 'P76gcBVeXsVzrHiYp4IIwore5rQz4cotdZ2j9GV5V04=';
+				$privateKey = <<<EOF
 -----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEAvqb0htUFZaZ+z5rn7cHWg0VzsSoVnusbtJvwWtHfD0T0s6Hb
 OqzE5h2fgdGbB49HRtc21SNHx6jeEStGv03yyqYkLUKrJJSg+ksrL+pT3Nd0h25q
@@ -92,14 +92,14 @@ oYiERqXgH5yS/mkDeXRFx1nWsVxjoLWfd/Vi7Lr43cuYFy4UjqXZdg==
 -----END RSA PRIVATE KEY-----
 EOF;
 
-		$key = openssl_pkey_get_private($privateKey);
-		$publicKey = openssl_pkey_get_details($key)['key'];
-		
-		return array(
-			"encryptionKey" => $encryptionKey,
-			"privateKey" => $privateKey,
-			"publicKey" => $publicKey
-		);
+				$key = openssl_pkey_get_private($privateKey);
+				$publicKey = openssl_pkey_get_details($key)['key'];
+				
+				return array(
+					"encryptionKey" => $encryptionKey,
+					"privateKey" => $privateKey,
+					"publicKey" => $publicKey
+				);
     }
     private function getClientId() {
         return "CoolApp";
@@ -131,29 +131,29 @@ EOF;
         }
     }
 
-	private function createConfig() {
-		// if (isset($_GET['client_id'])) {
-			$clientId = $_GET['client_id'];
-			$client = $this->getClient($clientId);
-		// }
-		try {
-			$config = (new \Pdsinterop\Solid\Auth\Factory\ConfigFactory(
-				$client,
-				$this->keys['encryptionKey'],
-				$this->keys['privateKey'],
-				$this->keys['publicKey'],
-				$this->openIdConfiguration
-			))->create();
-		} catch(\Throwable $e) {
-			var_dump($e);
+	  private function createConfig() {
+				// if (isset($_GET['client_id'])) {
+				$clientId = $_GET['client_id'];
+				$client = $this->getClient($clientId);
+				// }
+				try {
+						$config = (new \Pdsinterop\Solid\Auth\Factory\ConfigFactory(
+								$client,
+								$this->keys['encryptionKey'],
+								$this->keys['privateKey'],
+								$this->keys['publicKey'],
+								$this->openIdConfiguration
+						))->create();
+				} catch(\Throwable $e) {
+						var_dump($e);
+				}
+				return $config;
 		}
-		return $config;
-	}
 
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $response = $this->getResponse();
-		$server	= new \Pdsinterop\Solid\Auth\Server($this->authServerFactory, $this->authServerConfig, $response);
-		return $server->respondToOpenIdMetadataRequest();
+				$server	= new \Pdsinterop\Solid\Auth\Server($this->authServerFactory, $this->authServerConfig, $response);
+				return $server->respondToOpenIdMetadataRequest();
     }
 }
