@@ -1,0 +1,742 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:feature" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:feature" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:upstream" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="71ad3c37-98ea-46a8-9025-18ba93ae163f" name="Default Changelist" comment="Change RouterService to use a route group for profile URLs.">
+      <change afterPath="$PROJECT_DIR$/src/Controller/AuthorizationController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../solid-auth/src/Enum/Jwk/Parameter.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/serve-docker-dev.sh" beforeDir="false" afterPath="$PROJECT_DIR$/bin/serve-docker-dev.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/AbstractController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/AbstractController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/Profile/CardController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/Profile/CardController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/Profile/ProfileController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/Profile/ProfileController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/WellKnown.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/WellKnown.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Service/ContainerService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Service/ContainerService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Service/RouterService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Service/RouterService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Template/card.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/fixtures/foaf.rdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../solid-auth/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/../solid-auth/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../solid-auth/src/Config/Server.php" beforeDir="false" afterPath="$PROJECT_DIR$/../solid-auth/src/Config/Server.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../solid-auth/src/Enum/Repository.php" beforeDir="false" afterPath="$PROJECT_DIR$/../solid-auth/src/Enum/Repository.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../solid-auth/src/Exceptions.inc.php" beforeDir="false" afterPath="$PROJECT_DIR$/../solid-auth/src/Exceptions.inc.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../solid-auth/src/Factory/AuthorizationServerFactory.php" beforeDir="false" afterPath="$PROJECT_DIR$/../solid-auth/src/Factory/AuthorizationServerFactory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../solid-auth/src/Factory/GrantTypeFactory.php" beforeDir="false" afterPath="$PROJECT_DIR$/../solid-auth/src/Factory/GrantTypeFactory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../solid-auth/src/Factory/RepositoryFactory.php" beforeDir="false" afterPath="$PROJECT_DIR$/../solid-auth/src/Factory/RepositoryFactory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../solid-auth/src/Server.php" beforeDir="false" afterPath="$PROJECT_DIR$/../solid-auth/src/Server.php" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings" doNotAsk="true" synchronizationState="SYNCHRONIZE">
+    <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
+    <execution />
+  </component>
+  <component name="CoverageOptionsProvider">
+    <option name="myAddOrReplace" value="0" />
+    <option name="myActivateViewOnRun" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../solid-auth" />
+  </component>
+  <component name="JsBowerSettings">
+    <node-interpreter value="project" />
+    <bower-package value="" />
+    <bower.json value="" />
+  </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration">
+    <include_path>
+      <path value="$PROJECT_DIR$/vendor/pdsinterop/flysystem-rdf" />
+      <path value="$PROJECT_DIR$/vendor/php-http/httplug" />
+      <path value="$PROJECT_DIR$/vendor/paragonie/random_compat" />
+      <path value="$PROJECT_DIR$/vendor/lcobucci/jwt" />
+      <path value="$PROJECT_DIR$/vendor/php-http/promise" />
+      <path value="$PROJECT_DIR$/vendor/laminas/laminas-zendframework-bridge" />
+      <path value="$PROJECT_DIR$/vendor/laminas/laminas-diactoros" />
+      <path value="$PROJECT_DIR$/vendor/laminas/laminas-httphandlerrunner" />
+      <path value="$PROJECT_DIR$/vendor/league/event" />
+      <path value="$PROJECT_DIR$/vendor/easyrdf/easyrdf" />
+      <path value="$PROJECT_DIR$/vendor/league/oauth2-server" />
+      <path value="$PROJECT_DIR$/vendor/league/container" />
+      <path value="$PROJECT_DIR$/vendor/league/flysystem" />
+      <path value="$PROJECT_DIR$/vendor/league/route" />
+      <path value="$PROJECT_DIR$/vendor/nikic/fast-route" />
+      <path value="$PROJECT_DIR$/vendor/defuse/php-encryption" />
+      <path value="$PROJECT_DIR$/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/vendor/psr/http-client" />
+      <path value="$PROJECT_DIR$/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/vendor/psr/http-server-middleware" />
+      <path value="$PROJECT_DIR$/vendor/psr/http-factory" />
+      <path value="$PROJECT_DIR$/vendor/psr/http-server-handler" />
+      <path value="$PROJECT_DIR$/vendor/ml/iri" />
+      <path value="$PROJECT_DIR$/vendor/ml/json-ld" />
+      <path value="$PROJECT_DIR$/vendor/composer" />
+      <path value="$PROJECT_DIR$/vendor/webmozart/assert" />
+      <path value="$PROJECT_DIR$/vendor/phpspec/prophecy" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/instantiator" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-ctype" />
+      <path value="$PROJECT_DIR$/vendor/symfony/yaml" />
+      <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-docblock" />
+      <path value="$PROJECT_DIR$/vendor/phpdocumentor/type-resolver" />
+      <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-common" />
+      <path value="$PROJECT_DIR$/vendor/myclabs/deep-copy" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/comparator" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/code-unit-reverse-lookup" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/object-enumerator" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/resource-operations" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/diff" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/environment" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/global-state" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/recursion-context" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/phpunit-mock-objects" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/exporter" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/version" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-code-coverage" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-text-template" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/phpunit" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-timer" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-file-iterator" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-token-stream" />
+      <path value="$PROJECT_DIR$/vendor/phptal/phptal" />
+      <path value="$PROJECT_DIR$/vendor/monolog/monolog" />
+      <path value="$PROJECT_DIR$/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/vendor/pdsinterop/solid-auth" />
+      <path value="$PROJECT_DIR$/vendor/league/commonmark" />
+      <path value="$PROJECT_DIR$/vendor/phar-io/version" />
+      <path value="$PROJECT_DIR$/vendor/phar-io/manifest" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/object-reflector" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/type" />
+      <path value="$PROJECT_DIR$/vendor/theseer/tokenizer" />
+    </include_path>
+  </component>
+  <component name="ProjectId" id="1eulPi27Vnw6VF8Y5SmeplLOGTb" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="sortByType" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../solid-auth" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.standard" value="true" />
+    <property name="node.js.detected.package.stylelint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.standard" value="project" />
+    <property name="node.js.path.for.package.stylelint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.standard" value="" />
+    <property name="node.js.selected.package.stylelint" value="" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="php.override.implement.member.chooser.php.doc" value="NONE" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/Model/OpenId/Provider" />
+      <recent name="$PROJECT_DIR$/tests/fixtures" />
+      <recent name="$PROJECT_DIR$/docker" />
+      <recent name="$PROJECT_DIR$/src/Authentication/Repository" />
+      <recent name="$PROJECT_DIR$/src/Authentication/Grants/ClientCredentials" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/Model/OAuth2" />
+      <recent name="$PROJECT_DIR$/src/Controller" />
+      <recent name="$PROJECT_DIR$/src/Routes" />
+      <recent name="$PROJECT_DIR$/docker" />
+      <recent name="$PROJECT_DIR$/docker/sites-enabled" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration>$USER_HOME$/.subversion</configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <branch name="feature/authentication" repository="$PROJECT_DIR$" original="true" />
+      <changelist id="71ad3c37-98ea-46a8-9025-18ba93ae163f" name="Default Changelist" comment="" />
+      <created>1595179336532</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1595939699072</updated>
+      <workItem from="1595179338766" duration="2373000" />
+      <workItem from="1595181755561" duration="12579000" />
+      <workItem from="1595230547293" duration="25077000" />
+      <workItem from="1595264872530" duration="81000" />
+      <workItem from="1595320576904" duration="15251000" />
+      <workItem from="1595932160620" duration="80000" />
+      <workItem from="1595932260693" duration="31000" />
+      <workItem from="1595939699723" duration="10000" />
+      <workItem from="1596098900276" duration="11635000" />
+      <workItem from="1596118444722" duration="402000" />
+      <workItem from="1596118999558" duration="5644000" />
+      <workItem from="1600099075758" duration="506000" />
+      <workItem from="1600099973441" duration="630000" />
+      <workItem from="1600108459110" duration="50000" />
+      <workItem from="1600108522888" duration="2584000" />
+      <workItem from="1600155229096" duration="145000" />
+      <workItem from="1600192518687" duration="5563000" />
+    </task>
+    <task id="LOCAL-00001" summary="Change code in index.php to less terse.">
+      <created>1595182452995</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1595182452995</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Add exception handling to index.php.">
+      <created>1595182528099</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1595182528099</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Change all class references in index.php to `use` statements.">
+      <created>1595182822275</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1595182822275</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Add abstract Controller class to be extended by all controller.">
+      <created>1595183095291</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1595183095291</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Add controller for &quot;Hello World&quot; response.">
+      <created>1595183405355</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1595183405355</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Change index.php to use controller structure.">
+      <created>1595183443125</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1595183443126</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Add Controller class to redirect http to https.">
+      <created>1595183760003</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1595183760003</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Change index.php to always use HTTPS in production.">
+      <created>1595183824320</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1595183824320</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Change index.php to always use HTTPS in production.">
+      <created>1595184650799</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1595184650799</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Add bash script to run a PHP development server in docker.">
+      <created>1595185025255</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1595185025255</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Add docker-compose.yml file to allow `docker-compose up`.">
+      <created>1595185167396</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1595185167396</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Add document outlining the Solid specification compliance of this project.">
+      <created>1595186476571</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1595186476571</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Add abstract Controller class to create redirects with.">
+      <created>1595192743756</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1595192743756</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Add class to redirect from path without to path with slash at the end.">
+      <created>1595192779684</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1595192779684</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Add abstract Controller class to create redirects with.">
+      <created>1595192972911</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1595192972911</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Add abstract Controller class to create redirects with.">
+      <created>1595193034820</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1595193034821</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Add class to redirect from path without to path with slash at the end.">
+      <created>1595193050355</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1595193050355</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Add class to redirect `/profile/` to `/profile/card`.">
+      <created>1595193087826</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1595193087826</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Add Controller class for displaying a users profile card.">
+      <created>1595193262105</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1595193262105</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Add routing to Profile Card in the index file.">
+      <created>1595193529984</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1595193529984</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Change message for 404 errors in the index page.">
+      <created>1595193556731</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1595193556731</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Change project README structure and add swag.">
+      <created>1595193643799</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1595193643799</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Add new requirements to composer.json file.">
+      <created>1595193682857</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1595193682857</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Change controller dependency to trait-based and setter injection.">
+      <created>1595238522928</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1595238522928</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Change auto-wiring for controllers in index file to be trait agnostic.">
+      <created>1595239294116</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1595239294116</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Change controller dependency to trait-based and setter injection.">
+      <created>1595244912075</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1595244912075</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Add PHPTAL as dependency for templating.">
+      <created>1595245240465</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1595245240465</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Add trait for templating.">
+      <created>1595246362550</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1595246362550</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Add default template to use as base for any UI.">
+      <created>1595253226621</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1595253226621</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Change HasTemplateTrait to offer a shortcut to create template output.">
+      <created>1595256398979</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1595256398979</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Change the HelloWorldController to use the templating engine.">
+      <created>1595256590567</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1595256590567</updated>
+    </task>
+    <task id="LOCAL-00032" summary="Change AbstractController to offer templating functionality.">
+      <created>1595256627208</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1595256627208</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Change the ProfileController to show different RDF formats.">
+      <created>1595256750745</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1595256750745</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Add PHPTAL to the container in index.php.">
+      <created>1595256895431</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1595256895431</updated>
+    </task>
+    <task id="LOCAL-00035" summary="Change Filesystem invocation in the index to be in a more private scope.">
+      <created>1595256983267</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1595256983267</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Add class to create HTML response for Exceptions.">
+      <created>1595324475132</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1595324475132</updated>
+    </task>
+    <task id="LOCAL-00037" summary="Add class to create HTML response for Exceptions.">
+      <created>1595324601861</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1595324601861</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Add service class to create objects and add them to the container.">
+      <created>1595325506171</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1595325506171</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Add service class to add all routes to the router.">
+      <created>1595325536679</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1595325536679</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Change index file to use services and exception handler.">
+      <created>1595325569110</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1595325569110</updated>
+    </task>
+    <task id="LOCAL-00041" summary="Change RouterService to use a route group for profile URLs.">
+      <created>1595326821772</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1595326821772</updated>
+    </task>
+    <task id="LOCAL-00042" summary="Implement OAuth2 Server">
+      <branch name="origin/feature/authentication" repository="$PROJECT_DIR$" />
+      <changelist id="71ad3c37-98ea-46a8-9025-18ba93ae163f" name="Default Changelist" comment="" />
+      <created>1595932221756</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1595932260275</updated>
+      <workItem from="1595932240780" duration="20000" />
+    </task>
+    <task id="LOCAL-00043" summary="Run HTTPS with Docker">
+      <changelist id="71ad3c37-98ea-46a8-9025-18ba93ae163f" name="Default Changelist" comment="" />
+      <created>1595932287404</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1595939699072</updated>
+      <workItem from="1595932291664" duration="7406000" />
+    </task>
+    <option name="localTasksCounter" value="44" />
+    <option name="clearContext" value="false" />
+    <option name="createChangelist" value="false" />
+    <option name="createBranch" value="false" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add document outlining the Solid specification compliance of this project." />
+    <MESSAGE value="Add abstract Controller class to create redirects with." />
+    <MESSAGE value="Add class to redirect from path without to path with slash at the end." />
+    <MESSAGE value="Add class to redirect `/profile/` to `/profile/card`." />
+    <MESSAGE value="Add Controller class for displaying a users profile card." />
+    <MESSAGE value="Add routing to Profile Card in the index file." />
+    <MESSAGE value="Change message for 404 errors in the index page." />
+    <MESSAGE value="Change project README structure and add swag." />
+    <MESSAGE value="Add new requirements to composer.json file." />
+    <MESSAGE value="Change auto-wiring for controllers in index file to be trait agnostic." />
+    <MESSAGE value="Change controller dependency to trait-based and setter injection." />
+    <MESSAGE value="Add PHPTAL as dependency for templating." />
+    <MESSAGE value="Add trait for templating." />
+    <MESSAGE value="Add default template to use as base for any UI." />
+    <MESSAGE value="Change HasTemplateTrait to offer a shortcut to create template output." />
+    <MESSAGE value="Change the HelloWorldController to use the templating engine." />
+    <MESSAGE value="Change AbstractController to offer templating functionality." />
+    <MESSAGE value="Change the ProfileController to show different RDF formats." />
+    <MESSAGE value="Add PHPTAL to the container in index.php." />
+    <MESSAGE value="Change Filesystem invocation in the index to be in a more private scope." />
+    <MESSAGE value="Add class to create HTML response for Exceptions." />
+    <MESSAGE value="Add service class to create objects and add them to the container." />
+    <MESSAGE value="Add service class to add all routes to the router." />
+    <MESSAGE value="Change index file to use services and exception handler." />
+    <MESSAGE value="Change RouterService to use a route group for profile URLs." />
+    <option name="LAST_COMMIT_MESSAGE" value="Change RouterService to use a route group for profile URLs." />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="539" y="193" width="800" height="719" key="#Plugins" timestamp="1600108508589">
+      <screen x="0" y="28" width="1920" height="1024" />
+    </state>
+    <state x="539" y="193" key="#Plugins/0.28.1920.1024@0.28.1920.1024" timestamp="1600108508589" />
+    <state x="591" y="197" width="800" height="719" key="#Plugins/72.27.1848.1053@72.27.1848.1053" timestamp="1595255263194" />
+    <state x="454" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1595932199478">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="454" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog/72.27.1848.1053@72.27.1848.1053" timestamp="1595932199478" />
+    <state x="688" y="354" width="662" height="406" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1596103521320">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="688" y="354" width="662" height="406" key="#com.intellij.fileTypes.FileTypeChooser/72.27.1848.1053@72.27.1848.1053" timestamp="1596103521320" />
+    <state x="781" y="232" width="420" height="691" key="#com.intellij.ide.util.MemberChooser" timestamp="1596100535010">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="781" y="232" width="420" height="691" key="#com.intellij.ide.util.MemberChooser/72.27.1848.1053@72.27.1848.1053" timestamp="1596100535010" />
+    <state x="750" y="331" width="525" height="424" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1595339503429">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="750" y="331" width="525" height="424" key="#com.intellij.ide.util.TreeClassChooserDialog/72.27.1848.1053@72.27.1848.1053" timestamp="1595339503429" />
+    <state x="603" y="27" width="776" height="1053" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1596126967341">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="603" y="27" width="776" height="1053" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/72.27.1848.1053@72.27.1848.1053" timestamp="1596126967341" />
+    <state x="683" y="304" width="526" height="483" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1600198762219">
+      <screen x="0" y="28" width="1920" height="1024" />
+    </state>
+    <state x="683" y="304" width="526" height="483" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.28.1920.1024@0.28.1920.1024" timestamp="1600198762219" />
+    <state x="729" y="311" width="524" height="491" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/72.27.1848.1053@72.27.1848.1053" timestamp="1596107086612" />
+    <state x="743" y="449" width="424" height="152" key="#com.jetbrains.php.lang.intentions.PhpImportClassDialog#" timestamp="1596106442508">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="743" y="449" width="424" height="152" key="#com.jetbrains.php.lang.intentions.PhpImportClassDialog#/72.27.1848.1053@72.27.1848.1053" timestamp="1596106442508" />
+    <state x="832" y="242" width="317" height="629" key="#com.jetbrains.php.refactoring.extractMethod.PhpExtractMethodDialog#function1" timestamp="1595323107006">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="832" y="242" width="317" height="629" key="#com.jetbrains.php.refactoring.extractMethod.PhpExtractMethodDialog#function1/72.27.1848.1053@72.27.1848.1053" timestamp="1595323107006" />
+    <state x="778" y="323" width="425" height="467" key="#com.jetbrains.php.refactoring.extractMethod.PhpExtractMethodDialog#method0" timestamp="1595324756766">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="778" y="323" width="425" height="467" key="#com.jetbrains.php.refactoring.extractMethod.PhpExtractMethodDialog#method0/72.27.1848.1053@72.27.1848.1053" timestamp="1595324756766" />
+    <state x="778" y="249" width="536" height="615" key="#com.jetbrains.php.refactoring.extractMethod.PhpExtractMethodDialog#method1" timestamp="1596109685611">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="778" y="249" width="536" height="615" key="#com.jetbrains.php.refactoring.extractMethod.PhpExtractMethodDialog#method1/72.27.1848.1053@72.27.1848.1053" timestamp="1596109685611" />
+    <state x="701" y="176" width="604" height="558" key="#com.jetbrains.php.refactoring.pullPush.pullUp.PhpPullUpDialog#1" timestamp="1596109494751">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="701" y="176" width="604" height="558" key="#com.jetbrains.php.refactoring.pullPush.pullUp.PhpPullUpDialog#1/72.27.1848.1053@72.27.1848.1053" timestamp="1596109494751" />
+    <state x="72" y="27" width="1839" height="1048" key="CommitChangelistDialog2" timestamp="1596104878730">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="72" y="27" width="1839" height="1048" key="CommitChangelistDialog2/72.27.1848.1053@72.27.1848.1053" timestamp="1596104878730" />
+    <state width="429" height="502" key="Diff.GoToChangePopup" timestamp="1595182113678">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state width="429" height="502" key="Diff.GoToChangePopup/72.27.1848.1053@72.27.1848.1053" timestamp="1595182113678" />
+    <state x="72" y="27" width="1808" height="1053" maximized="true" key="DiffContextDialog" timestamp="1596104877254">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="72" y="27" width="1808" height="1053" maximized="true" key="DiffContextDialog/72.27.1848.1053@72.27.1848.1053" timestamp="1596104877254" />
+    <state x="617" y="227" width="426" height="483" key="FileChooserDialogImpl" timestamp="1600197059467">
+      <screen x="0" y="28" width="1920" height="1024" />
+    </state>
+    <state x="617" y="227" width="426" height="483" key="FileChooserDialogImpl/0.28.1920.1024@0.28.1920.1024" timestamp="1600197059467" />
+    <state x="666" y="232" width="658" height="702" key="FileChooserDialogImpl/72.27.1848.1053@72.27.1848.1053" timestamp="1596120789538" />
+    <state x="72" y="27" width="1847" height="1052" key="MergeDialog" timestamp="1595244771619">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="72" y="27" width="1847" height="1052" key="MergeDialog/72.27.1848.1053@72.27.1848.1053" timestamp="1595244771619" />
+    <state x="624" y="313" width="733" height="487" key="MultipleFileMergeDialog" timestamp="1595244771621">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="624" y="313" width="733" height="487" key="MultipleFileMergeDialog/72.27.1848.1053@72.27.1848.1053" timestamp="1595244771621" />
+    <state x="566" y="289" width="722" height="560" key="NewPhpClassDialog" timestamp="1600199268212">
+      <screen x="0" y="28" width="1920" height="1024" />
+    </state>
+    <state x="566" y="289" width="722" height="560" key="NewPhpClassDialog/0.28.1920.1024@0.28.1920.1024" timestamp="1600199268212" />
+    <state x="617" y="295" width="774" height="599" key="NewPhpClassDialog/72.27.1848.1053@72.27.1848.1053" timestamp="1596126842916" />
+    <state x="789" y="478" width="404" height="158" key="NewPhpFileDialog" timestamp="1595337766086">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="789" y="478" width="404" height="158" key="NewPhpFileDialog/72.27.1848.1053@72.27.1848.1053" timestamp="1595337766086" />
+    <state x="797" y="490" width="388" height="133" key="ReplaceDuplicatesPrompt" timestamp="1595323408605">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="797" y="490" width="388" height="133" key="ReplaceDuplicatesPrompt/72.27.1848.1053@72.27.1848.1053" timestamp="1595323408605" />
+    <state x="634" y="258" width="1078" height="730" key="SettingsEditor" timestamp="1600155327965">
+      <screen x="0" y="28" width="1920" height="1024" />
+    </state>
+    <state x="634" y="258" width="1078" height="730" key="SettingsEditor/0.28.1920.1024@0.28.1920.1024" timestamp="1600155327965" />
+    <state x="477" y="188" width="1037" height="737" key="SettingsEditor/72.27.1848.1053@72.27.1848.1053" timestamp="1596119166455" />
+    <state x="669" y="385" width="644" height="351" key="SimpleOpenTaskDialog" timestamp="1595932291217">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="669" y="385" width="644" height="351" key="SimpleOpenTaskDialog/72.27.1848.1053@72.27.1848.1053" timestamp="1595932291217" />
+    <state width="518" height="435" key="SwitcherDM" timestamp="1600197351337">
+      <screen x="0" y="28" width="1920" height="1024" />
+    </state>
+    <state width="518" height="435" key="SwitcherDM/0.28.1920.1024@0.28.1920.1024" timestamp="1600197351337" />
+    <state width="498" height="447" key="SwitcherDM/72.27.1848.1053@72.27.1848.1053" timestamp="1596108835752" />
+    <state x="742" y="221" width="497" height="672" key="VCS.ChangeListViewerDialog" timestamp="1595246092394">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="742" y="221" width="497" height="672" key="VCS.ChangeListViewerDialog/72.27.1848.1053@72.27.1848.1053" timestamp="1595246092394" />
+    <state x="172" y="127" width="1648" height="853" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1595244041217">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="172" y="127" width="1648" height="853" key="com.intellij.history.integration.ui.views.FileHistoryDialog/72.27.1848.1053@72.27.1848.1053" timestamp="1595244041217" />
+    <state x="621" y="206" width="740" height="701" key="com.intellij.javaee.MapExternalResourceDialog" timestamp="1595241591765">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="621" y="206" width="740" height="701" key="com.intellij.javaee.MapExternalResourceDialog/72.27.1848.1053@72.27.1848.1053" timestamp="1595241591765" />
+    <state x="555" y="152" width="770" height="806" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1600196591159">
+      <screen x="0" y="28" width="1920" height="1024" />
+    </state>
+    <state x="555" y="152" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.28.1920.1024@0.28.1920.1024" timestamp="1600196591159" />
+    <state x="606" y="154" width="770" height="806" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/72.27.1848.1053@72.27.1848.1053" timestamp="1596111924384" />
+    <state x="391" y="130" width="1125" height="848" key="find.popup" timestamp="1600199044222">
+      <screen x="0" y="28" width="1920" height="1024" />
+    </state>
+    <state x="391" y="130" width="1125" height="848" key="find.popup/0.28.1920.1024@0.28.1920.1024" timestamp="1600199044222" />
+    <state x="448" y="132" width="1082" height="871" key="find.popup/72.27.1848.1053@72.27.1848.1053" timestamp="1596112374159" />
+    <state x="711" y="236" width="560" height="641" key="git4idea.branch.GitSmartOperationDialog" timestamp="1595932248018">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="711" y="236" width="560" height="641" key="git4idea.branch.GitSmartOperationDialog/72.27.1848.1053@72.27.1848.1053" timestamp="1595932248018" />
+    <state x="611" y="247" key="run.anything.popup" timestamp="1600199568260">
+      <screen x="0" y="28" width="1920" height="1024" />
+    </state>
+    <state x="611" y="247" key="run.anything.popup/0.28.1920.1024@0.28.1920.1024" timestamp="1600199568260" />
+    <state x="660" y="252" key="run.anything.popup/72.27.1848.1053@72.27.1848.1053" timestamp="1596107977611" />
+    <state x="610" y="254" width="699" height="660" key="search.everywhere.popup" timestamp="1600199428750">
+      <screen x="0" y="28" width="1920" height="1024" />
+    </state>
+    <state x="610" y="254" width="699" height="660" key="search.everywhere.popup/0.28.1920.1024@0.28.1920.1024" timestamp="1600199428750" />
+    <state x="659" y="259" width="672" height="678" key="search.everywhere.popup/72.27.1848.1053@72.27.1848.1053" timestamp="1596123470549" />
+    <state x="721" y="455" width="540" height="204" key="vcs.readOnlyHandler.ReadOnlyStatusDialog" timestamp="1595939172856">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="721" y="455" width="540" height="204" key="vcs.readOnlyHandler.ReadOnlyStatusDialog/72.27.1848.1053@72.27.1848.1053" timestamp="1595939172856" />
+  </component>
+</project>
