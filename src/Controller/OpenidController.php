@@ -19,7 +19,7 @@ class OpenidController extends AbstractController
         return "/$route";
     }
     private function getBaseUrl($httpHost) {
-        return "http://$httpHost";
+        return "https://$httpHost";
     }
     private function getAbsoluteUrl($relativeUrl, $baseUrl) {
         return "$baseUrl$relativeUrl";
