@@ -38,8 +38,8 @@ To install the project, clone it from GitHub and install the PHP dependencies
 using Composer:
 
 ```sh
-git clone git://github.com/pdsinerop/solid-server-php.git solid-server-php \
-    && cd $ \
+git clone git://github.com/pdsinterop/php-solid-server.git \
+    && cd php-solid-server \
     && composer install --no-dev --prefer-dist
 ```
 At this point, the application is ready to run.
