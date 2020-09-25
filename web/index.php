@@ -16,6 +16,7 @@ use League\Route\Http\Exception as HttpException;
 use League\Route\Http\Exception\NotFoundException;
 use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
+use Pdsinterop\Solid\Controller\LoginController;
 use Pdsinterop\Solid\Controller\AddSlashToPathController;
 use Pdsinterop\Solid\Controller\HelloWorldController;
 use Pdsinterop\Solid\Controller\HttpToHttpsController;
@@ -34,6 +35,7 @@ $request = ServerRequestFactory::fromGlobals(
 );
 $strategy = new ApplicationStrategy();
 
+session_start();
 $router = new Router();
 
 /*/ Wire objects together /*/
@@ -70,6 +72,7 @@ $container->share(\PHPTAL::class, function () {
 });
 
 $controllers = [
+    LoginController::class,
     AddSlashToPathController::class,
     CardController::class,
     HelloWorldController::class,
@@ -114,6 +117,7 @@ if (getenv('ENVIRONMENT') !== 'development') {
 $router->map('GET', '/', HelloWorldController::class)->setScheme($scheme);
 
 /*/ Create URI groups /*/
+$router->map('POST', '/login', LoginController::class)->setScheme($scheme);
 $router->map('GET', '/profile', AddSlashToPathController::class)->setScheme($scheme);
 $router->map('GET', '/profile/', ProfileController::class)->setScheme($scheme);
 $router->map('GET', '/profile/card', CardController::class)->setScheme($scheme);
