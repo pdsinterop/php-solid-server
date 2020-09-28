@@ -147,6 +147,17 @@ If you discover any security related issues, please email <security@pdsinterop.o
 
 -->
 
+## Running solid/webid-provider-tests
+Due to https://github.com/pdsinterop/php-solid-server/issues/8 you should run, in one terminal window:
+```sh
+HOST=127.0.0.1 composer serve-dev
+```
+and in another you run the [webid-provider-test](https://github.com/solid/webid-provider-tests) as:
+```sh
+SERVER_ROOT=http://localhost:8080 ./node_modules/.bin/jest test/surface/fetch-openid-config.test.ts
+```
+The current `dev` branch of php-solid-server should pass roughly 7 out of 17 tests.
+
 ## Available Features
 
 Based on the specifications, the following features are available:

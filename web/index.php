@@ -16,11 +16,14 @@ use League\Route\Http\Exception as HttpException;
 use League\Route\Http\Exception\NotFoundException;
 use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
+use Pdsinterop\Solid\Controller\LoginController;
 use Pdsinterop\Solid\Controller\AddSlashToPathController;
 use Pdsinterop\Solid\Controller\HelloWorldController;
 use Pdsinterop\Solid\Controller\HttpToHttpsController;
 use Pdsinterop\Solid\Controller\Profile\CardController;
 use Pdsinterop\Solid\Controller\Profile\ProfileController;
+use Pdsinterop\Solid\Controller\OpenidController;
+use Pdsinterop\Solid\Controller\AuthorizeController;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -32,6 +35,7 @@ $request = ServerRequestFactory::fromGlobals(
 );
 $strategy = new ApplicationStrategy();
 
+session_start();
 $router = new Router();
 
 /*/ Wire objects together /*/
@@ -68,11 +72,14 @@ $container->share(\PHPTAL::class, function () {
 });
 
 $controllers = [
+    LoginController::class,
     AddSlashToPathController::class,
     CardController::class,
     HelloWorldController::class,
     HttpToHttpsController::class,
     ProfileController::class,
+    OpenidController::class,
+    AuthorizeController::class
 ];
 
 $traits = [
@@ -110,10 +117,13 @@ if (getenv('ENVIRONMENT') !== 'development') {
 $router->map('GET', '/', HelloWorldController::class)->setScheme($scheme);
 
 /*/ Create URI groups /*/
+$router->map('POST', '/login', LoginController::class)->setScheme($scheme);
 $router->map('GET', '/profile', AddSlashToPathController::class)->setScheme($scheme);
 $router->map('GET', '/profile/', ProfileController::class)->setScheme($scheme);
 $router->map('GET', '/profile/card', CardController::class)->setScheme($scheme);
 $router->map('GET', '/profile/card{extension}', CardController::class)->setScheme($scheme);
+$router->map('GET', '/.well-known/openid-configuration', OpenidController::class)->setScheme($scheme);
+$router->map('GET', '/authorize', AuthorizeController::class)->setScheme($scheme);
 
 try {
     $response = $router->dispatch($request);
