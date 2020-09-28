@@ -95,7 +95,7 @@ EOF;
 				);
     }
     private function getClientId() {
-        return "CoolApp";
+        return "coolApp";
     }
     private function getClient($clientId, $baseUrl) {
         if (!$clientId) {

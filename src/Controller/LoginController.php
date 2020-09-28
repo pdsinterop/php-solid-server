@@ -12,20 +12,20 @@ class LoginController extends AbstractController
         $postBody = $request->getParsedBody();
         $response = $this->getResponse();
         // var_dump($_SESSION);
-        if (isset($_SESSION["userid"])) {
-          $user = $_SESSION["userid"];
+        if (isset($_SESSION['userid'])) {
+          $user = $_SESSION['userid'];
           $response->getBody()->write("<h1>Already logged in as $user</h1>");
-        } else if ($postBody["user"] == $_ENV["USER"] && $postBody["password"] == $_ENV["PASSWORD"]) {
-          $user = $postBody["user"];
+        } else if ($postBody['user'] == $_ENV['USER'] && $postBody['password'] == $_ENV['PASSWORD']) {
+          $user = $postBody['user'];
           $response->getBody()->write("<h1>Welcome $user</h1>\n");
-          $_SESSION["userid"] =  $user;
-          print_r("session started\n");
+          $_SESSION['userid'] =  $user;
+          echo("session started\n");
           var_dump($_SESSION);
         } else {
           // var_dump($postBody);
-          print_r("cookie:\n");
+          echo("cookie:\n");
           var_dump($_COOKIE);
-          print_r("session:\n");
+          echo("session:\n");
           var_dump($_SESSION);
           $response->getBody()->write("<h1>No (try posting user=alice&password=alice123)</h1>\n");
         }
