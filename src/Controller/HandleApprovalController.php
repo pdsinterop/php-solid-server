@@ -9,7 +9,7 @@ class HandleApprovalController extends ServerController
 {    
     public function __invoke(ServerRequestInterface $request, array $args) : ResponseInterface
     {
-		$clientId = $_POST['clientId'];
+		$clientId = $args['clientId'];
 		$returnUrl = $_POST['returnUrl'];
 		$approval = $_POST['approval'];
 

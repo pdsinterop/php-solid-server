@@ -23,7 +23,7 @@ class RegisterController extends ServerController
 		
 		$registration = array(
 			'client_id' => $clientId,
-			'registration_client_uri' => "http://localhost/clients/$clientId", // FIXME: properly generate this url;
+			'registration_client_uri' => "https://localhost/clients/$clientId", // FIXME: properly generate this url;
 			'client_id_issued_at' => $clientData['client_id_issued_at'],
 			'redirect_uris' => $clientData['redirect_uris'],
 		);

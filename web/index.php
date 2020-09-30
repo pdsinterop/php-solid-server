@@ -17,6 +17,7 @@ use League\Route\Http\Exception\NotFoundException;
 use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
 use Pdsinterop\Solid\Controller\LoginController;
+use Pdsinterop\Solid\Controller\LoginPageController;
 use Pdsinterop\Solid\Controller\AddSlashToPathController;
 use Pdsinterop\Solid\Controller\HelloWorldController;
 use Pdsinterop\Solid\Controller\HttpToHttpsController;
@@ -79,6 +80,7 @@ $container->share(\PHPTAL::class, function () {
 
 $controllers = [
     LoginController::class,
+    LoginPageController::class,
     AddSlashToPathController::class,
     CardController::class,
     HelloWorldController::class,
@@ -132,7 +134,8 @@ $OpenidController = new OpenidController();
 /*/ Create URI groups /*/
 $router->map('GET', '/.well-known/openid-configuration', OpenidController::class)->setScheme($scheme);
 $router->map('GET', '/jwks', JwksController::class)->setScheme($scheme);
-$router->map('POST', '/login', LoginController::class)->setScheme($scheme);
+$router->map('GET', '/login/', LoginPageController::class)->setScheme($scheme);
+$router->map('POST', '/login/', LoginController::class)->setScheme($scheme);
 $router->map('OPTIONS', '/register', CorsController::class)->setScheme($scheme);
 $router->map('POST', '/register', RegisterController::class)->setScheme($scheme);
 $router->map('GET', '/profile', AddSlashToPathController::class)->setScheme($scheme);
@@ -140,8 +143,8 @@ $router->map('GET', '/profile/', ProfileController::class)->setScheme($scheme);
 $router->map('GET', '/profile/card', CardController::class)->setScheme($scheme);
 $router->map('GET', '/profile/card{extension}', CardController::class)->setScheme($scheme);
 $router->map('GET', '/authorize', AuthorizeController::class)->setScheme($scheme);
-$router->map('GET', '/approval/', ApprovalController::class)->setScheme($scheme);
-$router->map('POST', '/approval/', HandleApprovalController::class)->setScheme($scheme);
+$router->map('GET', '/sharing/{clientId}/', ApprovalController::class)->setScheme($scheme);
+$router->map('POST', '/sharing/{clientId}/', HandleApprovalController::class)->setScheme($scheme);
 
 try {
     $response = $router->dispatch($request);

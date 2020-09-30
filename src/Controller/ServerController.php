@@ -21,20 +21,20 @@ abstract class ServerController extends AbstractController
 		$this->authServerFactory = (new \Pdsinterop\Solid\Auth\Factory\AuthorizationServerFactory($this->authServerConfig))->create();		
 		$this->tokenGenerator = (new \Pdsinterop\Solid\Auth\TokenGenerator($this->authServerConfig));
 		
-//		$this->baseUrl = "http://localhost";
+//		$this->baseUrl = "https://localhost";
     }
 
 	public function getOpenIdEndpoints() {
-		$this->baseUrl = "http://localhost"; // FIXME: generate proper urls
+		$this->baseUrl = "https://localhost/"; // FIXME: generate proper urls
 		return [
 			'issuer' => $this->baseUrl,
-			'authorization_endpoint' => $this->baseUrl . "/authorize",
-			'jwks_uri' => $this->baseUrl . "/jwks",
-			"check_session_iframe" => $this->baseUrl . "/session",
-			"end_session_endpoint" => $this->baseUrl . "/logout",
-			"token_endpoint" => $this->baseUrl . "/token",
-			"userinfo_endpoint" => $this->baseUrl . "/userinfo",
-			"registration_endpoint" => $this->baseUrl . "/register"
+			'authorization_endpoint' => $this->baseUrl . "authorize",
+			'jwks_uri' => $this->baseUrl . "jwks",
+			"check_session_iframe" => $this->baseUrl . "session",
+			"end_session_endpoint" => $this->baseUrl . "logout",
+			"token_endpoint" => $this->baseUrl . "token",
+			"userinfo_endpoint" => $this->baseUrl . "userinfo",
+			"registration_endpoint" => $this->baseUrl . "register"
 		];
 	}
 
@@ -113,7 +113,7 @@ abstract class ServerController extends AbstractController
 	}
 	
 	public function getProfilePage() {
-		return "http://localhost/profile/alice/turtle#me";
+		return "https://localhost/profile/card#me";
 	}
 	
 	public function getResponseType() {

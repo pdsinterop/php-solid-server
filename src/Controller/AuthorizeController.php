@@ -9,6 +9,15 @@ class AuthorizeController extends ServerController
 {
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
     {
+        if (!isset($_COOKIE['userid'])) {
+			$response = $this->getResponse();
+			$response = $response->withStatus(302, "Approval required");
+			
+			// FIXME: Generate a proper url for this;
+			$loginUrl = "https://localhost/login/?returnUrl=" . urlencode($_SERVER['REQUEST_URI']);
+			$response = $response->withHeader("Location", $loginUrl);
+			return $response;
+		}
 		$parser = new \Lcobucci\JWT\Parser();
 
 		try {
@@ -41,7 +50,7 @@ class AuthorizeController extends ServerController
 			$response = $response->withStatus(302, "Approval required");
 			
 			// FIXME: Generate a proper url for this;
-			$approvalUrl = "http://localhost/approval/?client_id=$clientId&returnUrl=" . urlencode($_SERVER['REQUEST_URI']);
+			$approvalUrl = "https://localhost/sharing/$clientId/?returnUrl=" . urlencode($_SERVER['REQUEST_URI']);
 			$response = $response->withHeader("Location", $approvalUrl);
 			return $response;
 		}
