@@ -23,7 +23,13 @@ use Pdsinterop\Solid\Controller\HttpToHttpsController;
 use Pdsinterop\Solid\Controller\Profile\CardController;
 use Pdsinterop\Solid\Controller\Profile\ProfileController;
 use Pdsinterop\Solid\Controller\OpenidController;
+use Pdsinterop\Solid\Controller\JwksController;
+use Pdsinterop\Solid\Controller\CorsController;
+use Pdsinterop\Solid\Controller\RegisterController;
 use Pdsinterop\Solid\Controller\AuthorizeController;
+use Pdsinterop\Solid\Controller\ApprovalController;
+use Pdsinterop\Solid\Controller\HandleApprovalController;
+
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -79,7 +85,12 @@ $controllers = [
     HttpToHttpsController::class,
     ProfileController::class,
     OpenidController::class,
-    AuthorizeController::class
+    JwksController::class,
+    CorsController::class,
+    RegisterController::class,
+    AuthorizeController::class,
+	ApprovalController::class,
+	HandleApprovalController::class,
 ];
 
 $traits = [
@@ -116,14 +127,21 @@ if (getenv('ENVIRONMENT') !== 'development') {
 
 $router->map('GET', '/', HelloWorldController::class)->setScheme($scheme);
 
+$OpenidController = new OpenidController();
+
 /*/ Create URI groups /*/
+$router->map('GET', '/.well-known/openid-configuration', OpenidController::class)->setScheme($scheme);
+$router->map('GET', '/jwks', JwksController::class)->setScheme($scheme);
 $router->map('POST', '/login', LoginController::class)->setScheme($scheme);
+$router->map('OPTIONS', '/register', CorsController::class)->setScheme($scheme);
+$router->map('POST', '/register', RegisterController::class)->setScheme($scheme);
 $router->map('GET', '/profile', AddSlashToPathController::class)->setScheme($scheme);
 $router->map('GET', '/profile/', ProfileController::class)->setScheme($scheme);
 $router->map('GET', '/profile/card', CardController::class)->setScheme($scheme);
 $router->map('GET', '/profile/card{extension}', CardController::class)->setScheme($scheme);
-$router->map('GET', '/.well-known/openid-configuration', OpenidController::class)->setScheme($scheme);
 $router->map('GET', '/authorize', AuthorizeController::class)->setScheme($scheme);
+$router->map('GET', '/approval/', ApprovalController::class)->setScheme($scheme);
+$router->map('POST', '/approval/', HandleApprovalController::class)->setScheme($scheme);
 
 try {
     $response = $router->dispatch($request);

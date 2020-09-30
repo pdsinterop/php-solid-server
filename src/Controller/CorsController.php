@@ -5,12 +5,12 @@ namespace Pdsinterop\Solid\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class OpenidController extends ServerController
+class CorsController extends ServerController
 {    
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
     {	
         $response = $this->getResponse();
-		$server	= new \Pdsinterop\Solid\Auth\Server($this->authServerFactory, $this->authServerConfig, $response);
-		return $server->respondToOpenIdMetadataRequest();
+		$response = $response->withHeader("Access-Control-Allow-Headers", "*");
+		return $response;
     }
 }
