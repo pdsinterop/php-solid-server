@@ -9,7 +9,7 @@ class AuthorizeController extends ServerController
 {
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        if (!isset($_COOKIE['userid'])) {
+        if (!isset($_COOKIE['userid']) && !isset($_SESSION['userid'])) {
 			$response = $this->getResponse();
 			$response = $response->withStatus(302, "Approval required");
 			
