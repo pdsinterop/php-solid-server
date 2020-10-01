@@ -11,6 +11,7 @@ class LoginController extends AbstractController
     {
         $postBody = $request->getParsedBody();
         $response = $this->getResponse();
+
         // var_dump($_SESSION);
         if (isset($_SESSION['userid'])) {
           $user = $_SESSION['userid'];
@@ -20,7 +21,10 @@ class LoginController extends AbstractController
 			return $response;
 		  }
           $response->getBody()->write("<h1>Already logged in as $user</h1>");
-        } else if ($postBody['username'] == "admin" || ($postBody['username'] == $_ENV['USER'] && $postBody['password'] == $_ENV['PASSWORD'])) {
+        } else if (
+			($postBody['username'] == $_ENV['USER'] && $postBody['password'] == $_ENV['PASSWORD']) ||
+			($postBody['username'] == $_SERVER['USER'] && $postBody['password'] == $_SERVER['PASSWORD'])
+		) {
           $user = $postBody['username'];
           $_SESSION['userid'] =  $user;
 		  if ($_GET['returnUrl']) {
@@ -37,7 +41,7 @@ class LoginController extends AbstractController
           //var_dump($_COOKIE);
           //echo("session:\n");
           //var_dump($_SESSION);
-          $response->getBody()->write("<h1>No (try posting user=alice&password=alice123)</h1>\n");
+          $response->getBody()->write("<h1>No (try posting username=alice&password=alice123)</h1>\n");
         }
         return $response;
     }
