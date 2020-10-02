@@ -21,13 +21,13 @@ class AuthorizeController extends ServerController
 		$parser = new \Lcobucci\JWT\Parser();
 
 		try {
-			$token = $parser->parse($_GET['request']);
+			$token = $parser->parse($request->getQueryParams()['request']);
 			$_SESSION["nonce"] = $token->getClaim('nonce');
 		} catch(\Exception $e) {
-			$_SESSION["nonce"] = $_GET['nonce'];
+			$_SESSION["nonce"] = $request->getQueryParams()['nonce'];
 		}
 
-		$getVars = $_GET;
+		$getVars = $request->getQueryParams();
 		if (!isset($getVars['grant_type'])) {
 			$getVars['grant_type'] = 'implicit';
 		}
@@ -58,7 +58,7 @@ class AuthorizeController extends ServerController
 		$user = new \Pdsinterop\Solid\Auth\Entity\User();
 		$user->setIdentifier($this->getProfilePage());
 
-		$request = \Laminas\Diactoros\ServerRequestFactory::fromGlobals($_SERVER, $getVars, $_POST, $_COOKIE, $_FILES);
+		$request = $request->withQueryParams($getVars); // replace the request getVars with the morphed version;
 		$response = new \Laminas\Diactoros\Response();
 		$server	= new \Pdsinterop\Solid\Auth\Server($this->authServerFactory, $this->authServerConfig, $response);
 

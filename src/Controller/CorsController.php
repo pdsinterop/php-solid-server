@@ -9,8 +9,6 @@ class CorsController extends ServerController
 {    
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
     {	
-        $response = $this->getResponse();
-		$response = $response->withHeader("Access-Control-Allow-Headers", "*");
-		return $response;
+        return $this->getResponse()->withHeader("Access-Control-Allow-Headers", "*");
     }
 }

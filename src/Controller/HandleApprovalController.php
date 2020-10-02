@@ -10,8 +10,8 @@ class HandleApprovalController extends ServerController
     public function __invoke(ServerRequestInterface $request, array $args) : ResponseInterface
     {
 		$clientId = $args['clientId'];
-		$returnUrl = $_POST['returnUrl'];
-		$approval = $_POST['approval'];
+		$returnUrl = $request->getParsedBody()['returnUrl'];
+		$approval = $request->getParsedBody()['approval'];
 
 		if ($approval == "allow") {		
 			$this->config->addAllowedClient($this->userId, $clientId);

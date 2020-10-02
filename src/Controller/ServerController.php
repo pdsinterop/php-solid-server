@@ -25,6 +25,7 @@ abstract class ServerController extends AbstractController
     }
 
 	public function getOpenIdEndpoints() {
+		// FIXME: would be better to base this on the available routes if possible.
 		$this->baseUrl = "https://localhost/"; // FIXME: generate proper urls
 		return [
 			'issuer' => $this->baseUrl,
@@ -51,7 +52,7 @@ abstract class ServerController extends AbstractController
 	}
 
 	public function createAuthServerConfig() {
-		$clientId = $_GET['client_id'];
+		$clientId = $_GET['client_id']; // FIXME: No request object here to get the client Id from.
 		$client = $this->getClient($clientId);
 		$keys = $this->getKeys();
 		try {
@@ -113,7 +114,7 @@ abstract class ServerController extends AbstractController
 	}
 	
 	public function getProfilePage() {
-		return "https://localhost/profile/card#me";
+		return $this->baseUrl . "profile/card#me"; // FIXME: would be better to base this on the available routes if possible.
 	}
 	
 	public function getResponseType() {

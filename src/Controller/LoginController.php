@@ -15,9 +15,9 @@ class LoginController extends AbstractController
         // var_dump($_SESSION);
         if (isset($_SESSION['userid'])) {
           $user = $_SESSION['userid'];
-		  if ($_GET['returnUrl']) {
+		  if ($request->getQueryParams()['returnUrl']) {
 			$response = $response->withStatus(302, "Redirecting");
-			$response = $response->withHeader("Location", $_GET['returnUrl']);
+			$response = $response->withHeader("Location", $request->getQueryParams()['returnUrl']);
 			return $response;
 		  }
           $response->getBody()->write("<h1>Already logged in as $user</h1>");
@@ -27,9 +27,9 @@ class LoginController extends AbstractController
 		) {
           $user = $postBody['username'];
           $_SESSION['userid'] =  $user;
-		  if ($_GET['returnUrl']) {
+		  if ($request->getQueryParams()['returnUrl']) {
 			$response = $response->withStatus(302, "Redirecting");
-			$response = $response->withHeader("Location", $_GET['returnUrl']);
+			$response = $response->withHeader("Location", $request->getQueryParams()['returnUrl']);
 			return $response;
 		  }
           $response->getBody()->write("<h1>Welcome $user</h1>\n");
