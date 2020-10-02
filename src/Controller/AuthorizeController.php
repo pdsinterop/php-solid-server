@@ -5,50 +5,65 @@ namespace Pdsinterop\Solid\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class AuthorizeController extends AbstractController
+class AuthorizeController extends ServerController
 {
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
     {
-				$httpHost = $request->getServerParams()['HTTP_HOST'];
-
-				// // Create a request
-				// if (!$this->userManager->userExists($this->userId)) {
-				// 	$result = new JSONResponse('Authorization required');
-				// 	$result->setStatus(401);
-				// 	return $result;
-				// }
-
-				$parser = new \Lcobucci\JWT\Parser();
-				$token = $parser->parse($_GET['request']);
-				$_SESSION['token'] = $token;
+        if (!isset($_SESSION['userid'])) {
+			$response = $this->getResponse();
+			$response = $response->withStatus(302, "Approval required");
 			
-				$user = new \Pdsinterop\Solid\Auth\Entity\User();
-				$user->setIdentifier('https://server/profile/card#me');
+			// FIXME: Generate a proper url for this;
+			$loginUrl = "https://localhost/login/?returnUrl=" . urlencode($_SERVER['REQUEST_URI']);
+			$response = $response->withHeader("Location", $loginUrl);
+			return $response;
+		}
+		$parser = new \Lcobucci\JWT\Parser();
 
-				$getVars = $_GET;
-				if (!isset($getVars['grant_type'])) {
-					$getVars['grant_type'] = 'implicit';
-				}
-				$getVars['response_type'] = 'token';
-				$getVars['scope'] = "openid";
-				
-				if (!isset($getVars['redirect_uri'])) {
-					$getVars['redirect_uri'] = 'https://solid.community/.well-known/solid/login';
-				}
-				$request = \Laminas\Diactoros\ServerRequestFactory::fromGlobals($_SERVER, $getVars, $_POST, $_COOKIE, $_FILES);
-				$response = new \Laminas\Diactoros\Response();
-				$server	= new \Pdsinterop\Solid\Auth\Server($this->authServerFactory, $this->authServerConfig, $response);
+		try {
+			$token = $parser->parse($request->getQueryParams()['request']);
+			$_SESSION["nonce"] = $token->getClaim('nonce');
+		} catch(\Exception $e) {
+			$_SESSION["nonce"] = $request->getQueryParams()['nonce'];
+		}
 
-				// if (!$this->checkApproval()) {
-				// 	$result = new JSONResponse('Approval required');
-				// 	$result->setStatus(302);
-				// 	$result->addHeader("Location", $this->urlGenerator->getAbsoluteURL($this->urlGenerator->linkToRoute("solid.server.sharing")));
-				// 	return $result;
-				// }
+		$getVars = $request->getQueryParams();
+		if (!isset($getVars['grant_type'])) {
+			$getVars['grant_type'] = 'implicit';
+		}
+		$getVars['response_type'] = $this->getResponseType();
+		$getVars['scope'] = "openid" ;
 
-				// FIXME: check if the user has approved - if not, show approval screen;
-				$approval = \Pdsinterop\Solid\Auth\Enum\Authorization::APPROVED;
-				//		$approval = false;
-				return $server->respondToAuthorizationRequest($request, $user, $approval);
-    }
+		if (!isset($getVars['redirect_uri'])) {
+			try {
+				$getVars['redirect_uri'] = $token->getClaim("redirect_uri");
+			} catch(\Exception $e) {
+				$response = $this->getResponse();
+				$response->withStatus(400, "Bad request, missing redirect uri");
+				return $response;
+			}
+		}
+		$clientId = $getVars['client_id'];
+		$approval = $this->checkApproval($clientId);	
+		if (!$approval) {
+			$response = $this->getResponse();
+			$response = $response->withStatus(302, "Approval required");
+			
+			// FIXME: Generate a proper url for this;
+			$approvalUrl = "https://localhost/sharing/$clientId/?returnUrl=" . urlencode($_SERVER['REQUEST_URI']);
+			$response = $response->withHeader("Location", $approvalUrl);
+			return $response;
+		}
+
+		$user = new \Pdsinterop\Solid\Auth\Entity\User();
+		$user->setIdentifier($this->getProfilePage());
+
+		$request = $request->withQueryParams($getVars); // replace the request getVars with the morphed version;
+		$response = new \Laminas\Diactoros\Response();
+		$server	= new \Pdsinterop\Solid\Auth\Server($this->authServerFactory, $this->authServerConfig, $response);
+
+		$response = $server->respondToAuthorizationRequest($request, $user, $approval);
+		$response = $this->tokenGenerator->addIdTokenToResponse($response, $clientId, $this->getProfilePage(), $_SESSION['nonce'], $this->config->getPrivateKey());
+		return $response;
+	}
 }

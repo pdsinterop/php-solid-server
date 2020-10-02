@@ -16,14 +16,23 @@ use League\Route\Http\Exception as HttpException;
 use League\Route\Http\Exception\NotFoundException;
 use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
-use Pdsinterop\Solid\Controller\LoginController;
+
 use Pdsinterop\Solid\Controller\AddSlashToPathController;
+use Pdsinterop\Solid\Controller\AuthorizeController;
+use Pdsinterop\Solid\Controller\ApprovalController;
+use Pdsinterop\Solid\Controller\CorsController;
+use Pdsinterop\Solid\Controller\HandleApprovalController;
 use Pdsinterop\Solid\Controller\HelloWorldController;
 use Pdsinterop\Solid\Controller\HttpToHttpsController;
+use Pdsinterop\Solid\Controller\JwksController;
+use Pdsinterop\Solid\Controller\LoginController;
+use Pdsinterop\Solid\Controller\LoginPageController;
+use Pdsinterop\Solid\Controller\OpenidController;
 use Pdsinterop\Solid\Controller\Profile\CardController;
 use Pdsinterop\Solid\Controller\Profile\ProfileController;
-use Pdsinterop\Solid\Controller\OpenidController;
-use Pdsinterop\Solid\Controller\AuthorizeController;
+use Pdsinterop\Solid\Controller\RegisterController;
+use Pdsinterop\Solid\Controller\TokenController;
+
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -72,14 +81,21 @@ $container->share(\PHPTAL::class, function () {
 });
 
 $controllers = [
-    LoginController::class,
     AddSlashToPathController::class,
+	ApprovalController::class,
+    AuthorizeController::class,
     CardController::class,
+    CorsController::class,
+	HandleApprovalController::class,
     HelloWorldController::class,
     HttpToHttpsController::class,
-    ProfileController::class,
+    JwksController::class,
+    LoginController::class,
+    LoginPageController::class,
     OpenidController::class,
-    AuthorizeController::class
+    ProfileController::class,
+    RegisterController::class,
+	TokenController::class,
 ];
 
 $traits = [
@@ -117,13 +133,21 @@ if (getenv('ENVIRONMENT') !== 'development') {
 $router->map('GET', '/', HelloWorldController::class)->setScheme($scheme);
 
 /*/ Create URI groups /*/
-$router->map('POST', '/login', LoginController::class)->setScheme($scheme);
+$router->map('GET', '/.well-known/openid-configuration', OpenidController::class)->setScheme($scheme);
+$router->map('GET', '/jwks', JwksController::class)->setScheme($scheme);
+$router->map('GET', '/login/', LoginPageController::class)->setScheme($scheme);
+$router->map('POST', '/login/', LoginController::class)->setScheme($scheme);
+$router->map('OPTIONS', '/{path}', CorsController::class)->setScheme($scheme);
+$router->map('POST', '/register', RegisterController::class)->setScheme($scheme);
 $router->map('GET', '/profile', AddSlashToPathController::class)->setScheme($scheme);
 $router->map('GET', '/profile/', ProfileController::class)->setScheme($scheme);
 $router->map('GET', '/profile/card', CardController::class)->setScheme($scheme);
 $router->map('GET', '/profile/card{extension}', CardController::class)->setScheme($scheme);
-$router->map('GET', '/.well-known/openid-configuration', OpenidController::class)->setScheme($scheme);
 $router->map('GET', '/authorize', AuthorizeController::class)->setScheme($scheme);
+$router->map('GET', '/sharing/{clientId}/', ApprovalController::class)->setScheme($scheme);
+$router->map('POST', '/sharing/{clientId}/', HandleApprovalController::class)->setScheme($scheme);
+$router->map('POST', '/token', TokenController::class)->setScheme($scheme);
+$router->map('POST', '/token/', TokenController::class)->setScheme($scheme);
 
 try {
     $response = $router->dispatch($request);
