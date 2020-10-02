@@ -10,7 +10,7 @@ class ApprovalController extends ServerController
     public function __invoke(ServerRequestInterface $request, array $args) : ResponseInterface
     {
 		$clientId = $args['clientId'];
-		$returnUrl = $_GET['returnUrl'];
+		$returnUrl = $request->getQueryParams()['returnUrl'];
 
         return $this->createTemplateResponse('approval.html', [
             'clientId' => $clientId,
