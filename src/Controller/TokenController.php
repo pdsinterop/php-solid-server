@@ -10,7 +10,7 @@ class TokenController extends ServerController
 {    
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
     {	
-		$code = $request->$request->getParsedBody()['code'];
+		$code = $request->getParsedBody()['code'];
 		$clientId = $request->getParsedBody()['client_id'];
 
 /*
