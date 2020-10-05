@@ -31,7 +31,7 @@ class TokenController extends ServerController
 			$server	= new \Pdsinterop\Solid\Auth\Server($this->authServerFactory, $this->authServerConfig, $response);
 			$response = $server->respondToAccessTokenRequest($request);
 
-			$codeInfo = $this->tokenGenerator->getCodeInfo();
+			$codeInfo = $this->tokenGenerator->getCodeInfo($code);
 			$response = $this->tokenGenerator->addIdTokenToResponse($response, $clientId, $codeInfo['user_id'], $_SESSION['nonce'], $this->config->getPrivateKey());
 
 			return $response;
