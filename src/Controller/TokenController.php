@@ -30,7 +30,9 @@ class TokenController extends ServerController
 			$response = new \Laminas\Diactoros\Response();
 			$server	= new \Pdsinterop\Solid\Auth\Server($this->authServerFactory, $this->authServerConfig, $response);
 			$response = $server->respondToAccessTokenRequest($request);
-			$response = $this->tokenGenerator->addIdTokenToResponse($response, $clientId, $this->getProfilePage(), $_SESSION['nonce'], $this->config->getPrivateKey());
+
+			$codeInfo = $this->tokenGenerator->getCodeInfo();
+			$response = $this->tokenGenerator->addIdTokenToResponse($response, $clientId, $codeInfo['user_id'], $_SESSION['nonce'], $this->config->getPrivateKey());
 
 			return $response;
 		}
