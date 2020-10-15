@@ -30,6 +30,7 @@
         "league/route": "^4.5",
         "pdsinterop/flysystem-rdf": "dev-dev",
         "pdsinterop/solid-auth": "dev-master",
+        "pdsinterop/solid-crud": "dev-master",
         "php-http/httplug": "^2.1",
         "phptal/phptal": "^1.4"
     },
