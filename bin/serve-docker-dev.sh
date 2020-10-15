@@ -4,15 +4,9 @@
 
 docker run                          \
   -i                                \
-  --env 'ENVIRONMENT=development'   \
-  --expose 80                       \
-  --name php-solid-server           \
+  --expose 443                      \
+  --name server                     \
   --network host                    \
   --rm                              \
   --volume "${PWD}:/app"            \
-  "php:${PHP_VERSION:-7.1}-alpine"  \
-  php                               \
-    --define 'log_errors=On'        \
-    --docroot /app/web/             \
-    --server '0.0.0.0:80'           \
-    /app/web/index.php
+  "${DOCKER_IMAGE:=php-solid-server}"
