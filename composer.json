@@ -43,5 +43,10 @@
         "serve-dev-docker":"bash ./bin/serve-docker-dev.sh",
         "test":"phpunit"
     },
+    "scripts-descriptions": {
+      "serve-dev": "Run the application with the internal PHP development server",
+      "serve-dev-docker": "Run the application with the docker image provided by the TestSuite repo.",
+      "test": "Run unit-test with PHPUnit"
+    },
     "type": "project"
 }
