@@ -20,22 +20,21 @@ abstract class ServerController extends AbstractController
 		$this->authServerConfig = $this->createAuthServerConfig(); 
 		$this->authServerFactory = (new \Pdsinterop\Solid\Auth\Factory\AuthorizationServerFactory($this->authServerConfig))->create();		
 		$this->tokenGenerator = (new \Pdsinterop\Solid\Auth\TokenGenerator($this->authServerConfig));
-		
-//		$this->baseUrl = "https://localhost";
+		$this->baseUrl = isset($_ENV['SERVER_ROOT']) ? $_ENV['SERVER_ROOT'] : "https://localhost";
     }
 
 	public function getOpenIdEndpoints() {
 		// FIXME: would be better to base this on the available routes if possible.
-		$this->baseUrl = "https://server/"; // FIXME: generate proper urls
+		$this->baseUrl = isset($_ENV['SERVER_ROOT']) ? $_ENV['SERVER_ROOT'] : "https://localhost";
 		return [
 			'issuer' => $this->baseUrl,
-			'authorization_endpoint' => $this->baseUrl . "authorize",
-			'jwks_uri' => $this->baseUrl . "jwks",
-			"check_session_iframe" => $this->baseUrl . "session",
-			"end_session_endpoint" => $this->baseUrl . "logout",
-			"token_endpoint" => $this->baseUrl . "token",
-			"userinfo_endpoint" => $this->baseUrl . "userinfo",
-			"registration_endpoint" => $this->baseUrl . "register"
+			'authorization_endpoint' => $this->baseUrl . "/authorize",
+			'jwks_uri' => $this->baseUrl . "/jwks",
+			"check_session_iframe" => $this->baseUrl . "/session",
+			"end_session_endpoint" => $this->baseUrl . "/logout",
+			"token_endpoint" => $this->baseUrl . "/token",
+			"userinfo_endpoint" => $this->baseUrl . "/userinfo",
+			"registration_endpoint" => $this->baseUrl . "/register",
 		];
 	}
 
@@ -114,7 +113,7 @@ abstract class ServerController extends AbstractController
 	}
 	
 	public function getProfilePage() {
-		return $this->baseUrl . "profile/card#me"; // FIXME: would be better to base this on the available routes if possible.
+		return $this->baseUrl . "/profile/card#me"; // FIXME: would be better to base this on the available routes if possible.
 	}
 	
 	public function getResponseType() {

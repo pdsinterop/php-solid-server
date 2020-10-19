@@ -20,10 +20,14 @@ class RegisterController extends ServerController
 		$origin = $parsedOrigin['host'];
 
 		$clientId = $this->config->saveClientRegistration($origin, $clientData);
-		
+
+		// FIXME: properly generate this url;
+		$baseUrl = $this->baseUrl;
+		$clientUrl = $baseUrl . "/clients/$clientId";
+
 		$registration = array(
 			'client_id' => $clientId,
-			'registration_client_uri' => "https://localhost/clients/$clientId", // FIXME: properly generate this url;
+			'registration_client_uri' => $clientUrl,
 			'client_id_issued_at' => $clientData['client_id_issued_at'],
 			'redirect_uris' => $clientData['redirect_uris'],
 		);

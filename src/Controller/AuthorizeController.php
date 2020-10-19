@@ -14,7 +14,8 @@ class AuthorizeController extends ServerController
 			$response = $response->withStatus(302, "Approval required");
 			
 			// FIXME: Generate a proper url for this;
-			$loginUrl = "https://localhost/login/?returnUrl=" . urlencode($_SERVER['REQUEST_URI']);
+			$baseUrl = $this->baseUrl;
+			$loginUrl = $baseUrl . "/login/?returnUrl=" . urlencode($_SERVER['REQUEST_URI']);
 			$response = $response->withHeader("Location", $loginUrl);
 			return $response;
 		}
@@ -50,7 +51,8 @@ class AuthorizeController extends ServerController
 			$response = $response->withStatus(302, "Approval required");
 			
 			// FIXME: Generate a proper url for this;
-			$approvalUrl = "https://localhost/sharing/$clientId/?returnUrl=" . urlencode($_SERVER['REQUEST_URI']);
+			$baseUrl = $this->baseUrl;
+			$approvalUrl = $baseUrl . "/sharing/$clientId/?returnUrl=" . urlencode($_SERVER['REQUEST_URI']);
 			$response = $response->withHeader("Location", $approvalUrl);
 			return $response;
 		}
