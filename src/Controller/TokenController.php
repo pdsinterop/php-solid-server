@@ -10,10 +10,11 @@ class TokenController extends ServerController
 {    
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
     {	
-		$code = $_POST['code'];
-		$clientId = $_POST['client_id'];
+		$code = $request->getParsedBody()['code'];
+		$clientId = $request->getParsedBody()['client_id'];
+
+/*
 		$DPoP = $_SERVER['HTTP_DPOP'];
-		
 		$parser = new \Lcobucci\JWT\Parser();
 		try {
 			$token = $parser->parse($DPoP);
@@ -21,20 +22,16 @@ class TokenController extends ServerController
 		} catch(\Exception $e) {
 			return $this->getResponse()->withStatus(409, "Invalid token");
 		}
-		
-		$registration = $this->config->getClientRegistration($clientId);
-		$approval = $this->checkApproval($clientId);
-		
-		if ($approval) {
-			$response = new \Laminas\Diactoros\Response();
-			$server	= new \Pdsinterop\Solid\Auth\Server($this->authServerFactory, $this->authServerConfig, $response);
-			$response = $server->respondToAccessTokenRequest($request);
+*/
+		$response = new \Laminas\Diactoros\Response();
+		$server	= new \Pdsinterop\Solid\Auth\Server($this->authServerFactory, $this->authServerConfig, $response);
+		$response = $server->respondToAccessTokenRequest($request);
 
-//			$response = $this->tokenGenerator->addIdTokenToResponse($response, $clientId, $this->getProfilePage(), $_SESSION['nonce'], $this->config->getPrivateKey());
-			return $response;
-//			$idToken = $this->tokenGenerator->generateIdToken($code, $clientId, $this->getProfilePage(), $_SESSION['nonce'], $this->config->getPrivateKey());
-	//		return new JsonResponse(array("token_type" => "DPoP", "id_token" => $idToken));
-		}
-		return new JsonResponse(array());
+		// FIXME: not sure if decoding this here is the way to go.
+		// FIXME: because this is a public page, the nonce from the session is not available here.
+		$codeInfo = $this->tokenGenerator->getCodeInfo($code);
+		$response = $this->tokenGenerator->addIdTokenToResponse($response, $clientId, $codeInfo['user_id'], $_SESSION['nonce'], $this->config->getPrivateKey());
+
+		return $response;
     }
 }
