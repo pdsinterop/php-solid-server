@@ -25,7 +25,7 @@ docker logs server
 echo Getting cookie...
 export COOKIE="`docker run --cap-add=SYS_ADMIN --network=testnet --env-file /tmp/env-vars-for-test-image.list cookie`"
 echo "Running webid-provider tests with cookie $COOKIE"
-docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file /tmp/env-vars-for-test-image.list webid-provider
+# docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file /tmp/env-vars-for-test-image.list webid-provider
 docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file /tmp/env-vars-for-test-image.list solid-crud
 # rm /tmp/env-vars-for-test-image.list
 # docker stop server
