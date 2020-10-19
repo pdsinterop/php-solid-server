@@ -26,7 +26,7 @@ abstract class ServerController extends AbstractController
 
 	public function getOpenIdEndpoints() {
 		// FIXME: would be better to base this on the available routes if possible.
-		$this->baseUrl = "https://localhost/"; // FIXME: generate proper urls
+		$this->baseUrl = "https://server/"; // FIXME: generate proper urls
 		return [
 			'issuer' => $this->baseUrl,
 			'authorization_endpoint' => $this->baseUrl . "authorize",
