@@ -18,8 +18,8 @@ use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
 
 use Pdsinterop\Solid\Controller\AddSlashToPathController;
-use Pdsinterop\Solid\Controller\AuthorizeController;
 use Pdsinterop\Solid\Controller\ApprovalController;
+use Pdsinterop\Solid\Controller\AuthorizeController;
 use Pdsinterop\Solid\Controller\CorsController;
 use Pdsinterop\Solid\Controller\HandleApprovalController;
 use Pdsinterop\Solid\Controller\HelloWorldController;
@@ -31,7 +31,9 @@ use Pdsinterop\Solid\Controller\OpenidController;
 use Pdsinterop\Solid\Controller\Profile\CardController;
 use Pdsinterop\Solid\Controller\Profile\ProfileController;
 use Pdsinterop\Solid\Controller\RegisterController;
+use Pdsinterop\Solid\Controller\ResourceController;
 use Pdsinterop\Solid\Controller\TokenController;
+use Pdsinterop\Solid\Resources\Server as ResourceServer;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -78,6 +80,16 @@ $container->share(\PHPTAL::class, function () {
     $template = new \PHPTAL();
     $template->setTemplateRepository(__DIR__.'/../src/Template');
     return $template;
+});
+
+$container->add(ResourceController::class, function () use ($container) {
+    $filesystem = $container-> get(FilesystemInterface::class);
+
+    require_once __DIR__ . '/../lib/solid-crud/src/Server.php';
+
+    $server = new ResourceServer($filesystem, new Response());
+
+    return new ResourceController($server);
 });
 
 $controllers = [
@@ -148,6 +160,23 @@ $router->map('GET', '/sharing/{clientId}/', ApprovalController::class)->setSchem
 $router->map('POST', '/sharing/{clientId}/', HandleApprovalController::class)->setScheme($scheme);
 $router->map('POST', '/token', TokenController::class)->setScheme($scheme);
 $router->map('POST', '/token/', TokenController::class)->setScheme($scheme);
+
+$router->group('/data', static function (\League\Route\RouteGroup $group) {
+    $methods = [
+        'DELETE',
+        'GET',
+        'HEAD',
+        // 'OPTIONS', // @TODO: This breaks because of the CorsController being added to `OPTION /*` in the index.php
+        'PATCH',
+        'POST',
+        'PUT',
+    ];
+
+    array_walk($methods, static function ($method) use (&$group) {
+        $group->map($method, '/', AddSlashToPathController::class);
+        $group->map($method, '{path:.*}', ResourceController::class);
+    });
+})->setScheme($scheme);
 
 try {
     $response = $router->dispatch($request);
