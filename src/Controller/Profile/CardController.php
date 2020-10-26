@@ -27,6 +27,7 @@ class CardController extends AbstractController
      */
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
     {
+		
         // @FIXME: Target file is hard-coded for not, replace with path from $request->getRequestTarget()
         $filePath = '/foaf.rdf';
         $filesystem = $this->getFilesystem();
@@ -50,8 +51,15 @@ class CardController extends AbstractController
         /** @noinspection PhpUndefinedMethodInspection */ // Method `readRdf` is defined by plugin
         $url = $request->getServerParams()["REQUEST_URI"];
         $content = $filesystem->readRdf($filePath, $format, $url);
-
-        return $this->createTextResponse($content)->withHeader('Content-Type', $contentType);
+		
+		$origin = $request->getServerParams()['HTTP_ORIGIN'];
+		if (!$origin) {
+			$origin = "*";
+		}
+        return $this->createTextResponse($content)->withHeader('Content-Type', $contentType)
+		->withHeader("Access-Control-Allow-Origin", $origin)
+		->withHeader("Access-Control-Allow-Headers", "authorization")
+		->withHeader("Access-Control-Allow-Credentials", "true");
     }
 
     ////////////////////////////// UTILITY METHODS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\

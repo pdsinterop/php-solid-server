@@ -4,8 +4,10 @@
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     xmlns:ldp="http://www.w3.org/ns/ldp#"
+	xmlns:vcard="http://www.w3.org/2006/vcard/ns#"
     xmlns:solid="http://www.w3.org/ns/solid/terms#"
     xmlns:space="http://www.w3.org/ns/pim/space#"
+	xmlns:acl="http://www.w3.org/ns/auth/acl#"
 >
     <foaf:Person rdf:ID="me">
         <ldp:inbox rdf:resource="/inbox/"/>
@@ -15,6 +17,7 @@
         <solid:publicTypeIndex rdf:resource="/settings/publicTypeIndex.ttl"/>
         <space:preferencesFile rdf:resource="/settings/preferencesFile.ttl"/>
         <rdf:type rdf:resource="http://schema.org/Person"/>
+		<vcard:fn>Ben Peachey</vcard:fn>
         <foaf:depiction rdf:resource="https://www.gravatar.com/avatar/f8d7c4a4899736c59ec1e40c7021d477?s=1024"/>
         <foaf:family_name>Peachey</foaf:family_name>
         <foaf:givenname>Ben</foaf:givenname>
@@ -41,7 +44,15 @@
         <foaf:title>Mr.</foaf:title>
         <foaf:workInfoHomepage rdf:resource="https://www.linkedin.com/in/benpeachey/"/>
         <foaf:workplaceHomepage rdf:resource="https://pdsinterop.org/"/>
-    </foaf:Person>
+		<acl:trustedApp>
+		  <rdf:Description>
+			<acl:mode rdf:resource="http://www.w3.org/ns/auth/acl#Append"/>
+			<acl:mode rdf:resource="http://www.w3.org/ns/auth/acl#Read"/>
+			<acl:mode rdf:resource="http://www.w3.org/ns/auth/acl#Write"/>
+			<acl:origin rdf:resource="https://generator.inrupt.com"/>
+		  </rdf:Description>
+		</acl:trustedApp>
+	</foaf:Person>
     <foaf:PersonalProfileDocument rdf:about="">
         <foaf:maker rdf:resource="#me"/>
         <foaf:primaryTopic rdf:resource="#me"/>

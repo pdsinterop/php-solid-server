@@ -24,10 +24,13 @@ class ProfileController extends AbstractController
         $formats = Format::keys();
         $contents = $this->fetchFileContents($filesystem, $formats);
 
+		$origin = $request->getServerParams()['HTTP_ORIGIN'];
         return $this->createTemplateResponse('card.html', [
             'files' => $contents,
             'formats' => $formats,
-        ]);
+        ])->withHeader("Access-Control-Allow-Origin", $origin)
+			->withHeader("Access-Control-Allow-Headers", "authorization")
+			->withHeader("Access-Control-Allow-Credentials", "true");
     }
 
     ////////////////////////////// UTILITY METHODS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\

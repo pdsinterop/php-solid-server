@@ -24,6 +24,7 @@ use Pdsinterop\Solid\Controller\CorsController;
 use Pdsinterop\Solid\Controller\HandleApprovalController;
 use Pdsinterop\Solid\Controller\HelloWorldController;
 use Pdsinterop\Solid\Controller\HttpToHttpsController;
+use Pdsinterop\Solid\Controller\InboxController;
 use Pdsinterop\Solid\Controller\JwksController;
 use Pdsinterop\Solid\Controller\LoginController;
 use Pdsinterop\Solid\Controller\LoginPageController;
@@ -90,6 +91,7 @@ $controllers = [
 	HandleApprovalController::class,
     HelloWorldController::class,
     HttpToHttpsController::class,
+	InboxController::class,
     JwksController::class,
     LoginController::class,
     LoginPageController::class,
@@ -127,25 +129,29 @@ $router->setStrategy($strategy);
 
 /*/ Make sure HTTPS is always used in production /*/
 $scheme = 'http';
-if (getenv('ENVIRONMENT') !== 'development') {
+//if (getenv('ENVIRONMENT') !== 'development') {
     $router->map('GET', '/{page:(?:.|/)*}', HttpToHttpsController::class)->setScheme($scheme);
     $scheme = 'https';
-}
+//}
 
 $router->map('GET', '/', HelloWorldController::class)->setScheme($scheme);
 
 /*/ Create URI groups /*/
 $router->map('GET', '/.well-known/openid-configuration', OpenidController::class)->setScheme($scheme);
+$router->map('OPTIONS', '/{path}', CorsController::class)->setScheme($scheme);
+$router->map('OPTIONS', '/{path}/', CorsController::class)->setScheme($scheme);
+$router->map('OPTIONS', '/{path}/{subpath}', CorsController::class)->setScheme($scheme);
+$router->map('GET', '/authorize', AuthorizeController::class)->setScheme($scheme);
+$router->map('GET', '/inbox/', InboxController::class)->setScheme($scheme);
+$router->map('GET', '/storage/', InboxController::class)->setScheme($scheme);
 $router->map('GET', '/jwks', JwksController::class)->setScheme($scheme);
 $router->map('GET', '/login/', LoginPageController::class)->setScheme($scheme);
 $router->map('POST', '/login/', LoginController::class)->setScheme($scheme);
-$router->map('OPTIONS', '/{path}', CorsController::class)->setScheme($scheme);
-$router->map('POST', '/register', RegisterController::class)->setScheme($scheme);
 $router->map('GET', '/profile', AddSlashToPathController::class)->setScheme($scheme);
 $router->map('GET', '/profile/', ProfileController::class)->setScheme($scheme);
 $router->map('GET', '/profile/card', CardController::class)->setScheme($scheme);
 $router->map('GET', '/profile/card{extension}', CardController::class)->setScheme($scheme);
-$router->map('GET', '/authorize', AuthorizeController::class)->setScheme($scheme);
+$router->map('POST', '/register', RegisterController::class)->setScheme($scheme);
 $router->map('GET', '/sharing/{clientId}/', ApprovalController::class)->setScheme($scheme);
 $router->map('POST', '/sharing/{clientId}/', HandleApprovalController::class)->setScheme($scheme);
 $router->map('GET', '/storage/', StorageController::class)->setScheme($scheme);

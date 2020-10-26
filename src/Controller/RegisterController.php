@@ -29,6 +29,7 @@ class RegisterController extends ServerController
 		);
 		
 		$registration = $this->tokenGenerator->respondToRegistration($registration, $this->config->getPrivateKey());
+		header("Access-Control-Allow-Origin: *");
 		return new JsonResponse($registration);
     }
 }

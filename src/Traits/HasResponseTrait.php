@@ -15,7 +15,7 @@ trait HasResponseTrait
 
     final public function getResponse() : ResponseInterface
     {
-        return $this->response;
+        return $this->response->withHeader("Access-Control-Allow-Origin", "*");
     }
 
     /**
