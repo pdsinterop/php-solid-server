@@ -5,7 +5,7 @@ namespace Pdsinterop\Solid\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class InboxController extends ServerController
+class StorageController extends ServerController
 {    
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
     {	
