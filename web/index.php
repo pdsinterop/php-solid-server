@@ -31,6 +31,7 @@ use Pdsinterop\Solid\Controller\OpenidController;
 use Pdsinterop\Solid\Controller\Profile\CardController;
 use Pdsinterop\Solid\Controller\Profile\ProfileController;
 use Pdsinterop\Solid\Controller\RegisterController;
+use Pdsinterop\Solid\Controller\StorageController;
 use Pdsinterop\Solid\Controller\TokenController;
 
 use Psr\Http\Message\ResponseInterface;
@@ -95,6 +96,7 @@ $controllers = [
     OpenidController::class,
     ProfileController::class,
     RegisterController::class,
+    StorageController::class,
 	TokenController::class,
 ];
 
@@ -146,6 +148,7 @@ $router->map('GET', '/profile/card{extension}', CardController::class)->setSchem
 $router->map('GET', '/authorize', AuthorizeController::class)->setScheme($scheme);
 $router->map('GET', '/sharing/{clientId}/', ApprovalController::class)->setScheme($scheme);
 $router->map('POST', '/sharing/{clientId}/', HandleApprovalController::class)->setScheme($scheme);
+$router->map('GET', '/storage/', StorageController::class)->setScheme($scheme);
 $router->map('POST', '/token', TokenController::class)->setScheme($scheme);
 $router->map('POST', '/token/', TokenController::class)->setScheme($scheme);
 
