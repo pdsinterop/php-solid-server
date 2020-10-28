@@ -16,7 +16,6 @@ use League\Route\Http\Exception as HttpException;
 use League\Route\Http\Exception\NotFoundException;
 use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
-
 use Pdsinterop\Solid\Controller\AddSlashToPathController;
 use Pdsinterop\Solid\Controller\AuthorizeController;
 use Pdsinterop\Solid\Controller\ApprovalController;
@@ -33,6 +32,7 @@ use Pdsinterop\Solid\Controller\Profile\ProfileController;
 use Pdsinterop\Solid\Controller\RegisterController;
 use Pdsinterop\Solid\Controller\StorageController;
 use Pdsinterop\Solid\Controller\TokenController;
+use Pdsinterop\Solid\Resources\Server;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -148,38 +148,49 @@ $router->map('GET', '/profile/card{extension}', CardController::class)->setSchem
 $router->map('GET', '/authorize', AuthorizeController::class)->setScheme($scheme);
 $router->map('GET', '/sharing/{clientId}/', ApprovalController::class)->setScheme($scheme);
 $router->map('POST', '/sharing/{clientId}/', HandleApprovalController::class)->setScheme($scheme);
+$router->map('GET', '/storage', AddSlashToPathController::class)->setScheme($scheme);
 $router->map('GET', '/storage/', StorageController::class)->setScheme($scheme);
+$router->map('GET', '/storage/{path}', StorageController::class)->setScheme($scheme);
 $router->map('POST', '/token', TokenController::class)->setScheme($scheme);
 $router->map('POST', '/token/', TokenController::class)->setScheme($scheme);
 
-try {
-    $response = $router->dispatch($request);
-} catch (HttpException $exception) {
-    $status = $exception->getStatusCode();
+$path = $request->getUri()->getPath();
+$target = $request->getMethod() . $request->getRequestTarget();
+if ($path !== "/storage/" && strpos($path, '/storage/') === 0) {
+    // Route starts with our data-source prefix
+	$response = new \Laminas\Diactoros\Response();
+	$server = new \Pdsinterop\Solid\Resources\Server($filesystem, $response);
+    $response = $server->respondToRequest($request);
+} else {
+	try {
+		$response = $router->dispatch($request);
+	} catch (HttpException $exception) {
+		$status = $exception->getStatusCode();
 
-    $message = 'Yeah, that\'s an error.';
-    if ($exception instanceof  NotFoundException) {
-        $message = 'No such page.';
-    }
+		$message = 'Yeah, that\'s an error.';
+		if ($exception instanceof  NotFoundException) {
+			$message = 'No such page.';
+		}
 
-    $html = "<h1>{$message}</h1><p>{$exception->getMessage()} ({$status})</p>";
+		$html = "<h1>{$message}</h1><p>{$exception->getMessage()} ({$status})</p>";
 
-    if (getenv('ENVIRONMENT') === 'development') {
-        $html .= "<pre>{$exception->getTraceAsString()}</pre>";
-    }
+		if (getenv('ENVIRONMENT') === 'development') {
+			$html .= "<pre>{$exception->getTraceAsString()}</pre>";
+		}
 
-    $response = new HtmlResponse($html, $status, $exception->getHeaders());
-} catch (\Exception $exception) {
-    $html = "<h1>Oh-no! The developers messed up!</h1><p>{$exception->getMessage()}</p>";
+		$response = new HtmlResponse($html, $status, $exception->getHeaders());
+	} catch (\Exception $exception) {
+		$html = "<h1>Oh-no! The developers messed up!</h1><p>{$exception->getMessage()}</p>";
 
-    if (getenv('ENVIRONMENT') === 'development') {
-        $html .=
-            "<p>{$exception->getFile()}:{$exception->getLine()}</p>" .
-            "<pre>{$exception->getTraceAsString()}</pre>"
-        ;
-    }
+		if (getenv('ENVIRONMENT') === 'development') {
+			$html .=
+				"<p>{$exception->getFile()}:{$exception->getLine()}</p>" .
+				"<pre>{$exception->getTraceAsString()}</pre>"
+			;
+		}
 
-    $response = new HtmlResponse($html, 500, []);
+		$response = new HtmlResponse($html, 500, []);
+	}
 }
 
 // send the response to the browser
