@@ -32,7 +32,9 @@
         "pdsinterop/solid-auth": "dev-master",
         "pdsinterop/solid-crud": "dev-master",
         "php-http/httplug": "^2.1",
-        "phptal/phptal": "^1.4"
+        "phptal/phptal": "^1.4",
+        "cboden/ratchet": "^0.4",
+        "textalk/websocket": "^1.4"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
