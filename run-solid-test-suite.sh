@@ -2,7 +2,7 @@
 set -e
 
 # Run the Solid test-suite
-#docker network create testnet
+docker network create testnet
 
 # Build and start Nextcloud server with code from current repo contents:
 docker build -t server .
