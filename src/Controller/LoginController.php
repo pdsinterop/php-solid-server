@@ -22,8 +22,8 @@ class LoginController extends AbstractController
 		  }
           $response->getBody()->write("<h1>Already logged in as $user</h1>");
         } else if (
-			($postBody['username'] == $_ENV['USER'] && $postBody['password'] == $_ENV['PASSWORD']) ||
-			($postBody['username'] == $_SERVER['USER'] && $postBody['password'] == $_SERVER['PASSWORD'])
+			($postBody['username'] == $_ENV['USERNAME'] && $postBody['password'] == $_ENV['PASSWORD']) ||
+			($postBody['username'] == $_SERVER['USERNAME'] && $postBody['password'] == $_SERVER['PASSWORD'])
 		) {
           $user = $postBody['username'];
           $_SESSION['userid'] =  $user;

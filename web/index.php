@@ -17,8 +17,8 @@ use League\Route\Http\Exception\NotFoundException;
 use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
 use Pdsinterop\Solid\Controller\AddSlashToPathController;
-use Pdsinterop\Solid\Controller\AuthorizeController;
 use Pdsinterop\Solid\Controller\ApprovalController;
+use Pdsinterop\Solid\Controller\AuthorizeController;
 use Pdsinterop\Solid\Controller\CorsController;
 use Pdsinterop\Solid\Controller\HandleApprovalController;
 use Pdsinterop\Solid\Controller\HelloWorldController;
@@ -30,9 +30,10 @@ use Pdsinterop\Solid\Controller\OpenidController;
 use Pdsinterop\Solid\Controller\Profile\CardController;
 use Pdsinterop\Solid\Controller\Profile\ProfileController;
 use Pdsinterop\Solid\Controller\RegisterController;
+use Pdsinterop\Solid\Controller\ResourceController;
 use Pdsinterop\Solid\Controller\StorageController;
 use Pdsinterop\Solid\Controller\TokenController;
-use Pdsinterop\Solid\Resources\Server;
+use Pdsinterop\Solid\Resources\Server as ResourceServer;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -79,6 +80,16 @@ $container->share(\PHPTAL::class, function () {
     $template = new \PHPTAL();
     $template->setTemplateRepository(__DIR__.'/../src/Template');
     return $template;
+});
+
+$container->add(ResourceController::class, function () use ($container) {
+    $filesystem = $container-> get(FilesystemInterface::class);
+
+    require_once __DIR__ . '/../lib/solid-crud/src/Server.php';
+
+    $server = new ResourceServer($filesystem, new Response());
+
+    return new ResourceController($server);
 });
 
 $controllers = [
@@ -191,6 +202,53 @@ if ($path !== "/storage/" && strpos($path, '/storage/') === 0) {
 
 		$response = new HtmlResponse($html, 500, []);
 	}
+/*
+$router->group('/data', static function (\League\Route\RouteGroup $group) {
+    $methods = [
+        'DELETE',
+        'GET',
+        'HEAD',
+        // 'OPTIONS', // @TODO: This breaks because of the CorsController being added to `OPTION /*` in the index.php
+        'PATCH',
+        'POST',
+        'PUT',
+    ];
+
+    array_walk($methods, static function ($method) use (&$group) {
+        $group->map($method, '/', AddSlashToPathController::class);
+        $group->map($method, '{path:.*}', ResourceController::class);
+    });
+})->setScheme($scheme);
+
+try {
+    $response = $router->dispatch($request);
+} catch (HttpException $exception) {
+    $status = $exception->getStatusCode();
+
+    $message = 'Yeah, that\'s an error.';
+    if ($exception instanceof  NotFoundException) {
+        $message = 'No such page.';
+    }
+
+    $html = "<h1>{$message}</h1><p>{$exception->getMessage()} ({$status})</p>";
+
+    if (getenv('ENVIRONMENT') === 'development') {
+        $html .= "<pre>{$exception->getTraceAsString()}</pre>";
+    }
+
+    $response = new HtmlResponse($html, $status, $exception->getHeaders());
+} catch (\Exception $exception) {
+    $html = "<h1>Oh-no! The developers messed up!</h1><p>{$exception->getMessage()}</p>";
+
+    if (getenv('ENVIRONMENT') === 'development') {
+        $html .=
+            "<p>{$exception->getFile()}:{$exception->getLine()}</p>" .
+            "<pre>{$exception->getTraceAsString()}</pre>"
+        ;
+    }
+
+    $response = new HtmlResponse($html, 500, []);
+*/
 }
 
 // send the response to the browser
