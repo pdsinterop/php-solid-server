@@ -31,6 +31,7 @@ use Pdsinterop\Solid\Controller\Profile\CardController;
 use Pdsinterop\Solid\Controller\Profile\ProfileController;
 use Pdsinterop\Solid\Controller\RegisterController;
 use Pdsinterop\Solid\Controller\ResourceController;
+use Pdsinterop\Solid\Controller\StorageController;
 use Pdsinterop\Solid\Controller\TokenController;
 use Pdsinterop\Solid\Resources\Server as ResourceServer;
 
@@ -54,21 +55,40 @@ $container->delegate(new ReflectionContainer());
 $container->add(ServerRequestInterface::class, Request::class);
 $container->add(ResponseInterface::class, Response::class);
 
+/*
 $adapter = new \League\Flysystem\Adapter\Local(__DIR__ . '/../tests/fixtures');
 $filesystem = new \League\Flysystem\Filesystem($adapter);
 $graph = new \EasyRdf_Graph();
 $plugin = new \Pdsinterop\Rdf\Flysystem\Plugin\ReadRdf($graph);
 $filesystem->addPlugin($plugin);
+*/
 
-$container->share(FilesystemInterface::class, function () {
+$container->share(FilesystemInterface::class, function () use ($request) {
     // @FIXME: Filesystem root and the $adapter should be configurable.
     //         Implement this with `$filesystem = \MJRider\FlysystemFactory\create(getenv('STORAGE_ENDPOINT'));`
     $filesystemRoot = __DIR__ . '/../tests/fixtures';
 
     $adapter = new \League\Flysystem\Adapter\Local($filesystemRoot);
 
-    $filesystem = new \League\Flysystem\Filesystem($adapter);
     $graph = new \EasyRdf_Graph();
+
+	// Create Formats objects
+	$formats = new \Pdsinterop\Rdf\Formats();
+
+	$serverUri = "https://server" . $request->getServerParams()["REQUEST_URI"]; // FIXME: doublecheck that this is the correct url;
+
+	// Create the RDF Adapter
+	$rdfAdapter = new \Pdsinterop\Rdf\Flysystem\Adapter\Rdf(
+		$adapter,
+		$graph,
+		$formats,
+		$serverUri
+	);
+	
+    $filesystem = new \League\Flysystem\Filesystem($rdfAdapter);
+
+	$filesystem->addPlugin(new \Pdsinterop\Rdf\Flysystem\Plugin\AsMime($formats));
+	
     $plugin = new \Pdsinterop\Rdf\Flysystem\Plugin\ReadRdf($graph);
     $filesystem->addPlugin($plugin);
 
@@ -104,6 +124,7 @@ $controllers = [
     OpenidController::class,
     ProfileController::class,
     RegisterController::class,
+	StorageController::class,
     TokenController::class,
 ];
 
@@ -170,6 +191,7 @@ $router->group('/storage', static function (\League\Route\RouteGroup $group) {
 
     array_walk($methods, static function ($method) use (&$group) {
         $group->map($method, '/', AddSlashToPathController::class);
+//        $group->map($method, '//', StorageController::class);
         $group->map($method, '{path:.*}', ResourceController::class);
     });
 })->setScheme($scheme);
