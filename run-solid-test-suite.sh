@@ -8,9 +8,12 @@ docker network create testnet
 docker build -t server .
 
 docker build -t webid-provider https://github.com/pdsinterop/test-suites.git#master:/testers/webid-provider
-docker build -t solid-crud https://github.com/pdsinterop/test-suites.git#master:/testers/solid-crud
+#docker build -t solid-crud https://github.com/pdsinterop/test-suites.git#master:/testers/solid-crud
+docker build --no-cache -t solid-crud https://github.com/pdsinterop/test-suites.git#master:/testers/solid-crud
 docker build -t cookie         https://github.com/pdsinterop/test-suites.git#master:servers/php-solid-server/cookie
-wget -O /tmp/env-vars-for-test-image.list https://raw.githubusercontent.com/pdsinterop/test-suites/master/servers/php-solid-server/env.list
+
+# wget -O /tmp/env-vars-for-test-image.list https://raw.githubusercontent.com/pdsinterop/test-suites/master/servers/php-solid-server/env.list
+curl https://raw.githubusercontent.com/pdsinterop/test-suites/master/servers/php-solid-server/env.list -o /tmp/env-vars-for-test-image.list
 
 docker run -d --name server --network=testnet --env-file /tmp/env-vars-for-test-image.list server
 
