@@ -31,7 +31,6 @@ use Pdsinterop\Solid\Controller\Profile\CardController;
 use Pdsinterop\Solid\Controller\Profile\ProfileController;
 use Pdsinterop\Solid\Controller\RegisterController;
 use Pdsinterop\Solid\Controller\ResourceController;
-use Pdsinterop\Solid\Controller\StorageController;
 use Pdsinterop\Solid\Controller\TokenController;
 use Pdsinterop\Solid\Resources\Server as ResourceServer;
 
@@ -85,8 +84,6 @@ $container->share(\PHPTAL::class, function () {
 $container->add(ResourceController::class, function () use ($container) {
     $filesystem = $container-> get(FilesystemInterface::class);
 
-    require_once __DIR__ . '/../lib/solid-crud/src/Server.php';
-
     $server = new ResourceServer($filesystem, new Response());
 
     return new ResourceController($server);
@@ -94,11 +91,11 @@ $container->add(ResourceController::class, function () use ($container) {
 
 $controllers = [
     AddSlashToPathController::class,
-	ApprovalController::class,
+    ApprovalController::class,
     AuthorizeController::class,
     CardController::class,
     CorsController::class,
-	HandleApprovalController::class,
+    HandleApprovalController::class,
     HelloWorldController::class,
     HttpToHttpsController::class,
     JwksController::class,
@@ -107,8 +104,7 @@ $controllers = [
     OpenidController::class,
     ProfileController::class,
     RegisterController::class,
-    StorageController::class,
-	TokenController::class,
+    TokenController::class,
 ];
 
 $traits = [
@@ -159,51 +155,9 @@ $router->map('GET', '/profile/card{extension}', CardController::class)->setSchem
 $router->map('GET', '/authorize', AuthorizeController::class)->setScheme($scheme);
 $router->map('GET', '/sharing/{clientId}/', ApprovalController::class)->setScheme($scheme);
 $router->map('POST', '/sharing/{clientId}/', HandleApprovalController::class)->setScheme($scheme);
-$router->map('GET', '/storage', AddSlashToPathController::class)->setScheme($scheme);
-$router->map('GET', '/storage/', StorageController::class)->setScheme($scheme);
-$router->map('GET', '/storage/{path}', StorageController::class)->setScheme($scheme);
 $router->map('POST', '/token', TokenController::class)->setScheme($scheme);
 $router->map('POST', '/token/', TokenController::class)->setScheme($scheme);
-
-$path = $request->getUri()->getPath();
-$target = $request->getMethod() . $request->getRequestTarget();
-if ($path !== "/storage/" && strpos($path, '/storage/') === 0) {
-    // Route starts with our data-source prefix
-	$response = new \Laminas\Diactoros\Response();
-	$server = new \Pdsinterop\Solid\Resources\Server($filesystem, $response);
-    $response = $server->respondToRequest($request);
-} else {
-	try {
-		$response = $router->dispatch($request);
-	} catch (HttpException $exception) {
-		$status = $exception->getStatusCode();
-
-		$message = 'Yeah, that\'s an error.';
-		if ($exception instanceof  NotFoundException) {
-			$message = 'No such page.';
-		}
-
-		$html = "<h1>{$message}</h1><p>{$exception->getMessage()} ({$status})</p>";
-
-		if (getenv('ENVIRONMENT') === 'development') {
-			$html .= "<pre>{$exception->getTraceAsString()}</pre>";
-		}
-
-		$response = new HtmlResponse($html, $status, $exception->getHeaders());
-	} catch (\Exception $exception) {
-		$html = "<h1>Oh-no! The developers messed up!</h1><p>{$exception->getMessage()}</p>";
-
-		if (getenv('ENVIRONMENT') === 'development') {
-			$html .=
-				"<p>{$exception->getFile()}:{$exception->getLine()}</p>" .
-				"<pre>{$exception->getTraceAsString()}</pre>"
-			;
-		}
-
-		$response = new HtmlResponse($html, 500, []);
-	}
-/*
-$router->group('/data', static function (\League\Route\RouteGroup $group) {
+$router->group('/storage', static function (\League\Route\RouteGroup $group) {
     $methods = [
         'DELETE',
         'GET',
@@ -248,7 +202,6 @@ try {
     }
 
     $response = new HtmlResponse($html, 500, []);
-*/
 }
 
 // send the response to the browser
