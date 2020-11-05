@@ -19,6 +19,5 @@ ADD . /app
 WORKDIR /app
 RUN php /install/composer.phar install --no-dev --prefer-dist
 COPY site.conf /etc/apache2/sites-enabled/site.conf
-RUN chown www-data /app/config
+RUN chown -R www-data:www-data /app
 EXPOSE 443
-RUN chown www-data:www-data config
