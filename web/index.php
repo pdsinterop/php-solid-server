@@ -75,7 +75,7 @@ $container->share(FilesystemInterface::class, function () use ($request) {
 	// Create Formats objects
 	$formats = new \Pdsinterop\Rdf\Formats();
 
-	$serverUri = "https://server" . $request->getServerParams()["REQUEST_URI"]; // FIXME: doublecheck that this is the correct url;
+	$serverUri = "https://" . $request->getServerParams()["SERVER_NAME"] . $request->getServerParams()["REQUEST_URI"]; // FIXME: doublecheck that this is the correct url;
 
 	// Create the RDF Adapter
 	$rdfAdapter = new \Pdsinterop\Rdf\Flysystem\Adapter\Rdf(
