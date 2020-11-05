@@ -24,11 +24,11 @@ until docker run --rm --network=testnet webid-provider curl -kI https://server 2
 do
   echo Waiting for server to start, this can take up to a minute ...
   docker ps -a
-  docker logs standalone-solid-server || true
+  docker logs server
   sleep 1
 done
 docker ps -a
-docker logs standalone-solid-server
+docker logs server
 
 echo Getting cookie...
 export COOKIE="`docker run --cap-add=SYS_ADMIN --network=testnet --env-file /tmp/env-vars-for-test-image.list cookie`"
