@@ -36,7 +36,9 @@ export COOKIE="`docker run --rm --cap-add=SYS_ADMIN --network=testnet -e SERVER_
 echo "Running webid-provider tests with cookie $COOKIE"
 docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file /tmp/env-vars-for-test-image.list webid-provider
 docker run --rm --network=testnet --env-file /tmp/env-vars-for-test-image.list solid-crud
-# rm /tmp/env-vars-for-test-image.list
-# docker stop standalone-solid-server
-# docker rm standalone-solid-server
-# docker network remove testnet
+rm /tmp/env-vars-for-test-image.list
+docker stop server
+docker rm server
+docker stop pubsub
+docker rm pubsub
+docker network remove testnet
