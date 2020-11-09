@@ -10,7 +10,7 @@ docker build --no-cache -t standalone-solid-server .
 docker build -t webid-provider https://github.com/pdsinterop/test-suites.git#master:/testers/webid-provider
 #docker build -t solid-crud https://github.com/solid/test-suite.git#master:/testers/solid-crud
 docker build --no-cache -t solid-crud https://github.com/solid/test-suite.git#master:/testers/solid-crud
-docker build -t cookie         https://github.com/pdsinterop/test-suites.git#master:servers/php-solid-server/cookie
+docker build -t cookie         https://github.com/solid/test-suite.git#master:helpers/cookie
 docker build -t pubsub-server  https://github.com/pdsinterop/php-solid-pubsub-server.git#master
 
 # wget -O /tmp/env-vars-for-test-image.list https://raw.githubusercontent.com/pdsinterop/test-suites/master/servers/php-solid-server/env.list
@@ -31,7 +31,8 @@ docker ps -a
 docker logs server
 
 echo Getting cookie...
-export COOKIE="`docker run --cap-add=SYS_ADMIN --network=testnet --env-file /tmp/env-vars-for-test-image.list cookie`"
+export COOKIE="`docker run --rm --cap-add=SYS_ADMIN --network=testnet -e SERVER_TYPE=php-solid-server --env-file /tmp/env-vars-for-test-image.list cookie`"
+
 echo "Running webid-provider tests with cookie $COOKIE"
 docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file /tmp/env-vars-for-test-image.list webid-provider
 docker run --rm --network=testnet --env-file /tmp/env-vars-for-test-image.list solid-crud
