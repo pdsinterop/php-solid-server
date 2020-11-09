@@ -5,7 +5,7 @@ set -e
 docker network create testnet
 
 # Build and start Nextcloud server with code from current repo contents:
-docker build -t standalone-solid-server .
+docker build --no-cache -t standalone-solid-server .
 
 docker build -t webid-provider https://github.com/pdsinterop/test-suites.git#master:/testers/webid-provider
 #docker build -t solid-crud https://github.com/solid/test-suite.git#master:/testers/solid-crud
