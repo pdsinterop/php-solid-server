@@ -235,7 +235,7 @@ Questions or feedback can be given by [opening an issue on GitHub](https://githu
 
 All PDS Interop projects are open source and community-friendly. 
 Any contribution is welcome!
-For more details read the [contribution guidelines](contributing.md).
+For more details read the [contribution guidelines](CONTRIBUTING.md).
 
 All PDS Interop projects adhere to [the Code Manifesto](http://codemanifesto.com)
 as its [code-of-conduct](CODE_OF_CONDUCT.md). Contributors are expected to abide by its terms.
