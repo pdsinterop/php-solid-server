@@ -14,13 +14,10 @@ function setup {
   #docker build -t cookie         https://github.com/solid/test-suite.git#master:helpers/cookie
   docker build -t cookie         https://github.com/pdsinterop/test-suites.git#master:servers/php-solid-server/cookie
   docker build -t pubsub-server  https://github.com/pdsinterop/php-solid-pubsub-server.git#master
-
-  # wget -O /tmp/env-vars-for-test-image.list https://raw.githubusercontent.com/pdsinterop/test-suites/master/servers/php-solid-server/env.list
-  curl https://raw.githubusercontent.com/pdsinterop/test-suites/master/servers/php-solid-server/env.list -o /tmp/env-vars-for-test-image.list
 }
 
 function runPss {
-  docker run -d --name server --network=testnet --env-file /tmp/env-vars-for-test-image.list standalone-solid-server
+  docker run -d --name server --network=testnet --env-file ./env-vars-for-test-image.list standalone-solid-server
 
   docker run -d --name pubsub --network=testnet pubsub-server
 
@@ -35,17 +32,16 @@ function runPss {
   docker logs server
 
   echo Getting cookie...
-  export COOKIE="`docker run --rm --cap-add=SYS_ADMIN --network=testnet -e SERVER_TYPE=php-solid-server --env-file /tmp/env-vars-for-test-image.list cookie`"
+  export COOKIE="`docker run --rm --cap-add=SYS_ADMIN --network=testnet -e SERVER_TYPE=php-solid-server --env-file ./env-vars-for-test-image.list cookie`"
 }
 
 function runTests {
   echo "Running webid-provider tests with cookie $COOKIE"
-  docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file /tmp/env-vars-for-test-image.list webid-provider
-  docker run --rm --network=testnet --env-file /tmp/env-vars-for-test-image.list solid-crud
+  docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list webid-provider
+  docker run --rm --network=testnet --env-file ./env-vars-for-test-image.list solid-crud
 }
 
 function teardown {
-  rm /tmp/env-vars-for-test-image.list
   docker stop server
   docker rm server
   docker stop pubsub

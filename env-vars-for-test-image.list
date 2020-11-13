@@ -1,0 +1,7 @@
+ALICE_WEBID=https://server/profile/card#me
+SERVER_ROOT_ESCAPED=https:\/\/server
+SERVER_ROOT=https://server
+STORAGE_ROOT=https://server/storage
+USERNAME=alice
+PASSWORD=alice123
+PUBSUB_URL=http://pubsub:8080
