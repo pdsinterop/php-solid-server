@@ -16,7 +16,6 @@ use League\Route\Http\Exception as HttpException;
 use League\Route\Http\Exception\NotFoundException;
 use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
-
 use Pdsinterop\Solid\Controller\AddSlashToPathController;
 use Pdsinterop\Solid\Controller\ApprovalController;
 use Pdsinterop\Solid\Controller\AuthorizeController;
@@ -32,6 +31,7 @@ use Pdsinterop\Solid\Controller\Profile\CardController;
 use Pdsinterop\Solid\Controller\Profile\ProfileController;
 use Pdsinterop\Solid\Controller\RegisterController;
 use Pdsinterop\Solid\Controller\ResourceController;
+use Pdsinterop\Solid\Controller\StorageController;
 use Pdsinterop\Solid\Controller\TokenController;
 use Pdsinterop\Solid\Resources\Server as ResourceServer;
 
@@ -55,21 +55,40 @@ $container->delegate(new ReflectionContainer());
 $container->add(ServerRequestInterface::class, Request::class);
 $container->add(ResponseInterface::class, Response::class);
 
+/*
 $adapter = new \League\Flysystem\Adapter\Local(__DIR__ . '/../tests/fixtures');
 $filesystem = new \League\Flysystem\Filesystem($adapter);
 $graph = new \EasyRdf_Graph();
 $plugin = new \Pdsinterop\Rdf\Flysystem\Plugin\ReadRdf($graph);
 $filesystem->addPlugin($plugin);
+*/
 
-$container->share(FilesystemInterface::class, function () {
+$container->share(FilesystemInterface::class, function () use ($request) {
     // @FIXME: Filesystem root and the $adapter should be configurable.
     //         Implement this with `$filesystem = \MJRider\FlysystemFactory\create(getenv('STORAGE_ENDPOINT'));`
     $filesystemRoot = __DIR__ . '/../tests/fixtures';
 
     $adapter = new \League\Flysystem\Adapter\Local($filesystemRoot);
 
-    $filesystem = new \League\Flysystem\Filesystem($adapter);
     $graph = new \EasyRdf_Graph();
+
+	// Create Formats objects
+	$formats = new \Pdsinterop\Rdf\Formats();
+
+	$serverUri = "https://" . $request->getServerParams()["SERVER_NAME"] . $request->getServerParams()["REQUEST_URI"]; // FIXME: doublecheck that this is the correct url;
+
+	// Create the RDF Adapter
+	$rdfAdapter = new \Pdsinterop\Rdf\Flysystem\Adapter\Rdf(
+		$adapter,
+		$graph,
+		$formats,
+		$serverUri
+	);
+	
+    $filesystem = new \League\Flysystem\Filesystem($rdfAdapter);
+
+	$filesystem->addPlugin(new \Pdsinterop\Rdf\Flysystem\Plugin\AsMime($formats));
+	
     $plugin = new \Pdsinterop\Rdf\Flysystem\Plugin\ReadRdf($graph);
     $filesystem->addPlugin($plugin);
 
@@ -85,8 +104,6 @@ $container->share(\PHPTAL::class, function () {
 $container->add(ResourceController::class, function () use ($container) {
     $filesystem = $container-> get(FilesystemInterface::class);
 
-    require_once __DIR__ . '/../lib/solid-crud/src/Server.php';
-
     $server = new ResourceServer($filesystem, new Response());
 
     return new ResourceController($server);
@@ -94,11 +111,11 @@ $container->add(ResourceController::class, function () use ($container) {
 
 $controllers = [
     AddSlashToPathController::class,
-	ApprovalController::class,
+    ApprovalController::class,
     AuthorizeController::class,
     CardController::class,
     CorsController::class,
-	HandleApprovalController::class,
+    HandleApprovalController::class,
     HelloWorldController::class,
     HttpToHttpsController::class,
     JwksController::class,
@@ -107,7 +124,8 @@ $controllers = [
     OpenidController::class,
     ProfileController::class,
     RegisterController::class,
-	TokenController::class,
+	StorageController::class,
+    TokenController::class,
 ];
 
 $traits = [
@@ -160,8 +178,7 @@ $router->map('GET', '/sharing/{clientId}/', ApprovalController::class)->setSchem
 $router->map('POST', '/sharing/{clientId}/', HandleApprovalController::class)->setScheme($scheme);
 $router->map('POST', '/token', TokenController::class)->setScheme($scheme);
 $router->map('POST', '/token/', TokenController::class)->setScheme($scheme);
-
-$router->group('/data', static function (\League\Route\RouteGroup $group) {
+$router->group('/storage', static function (\League\Route\RouteGroup $group) {
     $methods = [
         'DELETE',
         'GET',
@@ -174,6 +191,7 @@ $router->group('/data', static function (\League\Route\RouteGroup $group) {
 
     array_walk($methods, static function ($method) use (&$group) {
         $group->map($method, '/', AddSlashToPathController::class);
+//        $group->map($method, '//', StorageController::class);
         $group->map($method, '{path:.*}', ResourceController::class);
     });
 })->setScheme($scheme);
