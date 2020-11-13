@@ -42,13 +42,12 @@ function runTests {
 }
 
 function teardown {
-  docker stop server
-  docker rm server
-  docker stop pubsub
-  docker rm pubsub
+  docker stop `docker ps --filter network=testnet -q`
+  docker rm `docker ps --filter network=testnet -qa`
   docker network remove testnet
 }
 
+teardown || true
 setup
 runPss
 runTests
