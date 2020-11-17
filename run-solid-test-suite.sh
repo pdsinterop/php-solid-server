@@ -11,8 +11,8 @@ function setup {
   docker build -t cookie         https://github.com/pdsinterop/test-suites.git#master:servers/php-solid-server/cookie
   docker build -t pubsub-server  https://github.com/pdsinterop/php-solid-pubsub-server.git#master
 
-  docker pull solidtestsuite/webid-provider-tests:v1.2.1
-  docker pull solidtestsuite/solid-crud-tests:nss-skips
+  docker pull solidtestsuite/webid-provider-tests:latest
+  docker pull solidtestsuite/solid-crud-tests:latest
   docker pull solidtestsuite/web-access-control-tests:latest
 }
 
