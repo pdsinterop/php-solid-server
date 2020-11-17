@@ -12,8 +12,11 @@ function setup {
   docker build -t pubsub-server  https://github.com/pdsinterop/php-solid-pubsub-server.git#master
 
   docker pull solidtestsuite/webid-provider-tests:latest
+  docker tag solidtestsuite/webid-provider-tests:latest webid-provider-tests
   docker pull solidtestsuite/solid-crud-tests:latest
+  docker tag solidtestsuite/solid-crud-tests:latest solid-crud-tests
   docker pull solidtestsuite/web-access-control-tests:latest
+  docker tag solidtestsuite/web-access-control-tests:latest web-access-control-tests
 }
 
 function runPss {
@@ -37,8 +40,8 @@ function runPss {
 
 function runTests {
   echo "Running webid-provider tests with cookie $COOKIE"
-  docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list solidtestsuite/webid-provider-tests
-  docker run --rm --network=testnet --env-file ./env-vars-for-test-image.list solidtestsuite/solid-crud-tests
+  docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list webid-provider-tests
+  docker run --rm --network=testnet --env-file ./env-vars-for-test-image.list solid-crud-tests
 }
 
 function teardown {
