@@ -8,10 +8,12 @@ function setup {
   # Build and start Nextcloud server with code from current repo contents:
   docker build -t standalone-solid-server .
 
-  docker build -t webid-provider https://github.com/pdsinterop/test-suites.git#master:/testers/webid-provider
-  docker build -t solid-crud https://github.com/solid/test-suite.git#master:/testers/solid-crud
   docker build -t cookie         https://github.com/pdsinterop/test-suites.git#master:servers/php-solid-server/cookie
   docker build -t pubsub-server  https://github.com/pdsinterop/php-solid-pubsub-server.git#master
+
+  docker pull solidtestsuite/webid-provider-tests:v1.2.1
+  docker pull solidtestsuite/solid-crud-tests:nss-skips
+  docker pull solidtestsuite/web-access-control-tests:latest
 }
 
 function runPss {
@@ -35,8 +37,8 @@ function runPss {
 
 function runTests {
   echo "Running webid-provider tests with cookie $COOKIE"
-  docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list webid-provider
-  docker run --rm --network=testnet --env-file ./env-vars-for-test-image.list solid-crud
+  docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list solidtestsuite/webid-provider-tests
+  docker run --rm --network=testnet --env-file ./env-vars-for-test-image.list solidtestsuite/solid-crud-tests
 }
 
 function teardown {
