@@ -8,10 +8,15 @@ function setup {
   # Build and start Nextcloud server with code from current repo contents:
   docker build -t standalone-solid-server .
 
-  docker build -t webid-provider https://github.com/pdsinterop/test-suites.git#master:/testers/webid-provider
-  docker build -t solid-crud https://github.com/solid/test-suite.git#master:/testers/solid-crud
   docker build -t cookie         https://github.com/pdsinterop/test-suites.git#master:servers/php-solid-server/cookie
   docker build -t pubsub-server  https://github.com/pdsinterop/php-solid-pubsub-server.git#master
+
+  docker pull solidtestsuite/webid-provider-tests:v1.1.0
+  docker tag solidtestsuite/webid-provider-tests:v1.1.0 webid-provider-tests
+  docker pull solidtestsuite/solid-crud-tests:latest
+  docker tag solidtestsuite/solid-crud-tests:latest solid-crud-tests
+  docker pull solidtestsuite/web-access-control-tests:latest
+  docker tag solidtestsuite/web-access-control-tests:latest web-access-control-tests
 }
 
 function runPss {
@@ -19,7 +24,7 @@ function runPss {
 
   docker run -d --name pubsub --network=testnet pubsub-server
 
-  until docker run --rm --network=testnet webid-provider curl -kI https://server 2> /dev/null > /dev/null
+  until docker run --rm --network=testnet webid-provider-tests curl -kI https://server 2> /dev/null > /dev/null
   do
     echo Waiting for server to start, this can take up to a minute ...
     docker ps -a
@@ -35,8 +40,8 @@ function runPss {
 
 function runTests {
   echo "Running webid-provider tests with cookie $COOKIE"
-  docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list webid-provider
-  docker run --rm --network=testnet --env-file ./env-vars-for-test-image.list solid-crud
+  docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list webid-provider-tests
+  docker run --rm --network=testnet --env-file ./env-vars-for-test-image.list solid-crud-tests
 }
 
 function teardown {
