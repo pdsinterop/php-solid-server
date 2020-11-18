@@ -24,7 +24,7 @@ function runPss {
 
   docker run -d --name pubsub --network=testnet pubsub-server
 
-  until docker run --rm --network=testnet webid-provider curl -kI https://server 2> /dev/null > /dev/null
+  until docker run --rm --network=testnet webid-provider-tests curl -kI https://server 2> /dev/null > /dev/null
   do
     echo Waiting for server to start, this can take up to a minute ...
     docker ps -a
