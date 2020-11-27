@@ -18,6 +18,8 @@ RUN php composer-setup.php
 RUN php -r "unlink('composer-setup.php');"
 ADD . /app
 WORKDIR /app
+RUN php /install/composer.phar require lcobucci/jwt:3.3.3
+RUN php /install/composer.phar update
 RUN php /install/composer.phar install
 COPY site.conf /etc/apache2/sites-enabled/site.conf
 RUN chown -R www-data:www-data /app
