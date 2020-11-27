@@ -1,7 +1,8 @@
-FROM php:7.2-apache
+FROM php:7.3-apache
 RUN apt-get update && \
     apt-get install -y \
         git \
+        libzip-dev \
         zlib1g-dev 
 WORKDIR /tls
 RUN openssl req -new -x509 -days 365 -nodes \
@@ -17,7 +18,9 @@ RUN php composer-setup.php
 RUN php -r "unlink('composer-setup.php');"
 ADD . /app
 WORKDIR /app
-RUN php /install/composer.phar install --no-dev --prefer-dist
+RUN php /install/composer.phar require lcobucci/jwt:3.3.3
+RUN php /install/composer.phar update
+RUN php /install/composer.phar install
 COPY site.conf /etc/apache2/sites-enabled/site.conf
 RUN chown -R www-data:www-data /app
 EXPOSE 443

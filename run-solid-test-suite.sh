@@ -54,4 +54,4 @@ teardown || true
 setup
 runPss
 runTests
-teardown
+# teardown
