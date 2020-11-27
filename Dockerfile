@@ -17,7 +17,7 @@ RUN php composer-setup.php
 RUN php -r "unlink('composer-setup.php');"
 ADD . /app
 WORKDIR /app
-RUN php /install/composer.phar install --no-dev --prefer-dist
+RUN php /install/composer.phar install
 COPY site.conf /etc/apache2/sites-enabled/site.conf
 RUN chown -R www-data:www-data /app
 EXPOSE 443
