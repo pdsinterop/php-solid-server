@@ -2,6 +2,7 @@ FROM php:7.3-apache
 RUN apt-get update && \
     apt-get install -y \
         git \
+        libzip-dev \
         zlib1g-dev 
 WORKDIR /tls
 RUN openssl req -new -x509 -days 365 -nodes \
