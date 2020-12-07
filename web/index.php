@@ -106,6 +106,11 @@ $container->add(ResourceController::class, function () use ($container) {
 
     $server = new ResourceServer($filesystem, new Response());
 
+	$baseUrl = "https://" . $_SERVER["SERVER_NAME"];
+	$pubsub = "http://" .$_SERVER["SERVER_NAME"] . ":8080/";
+	$server->setBaseUrl($baseUrl);
+	$server->setPubSubUrl($pubsub);
+
     return new ResourceController($server);
 });
 
