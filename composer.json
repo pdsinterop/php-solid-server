@@ -7,7 +7,7 @@
     "config": {
         "bin-dir": "./bin",
         "platform": {
-            "php": "7.3.11",
+            "php": "7.2",
             "ext-dom": "0.0.0",
             "ext-mbstring": "0.0.0"
         },
