@@ -1,0 +1,7 @@
+ALICE_WEBID=https://thirdparty/profile/card#me
+SERVER_ROOT_ESCAPED=https:\/\/thirdparty
+SERVER_ROOT=https://thirdparty
+STORAGE_ROOT=https://thirdparty/storage
+USERNAME=alice
+PASSWORD=alice123
+PUBSUB_URL=http://pubsub:8080
