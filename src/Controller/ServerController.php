@@ -205,12 +205,12 @@ abstract class ServerController extends AbstractController
 		// 7.  the "htu" claims matches the HTTP URI value for the HTTP request
 		//     in which the JWT was received, ignoring any query and fragment
 		// 	   parts,
-		$requestedPath = $request->getRequestTarget();
+		$requestedPath = $request->getServerParams()['REQUEST_SCHEME'] . "://" . $request->getServerParams()['SERVER_NAME'] . $request->getRequestTarget();
+		$requestedPath = preg_replace("/[?#].*$/", "", $requestedPath);
+		error_log("REQUESTED HTU $htu");
 		error_log("REQUESTED PATH $requestedPath");
-		
-		$requestedPath = "https://localhost/token"; // FIXME: check the actual request;
 		if ($htu != $requestedPath) { 
-			throw new Exception("htm http method is invalid");
+			throw new Exception("htu does not match requested path");
 		}
 
 		error_log("8");
