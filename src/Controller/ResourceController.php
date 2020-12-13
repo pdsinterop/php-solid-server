@@ -3,6 +3,7 @@
 namespace Pdsinterop\Solid\Controller;
 
 use Pdsinterop\Solid\Resources\Server;
+use Pdsinterop\Solid\Traits\HasFilesystemTrait;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Lcobucci\JWT\Parser;
@@ -10,6 +11,8 @@ use Lcobucci\JWT\Parser;
 class ResourceController extends AbstractController
 {
     ////////////////////////////// CLASS PROPERTIES \\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+    use HasFilesystemTrait;
 
     /** @var Server */
     private $server;
@@ -56,8 +59,50 @@ class ResourceController extends AbstractController
         return $response;
     }
 
+    	/**
+    	 * Checks the requested filename (path+name) and user (webid) to see if the request
+    	 * is allowed to continue, according to the web acl
+    	 * see: https://github.com/solid/web-access-control-spec
+    	 */
 	public function isAllowed($webId, $request) {
 		return true; // FIXME: Check if $webid actually has access to the requested resource;
+		$fs = $this->getFilesystem();
+		// get the path from the request
+		$path = $request->getUri()->getPath();
+		// get the filename from the request
+		$filename = basename($path);
+		$path = dirname($path);
+		// get the method from the request
+		$method = $request->getMethod();
+		// look for .acl file, deepest directory first (filename.acl or .acl in dirs going up)
+		if ($fs->has($path.$filename.'.acl')) {
+			// parse acl
+			// check that method is allowed
+		} else {
+			// see: https://github.com/solid/web-access-control-spec#acl-inheritance-algorithm
+			// check for acl:default predicate, if not found, continue searching up the directory tree
+			$default = false;
+			while (!$default && $path && $path!='.') {
+				while ($path && $path!='.' && !$fs->has($path.'.acl') ) {
+					$path = dirname($path);
+				}
+				if ($path && $path!='.') {
+					$acl = $fs->read($path.'.acl');
+//					$default = \Pdsinterop\Solid\WebACL::parse($acl)->getDefault();
+				}
+			}
+			if ($default) {
+				// check that method is allowed
+				$methodsToGrant = [
+					'GET'    => 'Read',
+					'HEAD'   => 'Read',
+					'POST'   => 'Append',
+					'PATCH'  => 'Write',
+					'PUT'    => 'Write',
+					'DELETE' => 'Write'
+				];
+			}
+		}
 	}
 	
 	// FIXME: Duplicate code from servercontroller, because we don't extend that;
