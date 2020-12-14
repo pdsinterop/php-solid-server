@@ -3,7 +3,8 @@
 namespace Pdsinterop\Solid\Controller;
 
 use Pdsinterop\Solid\Resources\Server;
-use Pdsinterop\Solid\Traits\HasFilesystemTrait;
+use Pdsinterop\Solid\Controller\AbstractController;
+use Pdsinterop\Rdf\Enum\Format as Format;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Lcobucci\JWT\Parser;
@@ -11,8 +12,6 @@ use Lcobucci\JWT\Parser;
 class ResourceController extends AbstractController
 {
     ////////////////////////////// CLASS PROPERTIES \\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-    use HasFilesystemTrait;
 
     /** @var Server */
     private $server;
@@ -59,51 +58,131 @@ class ResourceController extends AbstractController
         return $response;
     }
 
-    	/**
-    	 * Checks the requested filename (path+name) and user (webid) to see if the request
-    	 * is allowed to continue, according to the web acl
-    	 * see: https://github.com/solid/web-access-control-spec
-    	 */
-	public function isAllowed($webId, $request) {
-		return true; // FIXME: Check if $webid actually has access to the requested resource;
-		$fs = $this->getFilesystem();
-		// get the path from the request
+	private function hasDefaultPredicate($aclPath, $webId) {
+		$fs = $this->server->getFilesystem();
+		
+		$acl = $fs->read($aclPath);
+		error_log("ACL: $acl");
+
+		$graph = new \EasyRdf_Graph();
+		$graph->parse($acl, Format::TURTLE, $url);
+		error_log("GRAPH: " . $graph->serialise("turtle"));
+		
+		$matching = $graph->resourcesMatching('http://www.w3.org/ns/auth/acl#agent', $webId);
+		foreach ($matching as $match) {
+			$agent = $match->get("<http://www.w3.org/ns/auth/acl#agent>");
+			$accessTo = $match->get("<http://www.w3.org/ns/auth/acl#accessTo>");
+			$default = $match->get("<http://www.w3.org/ns/auth/acl#default>");
+			if ($default) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private function getGrants($aclPath, $webId) {
+		$fs = $this->server->getFilesystem();
+		
+		$acl = $fs->read($aclPath);
+
+		$graph = new \EasyRdf_Graph();
+		$graph->parse($acl, Format::TURTLE, $url);
+		
+		$grants = array();
+		$matching = $graph->resourcesMatching('http://www.w3.org/ns/auth/acl#agent', $webId);
+		foreach ($matching as $match) {
+			$accessTo = $match->get("<http://www.w3.org/ns/auth/acl#accessTo>");
+			$default = $match->get("<http://www.w3.org/ns/auth/acl#default>");
+			$modes = $match->all("<http://www.w3.org/ns/auth/acl#mode>");
+			if ($accessTo) {
+				foreach ($modes as $mode) {
+					$grants[$accessTo->getUri()][$mode->getUri()] = true;
+				}
+			}
+			if ($default) {
+				foreach ($modes as $mode) {
+					$grants[$default->getUri()][$mode->getUri()] = true;
+				}
+			}
+		}
+		return $grants;
+	}
+
+	private function getAclPath($request) {
+		$fs = $this->server->getFilesystem();
+		
 		$path = $request->getUri()->getPath();
 		// get the filename from the request
 		$filename = basename($path);
 		$path = dirname($path);
-		// get the method from the request
-		$method = $request->getMethod();
+		
+		error_log("REQUESTED PATH: $path");
+		error_log("REQUESTED FILE: $filename");
+
 		// look for .acl file, deepest directory first (filename.acl or .acl in dirs going up)
 		if ($fs->has($path.$filename.'.acl')) {
+			return $path.$filename.'.acl';
 			// parse acl
 			// check that method is allowed
+		} else if ($fs->has($path.$filename."/".'.acl')) {
+			return $path.$filename."/". ".acl";
 		} else {
+			error_log("Seeking .acl from $path");
+			
 			// see: https://github.com/solid/web-access-control-spec#acl-inheritance-algorithm
 			// check for acl:default predicate, if not found, continue searching up the directory tree
 			$default = false;
-			while (!$default && $path && $path!='.') {
-				while ($path && $path!='.' && !$fs->has($path.'.acl') ) {
+			while (!$default && $path && $path!='/') {
+				while ($path && $path!='/' && !$fs->has($path.'/.acl') ) {
+					error_log("CHECKING PATH [$path]");
 					$path = dirname($path);
 				}
-				if ($path && $path!='.') {
-					$acl = $fs->read($path.'.acl');
-//					$default = \Pdsinterop\Solid\WebACL::parse($acl)->getDefault();
+				if ($path && $path!='/') {
+					$aclPath = $path.'/.acl';
+					if ($this->hasDefaultPredicate($aclPath, $webId)) {
+						return $aclPath;
+					}
 				}
 			}
-			if ($default) {
-				// check that method is allowed
-				$methodsToGrant = [
-					'GET'    => 'Read',
-					'HEAD'   => 'Read',
-					'POST'   => 'Append',
-					'PATCH'  => 'Write',
-					'PUT'    => 'Write',
-					'DELETE' => 'Write'
-				];
-			}
+			return false; // No ACL found;
 		}
 	}
+	
+	/**
+	 * Checks the requested filename (path+name) and user (webid) to see if the request
+	 * is allowed to continue, according to the web acl
+	 * see: https://github.com/solid/web-access-control-spec
+	 */
+	public function isAllowed($webId, $request) {
+		$fs = $this->server->getFilesystem();
+
+		// get the method from the request
+		$method = $request->getMethod();
+
+		// check that method is allowed
+		$methodsToGrant = [
+			'GET'    => 'http://www.w3.org/ns/auth/acl#Read',
+			'HEAD'   => 'http://www.w3.org/ns/auth/acl#Read',
+			'POST'   => 'http://www.w3.org/ns/auth/acl#Append',
+			'PATCH'  => 'http://www.w3.org/ns/auth/acl#Write',
+			'PUT'    => 'http://www.w3.org/ns/auth/acl#Write',
+			'DELETE' => 'http://www.w3.org/ns/auth/acl#Write'
+		];
+					
+		$requestedGrant = $methodsToGrant[strtoupper($method)];
+		error_log("REQUESTED GRANT: $requestedGrant");
+		
+		$aclPath = $this->getAclPath($request);
+		if ($aclPath) {
+			error_log("FOUND ACLPATH: $aclPath");
+			$acl = $fs->read($aclPath);
+			$grants = $this->getGrants($aclPath, $webId);
+			error_log("GRANTS: ". print_r($grants, true));		
+		}
+		
+		return true; // FIXME: Check if $webid actually has access to the requested resource;		
+	}
+	
 	
 	// FIXME: Duplicate code from servercontroller, because we don't extend that;
 	public function getDpopKey($dpop, $request) {
