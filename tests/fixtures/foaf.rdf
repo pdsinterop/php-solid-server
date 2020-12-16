@@ -48,4 +48,19 @@
         <admin:generatorAgent rdf:resource="http://www.ldodds.com/foaf/foaf-a-matic"/>
         <admin:errorReportsTo rdf:resource="mailto:leigh@ldodds.com"/>
     </foaf:PersonalProfileDocument>
+    <foaf:Person rdf:ID="bob">
+        <ldp:inbox rdf:resource="/inbox-bob/"/>
+        <solid:account rdf:resource="/account-bob/"/>
+        <space:storage rdf:resource="/storage-bob/"/>
+        <solid:privateTypeIndex rdf:resource="/settings-bob/privateTypeIndex.ttl"/>
+        <solid:publicTypeIndex rdf:resource="/settings-bob/publicTypeIndex.ttl"/>
+        <space:preferencesFile rdf:resource="/settings-bob/preferencesFile.ttl"/>
+        <rdf:type rdf:resource="http://schema.org/Person"/>
+        <foaf:depiction rdf:resource="https://www.gravatar.com/avatar/f8d7c4a4899736c59ec1e40c7021d477?s=1024"/>
+        <foaf:family_name>Bobby</foaf:family_name>
+        <foaf:givenname>Bob</foaf:givenname>
+        <foaf:name>Bob Bobby</foaf:name>
+        <foaf:nick>Bobbers</foaf:nick>
+        <foaf:workplaceHomepage rdf:resource="https://pdsinterop.org/"/>
+    </foaf:Person>
 </rdf:RDF>
