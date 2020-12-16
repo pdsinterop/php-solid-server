@@ -50,6 +50,8 @@ class ResourceController extends AbstractController
 		} else {
 			return $this->server->getResponse()->withStatus(403, "Access denied");
 		}
+
+//		$webId = "https://localhost/profile/card#me";
 		
 		if (!$this->isAllowed($request, $webId)) {
 			return $this->server->getResponse()->withStatus(403, "Access denied");
@@ -66,7 +68,7 @@ class ResourceController extends AbstractController
 		
 		$acl = $fs->read($aclPath);
 		$graph = new \EasyRdf_Graph();
-		$graph->parse($acl, Format::TURTLE, $url);
+		$graph->parse($acl, Format::TURTLE, $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['SERVER_NAME']);
 		
 		$matching = $graph->resourcesMatching('http://www.w3.org/ns/auth/acl#agent');
 		foreach ($matching as $match) {
@@ -87,7 +89,7 @@ class ResourceController extends AbstractController
 		
 		$acl = $fs->read($aclPath);
 		$graph = new \EasyRdf_Graph();
-		$graph->parse($acl, Format::TURTLE, $url);
+		$graph->parse($acl, Format::TURTLE, $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['SERVER_NAME']);
 		
 		$matching = $graph->resourcesMatching('http://www.w3.org/ns/auth/acl#agent');
 		foreach ($matching as $match) {
@@ -103,8 +105,12 @@ class ResourceController extends AbstractController
 		return false;
 	}
 
-	private function getGrants($aclPath, $webId) {
+	private function getGrants($resourcePath, $webId) {
 		$fs = $this->server->getFilesystem();
+		$aclPath = $this->getAclPath($resourcePath, $webId);
+		if (!$aclPath) {
+			return array();
+		}
 		
 		$acl = $fs->read($aclPath);
 
@@ -139,9 +145,8 @@ class ResourceController extends AbstractController
 		return $grants;
 	}
 
-	private function getAclPath($request, $webId) {
+	private function getAclPath($path, $webId) {
 		$fs = $this->server->getFilesystem();
-		$path = $request->getUri()->getPath();
 		// get the filename from the request
 		$filename = basename($path);
 		$path = dirname($path);
@@ -195,10 +200,14 @@ class ResourceController extends AbstractController
 		switch ($method) {
 			case "GET":
 			case "HEAD":
-				return ['http://www.w3.org/ns/auth/acl#Read'];
+				return array(
+					"resource" => array('http://www.w3.org/ns/auth/acl#Read')
+				);
 			break;
 			case "DELETE":
-				return ['http://www.w3.org/ns/auth/acl#Write'];
+				return array(
+					"resource" => array('http://www.w3.org/ns/auth/acl#Write')
+				);
 			break;
 			case "PUT":
 				if ($fs->has($path)) {
@@ -207,20 +216,34 @@ class ResourceController extends AbstractController
 
 					$existingFile = $fs->read($path);
 					if (strpos($body, $existingFile) === 0) { // new file starts with the content of the old, so 'Append' grant wil suffice;
-						return ['http://www.w3.org/ns/auth/acl#Write', 'http://www.w3.org/ns/auth/acl#Append'];
+						return array(
+							"resource" => array(
+								'http://www.w3.org/ns/auth/acl#Write',
+								'http://www.w3.org/ns/auth/acl#Append'
+							)
+						);
 					} else {
-						return ['http://www.w3.org/ns/auth/acl#Write'];
+						return array(
+							"resource" => array('http://www.w3.org/ns/auth/acl#Write')
+						);
 					}
 				} else {
 					// FIXME: to add a new file, Append is needed on the parent container;
-					return ['http://www.w3.org/ns/auth/acl#Write'];
+					return array(
+						"resource" => array('http://www.w3.org/ns/auth/acl#Write'),
+						"parent"   => array('http://www.w3.org/ns/auth/acl#Append', 'http://www.w3.org/ns/auth/acl#Write')
+					);
 				}
 			break;
 			case "POST":
-				return ['http://www.w3.org/ns/auth/acl#Append', 'http://www.w3.org/ns/auth/acl#Write']; // We need 'append' for this, but because Write trumps Append, also allow it when we have Write;
+				return array(
+					"resource" => array(
+						'http://www.w3.org/ns/auth/acl#Write', // We need 'append' for this, but because Write trumps Append, also allow it when we have Write;
+						'http://www.w3.org/ns/auth/acl#Append'
+					)
+				);
 			break;
 			case "PATCH";
-				// FIXME: if the file does not exist yet, we also need Append on the parent container;
 				$grants = array();
 				$body = $request->getBody()->getContents();
 				if (strstr($body, "DELETE")) {
@@ -234,7 +257,16 @@ class ResourceController extends AbstractController
 				}
 				// error_log($body);
 				$request->getBody()->rewind();
-				return $grants;
+				if ($fs->has($path)) {
+					return array(
+						"resource" => $grants
+					);
+				} else {
+					return array(
+						"resource" => $grants,
+						"parent"   => array('http://www.w3.org/ns/auth/acl#Append', 'http://www.w3.org/ns/auth/acl#Write')
+					);
+				}
 			break;
 		}
 	}
@@ -244,54 +276,63 @@ class ResourceController extends AbstractController
 		// error_log("COMPARING REQPATH: [" . $requestPath . "]");
 		return $grantPath == $requestPath;
 	}
-	
+
+	private function getParentUri($uri) {
+		$path = $uri->getPath();
+		if ($path == "/") {
+			return $uri;
+		}
+
+		$parentPath = dirname($path) . '/';
+		$fs = $this->server->getFilesystem();
+		if ($fs->has($parentPath)) {
+			return $uri->withPath($parentPath);
+		} else {
+			return $this->getParentUri($uri->withPath($parentPath));
+		}
+	}
+
 	/**
 	 * Checks the requested filename (path+name) and user (webid) to see if the request
 	 * is allowed to continue, according to the web acl
 	 * see: https://github.com/solid/web-access-control-spec
 	 */
+
 	public function isAllowed($request, $webId) {
-		$fs = $this->server->getFilesystem();
-
 		$requestedGrants = $this->getRequestedGrants($request);
-		$path = $request->getUri();
-		// error_log("REQUESTED GRANT: " . join(" or ", $requestedGrants) . " on $path");
+		$uri = $request->getUri();
+		$parentUri = $this->getParentUri($uri);
+		if (
+			$this->isGranted($requestedGrants['resource'], $uri, $webId) &&
+			$this->isGranted($requestedGrants['parent'], $parentUri, $webId)
+		) {
+			return true;
+		}
+		return false;
+	}
 
-		$aclPath = $this->getAclPath($request, $webId);
+	private function isGranted($requestedGrants, $uri, $webId) {
+		if (!$requestedGrants) {
+			return true;
+		}
 		
-		if ($aclPath) {
-			// error_log("FOUND ACLPATH: $aclPath");
-			$acl = $fs->read($aclPath);
-			$grants = $this->getGrants($aclPath, $webId);
-
-			// error_log("GRANTS for $webId: ". print_r($grants, true));
-			if (is_array($grants)) {
-				foreach ($requestedGrants as $requestedGrant) {
-					if ($grants['accessTo'] && $grants['accessTo'][$requestedGrant] && $this->arePathsEqual($grants['accessTo'][$requestedGrant], $path)) {
-						return true;
-					} else if ($grants['default'][$requestedGrant]) {
-						// error_log("COMPARING DEF: " . $grants['default'][$requestedGrant]);
-						// error_log("COMPARING PATH: " . $path);
-						if ($this->arePathsEqual($grants['default'][$requestedGrant], $path)) {
-							return false; // only use default for children, not for an exact match;
-						}
-						return true;
-						/*
-						// FIXME: Let the default only be valid 
-						if (strpos($grants['default'][$requestedGrant], $path) === 0) {
-							return true;
-						} else {
-							error_log("DENIED: $path vs " . $grants['default'][$requestedGrant]);
-						}
-						*/
+		// error_log("REQUESTED GRANT: " . join(" or ", $requestedGrants) . " on $uri");
+		$grants = $this->getGrants($uri->getPath(), $webId);
+		// error_log("GRANTED GRANTS for $webId: " . json_encode($grants));
+		if (is_array($grants)) {
+			foreach ($requestedGrants as $requestedGrant) {
+				if ($grants['accessTo'] && $grants['accessTo'][$requestedGrant] && $this->arePathsEqual($grants['accessTo'][$requestedGrant], $uri)) {
+					return true;
+				} else if ($grants['default'][$requestedGrant]) {
+					if ($this->arePathsEqual($grants['default'][$requestedGrant], $uri)) {
+						return false; // only use default for children, not for an exact match;
 					}
+					return true;
 				}
 			}
 		}
-		
 		return false;
 	}
-	
 	
 	// FIXME: Duplicate code from servercontroller, because we don't extend that;
 	public function getDpopKey($dpop, $request) {
