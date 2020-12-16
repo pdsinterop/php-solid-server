@@ -109,22 +109,30 @@ class ResourceController extends AbstractController
 		$acl = $fs->read($aclPath);
 
 		$graph = new \EasyRdf_Graph();
-		$graph->parse($acl, Format::TURTLE, $url);
+		$graph->parse($acl, Format::TURTLE, $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['SERVER_NAME']);
 		
+		// error_log("GET GRANTS for $webId");
 		$grants = array();
-		$matching = $graph->resourcesMatching('http://www.w3.org/ns/auth/acl#agent', $webId);
+		$matching = $graph->resourcesMatching('http://www.w3.org/ns/auth/acl#agent');
+		//error_log("MATCHING " . sizeof($matching));
 		foreach ($matching as $match) {
-			$accessTo = $match->get("<http://www.w3.org/ns/auth/acl#accessTo>");
-			$default = $match->get("<http://www.w3.org/ns/auth/acl#default>");
-			$modes = $match->all("<http://www.w3.org/ns/auth/acl#mode>");
-			if ($accessTo) {
-				foreach ($modes as $mode) {
-					$grants[$accessTo->getUri()][$mode->getUri()] = true;
+			$agent = $match->get("<http://www.w3.org/ns/auth/acl#agent>");
+			if ($agent == $webId) {
+				$accessTo = $match->get("<http://www.w3.org/ns/auth/acl#accessTo>");
+				//error_log("$webId accessTo $accessTo");
+				$default = $match->get("<http://www.w3.org/ns/auth/acl#default>");
+				$modes = $match->all("<http://www.w3.org/ns/auth/acl#mode>");
+				if ($default) {
+					foreach ($modes as $mode) {
+						$grants["default"][$mode->getUri()] = $default->getUri();
+					//	$grants[$mode->getUri()] = $default->getUri();
+					}
 				}
-			}
-			if ($default) {
-				foreach ($modes as $mode) {
-					$grants[$default->getUri()][$mode->getUri()] = true;
+				if ($accessTo) {
+					foreach ($modes as $mode) {
+						$grants["accessTo"][$mode->getUri()] = $accessTo->getUri();
+					//	$grants[$mode->getUri()] = $accessTo->getUri();
+					}
 				}
 			}
 		}
