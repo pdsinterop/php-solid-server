@@ -27,29 +27,32 @@ class ResourceController extends AbstractController
     {
 		$auth = explode(" ", $request->getServerParams()['HTTP_AUTHORIZATION']);
 		$jwt = $auth[1];
-		error_log("JWT:$jwt");
+		//error_log("JWT:$jwt");
 
 		if (strtolower($auth[0]) == "dpop") {
 			$dpop = $request->getServerParams()['HTTP_DPOP'];
-			error_log("DPOP:$dpop");
+			//error_log("DPOP:$dpop");
 			if ($dpop) {
 				try {
 					$dpopKey = $this->getDpopKey($dpop, $request);
-					error_log("dpop looks valid!");
+					//error_log("dpop looks valid!");
 					if (!$this->validateDpop($jwt, $dpopKey)) {
-						return $this->getResponse()->withStatus(409, "Invalid token");
+						return $this->server->get()->withStatus(409, "Invalid token");
 					}
 				} catch(\Exception $e) {
-					error_log("dpop is invalid!");
-					return $this->getResponse()->withStatus(409, "Invalid token");
+					//error_log("dpop is invalid!");
+					return $this->server->getResponse()->withStatus(409, "Invalid token");
 				}
 			}
 		}
 		if ($jwt) {
 			$webId = $this->getSubjectFromJwt($jwt);
+		} else {
+			return $this->server->getResponse()->withStatus(403, "Access denied");
 		}
-		if (!$this->isAllowed($webId, $request)) {
-			return $this->getResponse()->withStatus(403, "Access denied");
+		
+		if (!$this->isAllowed($request, $webId)) {
+			return $this->server->getResponse()->withStatus(403, "Access denied");
 		}
 		
 		$response = $this->server->respondToRequest($request);
