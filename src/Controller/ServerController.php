@@ -207,8 +207,14 @@ abstract class ServerController extends AbstractController
 		// 	   parts,
 		$requestedPath = $request->getServerParams()['REQUEST_SCHEME'] . "://" . $request->getServerParams()['SERVER_NAME'] . $request->getRequestTarget();
 		$requestedPath = preg_replace("/[?#].*$/", "", $requestedPath);
+
+		// FIXME: Remove this; it was disabled for testing with a server running on 443 internally but accessible on :444
+		$htu = str_replace(":444", "", $htu);
+		$requestedPath = str_replace(":444", "", $requestedPath);
+
 		error_log("REQUESTED HTU $htu");
 		error_log("REQUESTED PATH $requestedPath");
+
 		if ($htu != $requestedPath) { 
 			throw new Exception("htu does not match requested path");
 		}
