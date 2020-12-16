@@ -65,18 +65,38 @@ class ResourceController extends AbstractController
 		$fs = $this->server->getFilesystem();
 		
 		$acl = $fs->read($aclPath);
-		error_log("ACL: $acl");
-
 		$graph = new \EasyRdf_Graph();
 		$graph->parse($acl, Format::TURTLE, $url);
-		error_log("GRAPH: " . $graph->serialise("turtle"));
 		
-		$matching = $graph->resourcesMatching('http://www.w3.org/ns/auth/acl#agent', $webId);
+		$matching = $graph->resourcesMatching('http://www.w3.org/ns/auth/acl#agent');
 		foreach ($matching as $match) {
-			$agent = $match->get("<http://www.w3.org/ns/auth/acl#agent>");
+			$agent = $match->get("<http://www.w3.org/ns/auth/acl#agent>");		
+			//error_log("AGENT [$agent] vs [$webId]");
 			$accessTo = $match->get("<http://www.w3.org/ns/auth/acl#accessTo>");
 			$default = $match->get("<http://www.w3.org/ns/auth/acl#default>");
-			if ($default) {
+			if (($agent == $webId) && $default) {
+				//error_log("DEFAULT FOUND");
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private function hasAccessToPredicate($aclPath, $webId) {
+		$fs = $this->server->getFilesystem();
+		
+		$acl = $fs->read($aclPath);
+		$graph = new \EasyRdf_Graph();
+		$graph->parse($acl, Format::TURTLE, $url);
+		
+		$matching = $graph->resourcesMatching('http://www.w3.org/ns/auth/acl#agent');
+		foreach ($matching as $match) {
+			$agent = $match->get("<http://www.w3.org/ns/auth/acl#agent>");		
+			//error_log("AGENT [$agent] vs [$webId]");
+			$accessTo = $match->get("<http://www.w3.org/ns/auth/acl#accessTo>");
+			$default = $match->get("<http://www.w3.org/ns/auth/acl#default>");
+			if (($agent == $webId) && $accessTo) {
+				//error_log("ACCESSTO FOUND");
 				return true;
 			}
 		}
