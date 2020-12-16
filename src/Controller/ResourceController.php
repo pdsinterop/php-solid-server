@@ -139,44 +139,102 @@ class ResourceController extends AbstractController
 		return $grants;
 	}
 
-	private function getAclPath($request) {
+	private function getAclPath($request, $webId) {
 		$fs = $this->server->getFilesystem();
-		
 		$path = $request->getUri()->getPath();
 		// get the filename from the request
 		$filename = basename($path);
 		$path = dirname($path);
 		
-		error_log("REQUESTED PATH: $path");
-		error_log("REQUESTED FILE: $filename");
+		//error_log("REQUESTED PATH: $path");
+		//error_log("REQUESTED FILE: $filename");
 
-		// look for .acl file, deepest directory first (filename.acl or .acl in dirs going up)
-		if ($fs->has($path.$filename.'.acl')) {
-			return $path.$filename.'.acl';
-			// parse acl
-			// check that method is allowed
-		} else if ($fs->has($path.$filename."/".'.acl')) {
-			return $path.$filename."/". ".acl";
-		} else {
-			error_log("Seeking .acl from $path");
-			
-			// see: https://github.com/solid/web-access-control-spec#acl-inheritance-algorithm
-			// check for acl:default predicate, if not found, continue searching up the directory tree
-			$default = false;
-			while (!$default && $path && $path!='/') {
-				while ($path && $path!='/' && !$fs->has($path.'/.acl') ) {
-					error_log("CHECKING PATH [$path]");
-					$path = dirname($path);
-				}
-				if ($path && $path!='/') {
-					$aclPath = $path.'/.acl';
-					if ($this->hasDefaultPredicate($aclPath, $webId)) {
-						return $aclPath;
-					}
-				}
+		$aclOptions = array(
+			$path.'/'.$filename.'.acl',
+			$path.'/'.$filename.'/.acl',
+			$path.'/.acl'
+		);
+
+		foreach ($aclOptions as $aclPath) {
+			if (
+				$fs->has($aclPath) &&
+				($this->hasAccessToPredicate($aclPath, $webId) || $this->hasDefaultPredicate($aclPath, $webId))
+			) {
+				return $aclPath;
 			}
-			return false; // No ACL found;
 		}
+
+		//error_log("Seeking .acl from $path");
+		// see: https://github.com/solid/web-access-control-spec#acl-inheritance-algorithm
+		// check for acl:default predicate, if not found, continue searching up the directory tree
+		return $this->getParentAcl($path, $webId);
+	}
+
+	private function getParentAcl($path, $webId) {
+		//error_log("GET PARENT ACL $path");
+		$fs = $this->server->getFilesystem();
+		if ($fs->has($path.'/.acl')) {
+			//error_log("CHECKING ACL FILE ON $path/.acl");
+			if ($this->hasDefaultPredicate($path . "/.acl", $webId)) {
+				return $path . "/.acl";
+			}
+		}
+		$parent = dirname($path);
+		if ($parent == $path) {
+			return false;
+		} else {
+			return $this->getParentAcl($parent, $webId);
+		}
+	}
+
+	public function getRequestedGrants($request) {
+		$method = strtoupper($request->getMethod());
+		$fs = $this->server->getFilesystem();
+		$path = $request->getUri()->getPath();
+
+		switch ($method) {
+			case "GET":
+			case "HEAD":
+				return ['http://www.w3.org/ns/auth/acl#Read'];
+			break;
+			case "DELETE":
+				return ['http://www.w3.org/ns/auth/acl#Write'];
+			break;
+			case "PUT":
+			//	if ($fs->has($path)) {
+			//		return ['http://www.w3.org/ns/auth/acl#Write'];
+			//	}
+				return ['http://www.w3.org/ns/auth/acl#Write','http://www.w3.org/ns/auth/acl#Append'];
+			break;
+			case "POST":
+			//	if ($fs->has($path)) {
+			//		return ['http://www.w3.org/ns/auth/acl#Write'];
+			//	}
+				return ['http://www.w3.org/ns/auth/acl#Write','http://www.w3.org/ns/auth/acl#Append'];
+			break;
+			case "PATCH";
+				$grants = array();
+				$body = $request->getBody()->getContents();
+				if (strstr($body, "DELETE")) {
+					$grants[] = 'http://www.w3.org/ns/auth/acl#Write';
+				}
+				if (strstr($body, "INSERT")) {
+					if ($fs->has($path)) {
+						$grants[] = 'http://www.w3.org/ns/auth/acl#Append';
+					}
+					$grants[] = 'http://www.w3.org/ns/auth/acl#Write';
+				}
+				// error_log($body);
+				$request->getBody()->rewind();
+				return $grants;
+			break;
+		}
+	}
+
+	private function arePathsEqual($grantPath, $requestPath) {
+		// error_log("COMPARING GRANTPATH: [" . $grantPath. "]");
+		// error_log("COMPARING REQPATH: [" . $requestPath . "]");
+		return $grantPath == $requestPath;
 	}
 	
 	/**
@@ -184,34 +242,46 @@ class ResourceController extends AbstractController
 	 * is allowed to continue, according to the web acl
 	 * see: https://github.com/solid/web-access-control-spec
 	 */
-	public function isAllowed($webId, $request) {
+	public function isAllowed($request, $webId) {
 		$fs = $this->server->getFilesystem();
 
-		// get the method from the request
-		$method = $request->getMethod();
+		$requestedGrants = $this->getRequestedGrants($request);
+		$path = $request->getUri();
+		// error_log("REQUESTED GRANT: " . join(" or ", $requestedGrants) . " on $path");
 
-		// check that method is allowed
-		$methodsToGrant = [
-			'GET'    => 'http://www.w3.org/ns/auth/acl#Read',
-			'HEAD'   => 'http://www.w3.org/ns/auth/acl#Read',
-			'POST'   => 'http://www.w3.org/ns/auth/acl#Append',
-			'PATCH'  => 'http://www.w3.org/ns/auth/acl#Write',
-			'PUT'    => 'http://www.w3.org/ns/auth/acl#Write',
-			'DELETE' => 'http://www.w3.org/ns/auth/acl#Write'
-		];
-					
-		$requestedGrant = $methodsToGrant[strtoupper($method)];
-		error_log("REQUESTED GRANT: $requestedGrant");
+		$aclPath = $this->getAclPath($request, $webId);
 		
-		$aclPath = $this->getAclPath($request);
 		if ($aclPath) {
-			error_log("FOUND ACLPATH: $aclPath");
+			// error_log("FOUND ACLPATH: $aclPath");
 			$acl = $fs->read($aclPath);
 			$grants = $this->getGrants($aclPath, $webId);
-			error_log("GRANTS: ". print_r($grants, true));		
+
+			// error_log("GRANTS for $webId: ". print_r($grants, true));
+			if (is_array($grants)) {
+				foreach ($requestedGrants as $requestedGrant) {
+					if ($grants['accessTo'] && $grants['accessTo'][$requestedGrant] && $this->arePathsEqual($grants['accessTo'][$requestedGrant], $path)) {
+						return true;
+					} else if ($grants['default'][$requestedGrant]) {
+						// error_log("COMPARING DEF: " . $grants['default'][$requestedGrant]);
+						// error_log("COMPARING PATH: " . $path);
+						if ($this->arePathsEqual($grants['default'][$requestedGrant], $path)) {
+							return false; // only use default for children, not for an exact match;
+						}
+						return true;
+						/*
+						// FIXME: Let the default only be valid 
+						if (strpos($grants['default'][$requestedGrant], $path) === 0) {
+							return true;
+						} else {
+							error_log("DENIED: $path vs " . $grants['default'][$requestedGrant]);
+						}
+						*/
+					}
+				}
+			}
 		}
 		
-		return true; // FIXME: Check if $webid actually has access to the requested resource;		
+		return false;
 	}
 	
 	
@@ -240,26 +310,26 @@ class ResourceController extends AbstractController
 				   utilization, a JWT with the same "jti" value has not been
 				   received previously (see Section 9.1).
 		*/
-		error_log("1");
+		//error_log("1");
 
 		$parser = new \Lcobucci\JWT\Parser();
 		// 1.  the string value is a well-formed JWT,
 		$dpop = $parser->parse($dpop);
 		
-		error_log("2");
+		//error_log("2");
 	    // 2.  all required claims are contained in the JWT,
 		$htm = $dpop->getClaim("htm"); // http method
 		$htu = $dpop->getClaim("htu"); // http uri
 		$typ = $dpop->getHeader("typ");
 		$alg = $dpop->getHeader("alg");
 
-		error_log("3");
+		//error_log("3");
 		// 3.  the "typ" field in the header has the value "dpop+jwt",
 		if ($typ != "dpop+jwt") {
 			throw new Exception("typ is not dpop+jwt");
 		}
 
-		error_log("4");
+		//error_log("4");
 		// 4.  the algorithm in the header of the JWT indicates an asymmetric 
 		//	   digital signature algorithm, is not "none", is supported by the
 		//	   application, and is deemed secure,   
@@ -270,34 +340,37 @@ class ResourceController extends AbstractController
 			throw new Exception("alg is not supported");
 		}
 		
-		error_log("5");
+		//error_log("5");
 		// 5.  that the JWT is signed using the public key contained in the
 		//     "jwk" header of the JWT,
 		
 		// FIXME: get the public key
 		
-		error_log("6");
+		//error_log("6");
 		// 6.  the "htm" claim matches the HTTP method value of the HTTP request
 		//	   in which the JWT was received (case-insensitive),
 		if (strtolower($htm) != strtolower($request->getMethod())) {
 			throw new Exception("htm http method is invalid");
 		}
 
-		error_log("7");
+		//error_log("7");
 		// 7.  the "htu" claims matches the HTTP URI value for the HTTP request
 		//     in which the JWT was received, ignoring any query and fragment
 		// 	   parts,
 		$requestedPath = $request->getServerParams()['REQUEST_SCHEME'] . "://" . $request->getServerParams()['SERVER_NAME'] . $request->getRequestTarget();
 		$requestedPath = preg_replace("/[?#].*$/", "", $requestedPath);
-		error_log("REQUESTED HTU $htu");
-		error_log("REQUESTED PATH $requestedPath");
+		// FIXME: Remove this; it was disabled for testing with a server running on 443 internally but accessible on :444
+		$htu = str_replace(":444", "", $htu);
+		$requestedPath = str_replace(":444", "", $requestedPath);
+		//error_log("REQUESTED HTU $htu");
+		//error_log("REQUESTED PATH $requestedPath");
 		if ($htu != $requestedPath) { 
 			throw new Exception("htu does not match requested path");
 		}
 
-		error_log("8");
+		//error_log("8");
 		$jwk = $dpop->getHeader("jwk");
-		error_log($jwk->kid);
+		//error_log($jwk->kid);
 
 		// FIXME: validate that the dpop was signed with the dpop key;
 		// $signer = new Sha256();
@@ -311,7 +384,7 @@ class ResourceController extends AbstractController
 		
 		// 9.  that, within a reasonable consideration of accuracy and resource utilization, a JWT with the same "jti" value has not been received previously (see Section 9.1).
 		// FIXME: Check if we know the jti;
-		error_log("9");
+		//error_log("9");
 		return $jwk->kid;
 	}
 	
@@ -321,12 +394,12 @@ class ResourceController extends AbstractController
 		$cnf = $jwt->getClaim("cnf");
 		
 		if ($cnf->jkt == $dpopKey) {
-			error_log("dpopKey matches");
+			//error_log("dpopKey matches");
 			return true;
 		}
-		error_log("dpopKey mismatch");
-		error_log(print_r($cnf, true));
-		error_log($dpopKey);
+		//error_log("dpopKey mismatch");
+		//error_log(print_r($cnf, true));
+		//error_log($dpopKey);
 		
 		return false;
 	}
@@ -336,7 +409,7 @@ class ResourceController extends AbstractController
 		try {
 			$jwt = $parser->parse($jwt);
 		} catch(\Exception $e) {
-			return $this->getResponse()->withStatus(409, "Invalid JWT token");
+			return $this->server->getResponse()->withStatus(409, "Invalid JWT token");
 		}
 
 		$sub = $jwt->getClaim("sub");
