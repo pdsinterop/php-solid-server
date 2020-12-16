@@ -201,18 +201,26 @@ class ResourceController extends AbstractController
 				return ['http://www.w3.org/ns/auth/acl#Write'];
 			break;
 			case "PUT":
-			//	if ($fs->has($path)) {
-			//		return ['http://www.w3.org/ns/auth/acl#Write'];
-			//	}
-				return ['http://www.w3.org/ns/auth/acl#Write','http://www.w3.org/ns/auth/acl#Append'];
+				if ($fs->has($path)) {
+					$body = $request->getBody()->getContents();
+					$request->getBody()->rewind();
+
+					$existingFile = $fs->read($path);
+					if (strpos($body, $existingFile) === 0) { // new file starts with the content of the old, so 'Append' grant wil suffice;
+						return ['http://www.w3.org/ns/auth/acl#Write', 'http://www.w3.org/ns/auth/acl#Append'];
+					} else {
+						return ['http://www.w3.org/ns/auth/acl#Write'];
+					}
+				} else {
+					// FIXME: to add a new file, Append is needed on the parent container;
+					return ['http://www.w3.org/ns/auth/acl#Write'];
+				}
 			break;
 			case "POST":
-			//	if ($fs->has($path)) {
-			//		return ['http://www.w3.org/ns/auth/acl#Write'];
-			//	}
-				return ['http://www.w3.org/ns/auth/acl#Write','http://www.w3.org/ns/auth/acl#Append'];
+				return ['http://www.w3.org/ns/auth/acl#Append', 'http://www.w3.org/ns/auth/acl#Write']; // We need 'append' for this, but because Write trumps Append, also allow it when we have Write;
 			break;
 			case "PATCH";
+				// FIXME: if the file does not exist yet, we also need Append on the parent container;
 				$grants = array();
 				$body = $request->getBody()->getContents();
 				if (strstr($body, "DELETE")) {
