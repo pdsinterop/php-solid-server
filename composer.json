@@ -7,7 +7,7 @@
     "config": {
         "bin-dir": "./bin",
         "platform": {
-            "php": "7.2",
+            "php": "7.3",
             "ext-dom": "0.0.0",
             "ext-mbstring": "0.0.0"
         },
@@ -21,6 +21,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
+        "codercat/jwk-to-pem": "^1.0",
         "defuse/php-encryption": "^2.2",
         "laminas/laminas-diactoros": " ^2.3",
         "laminas/laminas-httphandlerrunner": "^1.2",
