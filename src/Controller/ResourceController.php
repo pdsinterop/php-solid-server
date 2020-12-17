@@ -45,69 +45,58 @@ class ResourceController extends AbstractController
 				}
 			}
 		}
+
 		if ($jwt) {
 			$webId = $this->getSubjectFromJwt($jwt);
 		} else {
-			return $this->server->getResponse()->withStatus(403, "Access denied");
+			$webId = "public";
 		}
-
-//		$webId = "https://localhost/profile/card#me";
 		
 		if (!$this->isAllowed($request, $webId)) {
 			return $this->server->getResponse()->withStatus(403, "Access denied");
 		}
+
+		$userGrants = $this->getWACGrants($this->getUserGrants($request->getUri()->getPath(), $webId), $request->getUri());
+		$publicGrants = $this->getWACGrants($this->getPublicGrants($request->getUri()->getPath()), $request->getUri());
+
+		$wacHeaders = array();
+		if ($userGrants) {
+			$wacHeaders[] = "user=\"$userGrants\"";
+		}
+		if ($publicGrants) {
+			$wacHeaders[] = "public=\"$publicGrants\"";
+		}
 		
 		$response = $this->server->respondToRequest($request);
 		$response = $response->withHeader("Link", '<.acl>; rel="acl"');
+		$response = $response->withHeader("WAC-Allow", implode(",", $wacHeaders));
 
         return $response;
     }
 
-	private function hasDefaultPredicate($aclPath, $webId) {
-		$fs = $this->server->getFilesystem();
+	private function getWACGrants($grants, $uri) {
+		$wacGrants = array();
 		
-		$acl = $fs->read($aclPath);
-		$graph = new \EasyRdf_Graph();
-		$graph->parse($acl, Format::TURTLE, $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['SERVER_NAME']);
-		
-		$matching = $graph->resourcesMatching('http://www.w3.org/ns/auth/acl#agent');
-		foreach ($matching as $match) {
-			$agent = $match->get("<http://www.w3.org/ns/auth/acl#agent>");		
-			//error_log("AGENT [$agent] vs [$webId]");
-			$accessTo = $match->get("<http://www.w3.org/ns/auth/acl#accessTo>");
-			$default = $match->get("<http://www.w3.org/ns/auth/acl#default>");
-			if (($agent == $webId) && $default) {
-				//error_log("DEFAULT FOUND");
-				return true;
+		foreach ((array)$grants['accessTo'] as $grant => $grantedUri) {
+			if ($this->arePathsEqual($grantedUri, $uri)) {
+				$wacGrants[] = $this->grantToWac($grant);
 			}
 		}
-		return false;
-	}
-
-	private function hasAccessToPredicate($aclPath, $webId) {
-		$fs = $this->server->getFilesystem();
-		
-		$acl = $fs->read($aclPath);
-		$graph = new \EasyRdf_Graph();
-		$graph->parse($acl, Format::TURTLE, $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['SERVER_NAME']);
-		
-		$matching = $graph->resourcesMatching('http://www.w3.org/ns/auth/acl#agent');
-		foreach ($matching as $match) {
-			$agent = $match->get("<http://www.w3.org/ns/auth/acl#agent>");		
-			//error_log("AGENT [$agent] vs [$webId]");
-			$accessTo = $match->get("<http://www.w3.org/ns/auth/acl#accessTo>");
-			$default = $match->get("<http://www.w3.org/ns/auth/acl#default>");
-			if (($agent == $webId) && $accessTo) {
-				//error_log("ACCESSTO FOUND");
-				return true;
+		foreach ((array)$grants['default'] as $grant => $grantedUri) {
+			if (!$this->arePathsEqual($grantedUri, $uri)) {
+				$wacGrants[] = $this->grantToWac($grant);
 			}
 		}
-		return false;
+
+		return implode(" ", $wacGrants);
+	}
+	private function grantToWac($grant) {
+		return strtolower(explode("#", $grant)[1]); // http://www.w3.org/ns/auth/acl#Read => read
 	}
 
-	private function getGrants($resourcePath, $webId) {
+	private function getPublicGrants($resourcePath) {
 		$fs = $this->server->getFilesystem();
-		$aclPath = $this->getAclPath($resourcePath, $webId);
+		$aclPath = $this->getAclPath($resourcePath);
 		if (!$aclPath) {
 			return array();
 		}
@@ -117,10 +106,49 @@ class ResourceController extends AbstractController
 		$graph = new \EasyRdf_Graph();
 		$graph->parse($acl, Format::TURTLE, $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['SERVER_NAME']);
 		
-		// error_log("GET GRANTS for $webId");
 		$grants = array();
+
+		$foafAgent = "http://xmlns.com/foaf/0.1/Agent";
+		$matching = $graph->resourcesMatching('http://www.w3.org/ns/auth/acl#agentClass');
+		foreach ($matching as $match) {
+			$agentClass = $match->get("<http://www.w3.org/ns/auth/acl#agentClass>");
+			if ($agentClass == $foafAgent) {
+				$accessTo = $match->get("<http://www.w3.org/ns/auth/acl#accessTo>");
+				$default = $match->get("<http://www.w3.org/ns/auth/acl#default>");
+				$modes = $match->all("<http://www.w3.org/ns/auth/acl#mode>");
+				if ($default) {
+					foreach ($modes as $mode) {
+						$grants["default"][$mode->getUri()] = $default->getUri();
+					}
+				}
+				if ($accessTo) {
+					foreach ($modes as $mode) {
+						$grants["accessTo"][$mode->getUri()] = $accessTo->getUri();
+					}
+				}
+			}
+		}
+		return $grants;
+	}
+
+	private function getUserGrants($resourcePath, $webId) {
+		$fs = $this->server->getFilesystem();
+		$aclPath = $this->getAclPath($resourcePath);
+		if (!$aclPath) {
+			return array();
+		}
+		$acl = $fs->read($aclPath);
+
+		$graph = new \EasyRdf_Graph();
+		$graph->parse($acl, Format::TURTLE, $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['SERVER_NAME']);
+		
+		// error_log("GET GRANTS for $webId");
+
+		$grants = $this->getPublicGrants($resourcePath);
+
 		$matching = $graph->resourcesMatching('http://www.w3.org/ns/auth/acl#agent');
 		//error_log("MATCHING " . sizeof($matching));
+		// Find all grants machting our webId;
 		foreach ($matching as $match) {
 			$agent = $match->get("<http://www.w3.org/ns/auth/acl#agent>");
 			if ($agent == $webId) {
@@ -131,21 +159,20 @@ class ResourceController extends AbstractController
 				if ($default) {
 					foreach ($modes as $mode) {
 						$grants["default"][$mode->getUri()] = $default->getUri();
-					//	$grants[$mode->getUri()] = $default->getUri();
 					}
 				}
 				if ($accessTo) {
 					foreach ($modes as $mode) {
 						$grants["accessTo"][$mode->getUri()] = $accessTo->getUri();
-					//	$grants[$mode->getUri()] = $accessTo->getUri();
 					}
 				}
 			}
 		}
+
 		return $grants;
 	}
 
-	private function getAclPath($path, $webId) {
+	private function getAclPath($path) {
 		$fs = $this->server->getFilesystem();
 		// get the filename from the request
 		$filename = basename($path);
@@ -162,8 +189,7 @@ class ResourceController extends AbstractController
 
 		foreach ($aclOptions as $aclPath) {
 			if (
-				$fs->has($aclPath) &&
-				($this->hasAccessToPredicate($aclPath, $webId) || $this->hasDefaultPredicate($aclPath, $webId))
+				$fs->has($aclPath)
 			) {
 				return $aclPath;
 			}
@@ -172,23 +198,21 @@ class ResourceController extends AbstractController
 		//error_log("Seeking .acl from $path");
 		// see: https://github.com/solid/web-access-control-spec#acl-inheritance-algorithm
 		// check for acl:default predicate, if not found, continue searching up the directory tree
-		return $this->getParentAcl($path, $webId);
+		return $this->getParentAcl($path);
 	}
 
-	private function getParentAcl($path, $webId) {
+	private function getParentAcl($path) {
 		//error_log("GET PARENT ACL $path");
 		$fs = $this->server->getFilesystem();
 		if ($fs->has($path.'/.acl')) {
 			//error_log("CHECKING ACL FILE ON $path/.acl");
-			if ($this->hasDefaultPredicate($path . "/.acl", $webId)) {
-				return $path . "/.acl";
-			}
+			return $path . "/.acl";
 		}
 		$parent = dirname($path);
 		if ($parent == $path) {
 			return false;
 		} else {
-			return $this->getParentAcl($parent, $webId);
+			return $this->getParentAcl($parent);
 		}
 	}
 
@@ -317,7 +341,7 @@ class ResourceController extends AbstractController
 		}
 		
 		// error_log("REQUESTED GRANT: " . join(" or ", $requestedGrants) . " on $uri");
-		$grants = $this->getGrants($uri->getPath(), $webId);
+		$grants = $this->getUserGrants($uri->getPath(), $webId);
 		// error_log("GRANTED GRANTS for $webId: " . json_encode($grants));
 		if (is_array($grants)) {
 			foreach ($requestedGrants as $requestedGrant) {
