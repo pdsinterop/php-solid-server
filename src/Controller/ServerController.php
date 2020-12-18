@@ -5,6 +5,8 @@ namespace Pdsinterop\Solid\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Signer\Key;
+use CoderCat\JWKToPEM\JWKConverter;
 
 abstract class ServerController extends AbstractController
 {    
@@ -162,6 +164,8 @@ abstract class ServerController extends AbstractController
 
 		$parser = new \Lcobucci\JWT\Parser();
 		// 1.  the string value is a well-formed JWT,
+		// error_log("DPOP $dpop");
+
 		$dpop = $parser->parse($dpop);
 		
 		error_log("2");
@@ -191,9 +195,16 @@ abstract class ServerController extends AbstractController
 		error_log("5");
 		// 5.  that the JWT is signed using the public key contained in the
 		//     "jwk" header of the JWT,
-		
-		// FIXME: get the public key
-		
+
+		$jwk = $dpop->getHeader("jwk");
+		$jwkConverter = new JWKConverter();
+		$pem = $jwkConverter->toPEM(json_decode(json_encode($jwk), true));
+		$signer = new \Lcobucci\JWT\Signer\Rsa\Sha256();
+		$key = new \Lcobucci\JWT\Signer\Key($pem);
+		if (!$dpop->verify($signer, $key)) {
+			throw new Exception("invalid signature");
+		}
+
 		error_log("6");
 		// 6.  the "htm" claim matches the HTTP method value of the HTTP request
 		//	   in which the JWT was received (case-insensitive),
@@ -220,22 +231,13 @@ abstract class ServerController extends AbstractController
 		}
 
 		error_log("8");
-		$jwk = $dpop->getHeader("jwk");
-		error_log($jwk->kid);
-
-		// FIXME: validate that the dpop was signed with the dpop key;
-		// $signer = new Sha256();
-		// if (!$dpop->verify($signer, $jwk->kid)) {
-		// 	throw new Exception("token was not signed by the supplied key");
-		// }
-		
 		// 8.  the token was issued within an acceptable timeframe (see Section 9.1), and
 		// $iat = $dpop->getClaim("iat"); // FIXME: Is it correct that this was already verified by the parser?
 		// $exp = $dpop->getClaim("exp"); // FIXME: Is it correct that this was already verified by the parser?
 		
+		error_log("9");
 		// 9.  that, within a reasonable consideration of accuracy and resource utilization, a JWT with the same "jti" value has not been received previously (see Section 9.1).
 		// FIXME: Check if we know the jti;
-		error_log("9");
 		return $jwk->kid;
 	}
 	
