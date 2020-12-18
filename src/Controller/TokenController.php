@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse as JsonResponse;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Pdsinterop\Solid\Auth\Utils\DPop as DPop;
 
 class TokenController extends ServerController
 {    
@@ -13,16 +14,12 @@ class TokenController extends ServerController
     {	
 		$code = $request->getParsedBody()['code'];
 		$clientId = $request->getParsedBody()['client_id'];
-
+		$DPop = new DPop();
 		$dpop = $request->getServerParams()['HTTP_DPOP'];
-		if ($dpop) {
-			try {
-				$dpopKey = $this->getDpopKey($dpop, $request);
-				error_log("dpop looks valid!");
-			} catch(\Exception $e) {
-				error_log("invalid!");
-				return $this->getResponse()->withStatus(409, "Invalid token");
-			}
+		try {
+			$dpopKey = $DPop->getDPopKey($dpop, $request);
+		} catch(\Exception $e) {
+			return $this->getResponse()->withStatus(409, "Invalid token");
 		}
 		
 		$response = new \Laminas\Diactoros\Response();
