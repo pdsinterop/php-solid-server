@@ -15,6 +15,7 @@ class ResourceController extends AbstractController
     ////////////////////////////// CLASS PROPERTIES \\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
     /** @var Server */
+	private $baseUrl;
     private $server;
 	private $DPop;
 	private $WAC;
@@ -22,9 +23,17 @@ class ResourceController extends AbstractController
 
     final public function __construct(Server $server)
     {
+		$this->baseUrl = isset($_ENV['SERVER_ROOT']) ? $_ENV['SERVER_ROOT'] : "https://localhost";
         $this->server = $server;
 		$this->DPop = new DPop();
 		$this->WAC = new WAC($server->getFilesystem());
+
+		// Make sure the root folder has an acl file, as is required by the spec;
+		// Generate a default file granting the owner full access if there is nothing there.
+		if (!$server->getFilesystem()->has("/storage/.acl")) {
+			$defaultAcl = $this->generateDefaultAcl();
+			$server->getFilesystem()->write("/storage/.acl", $defaultAcl);
+		}
     }
 
     final public function __invoke(Request $request, array $args) : Response
@@ -34,6 +43,10 @@ class ResourceController extends AbstractController
 		} catch(\Exception $e) {
 			return $this->server->getResponse()->withStatus(409, "Invalid token");
 		}
+		$uri = $request->getUri();
+		$uri = $uri->withQuery("");
+		$request = $request->withUri($uri); // FIXME: Why are we getting a 'url' query argument in $request? -> https://server/storage?url=/storage/ 
+
 		if (!$this->WAC->isAllowed($request, $webId)) {
 			return $this->server->getResponse()->withStatus(403, "Access denied");
 		}
@@ -43,4 +56,42 @@ class ResourceController extends AbstractController
 		
         return $response;
     }
+
+	private function generateDefaultAcl() {
+		$defaultProfile = <<< EOF
+# Root ACL resource for the user account
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+
+<#public>
+        a acl:Authorization;
+        acl:agentClass foaf:Agent;
+        acl:accessTo </>;
+        acl:default </>;
+        acl:mode
+				acl:Read.
+
+# The owner has full access to every resource in their pod.
+# Other agents have no access rights,
+# unless specifically authorized in other .acl resources.
+<#owner>
+	a acl:Authorization;
+	acl:agent <{user-profile-uri}>;
+	# Set the access to the root storage folder itself
+	acl:accessTo </>;
+	# All resources will inherit this authorization, by default
+	acl:default </>;
+	# The owner has all of the access modes allowed
+	acl:mode
+		acl:Read, acl:Write, acl:Control.
+EOF;
+
+		$profileUri = $this->getUserProfile();
+		$defaultProfile = str_replace("{user-profile-uri}", $profileUri, $defaultProfile);
+		return $defaultProfile;
+	}
+
+	private function getUserProfile() {
+		return $this->baseUrl . "/profile/card#me";
+	}
 }
