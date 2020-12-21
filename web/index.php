@@ -102,7 +102,7 @@ $container->share(\PHPTAL::class, function () {
 });
 
 $container->add(ResourceController::class, function () use ($container) {
-    $filesystem = $container-> get(FilesystemInterface::class);
+    $filesystem = $container->get(FilesystemInterface::class);
 
     $server = new ResourceServer($filesystem, new Response());
 

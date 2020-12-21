@@ -7,7 +7,7 @@
     "config": {
         "bin-dir": "./bin",
         "platform": {
-            "php": "7.2",
+            "php": "7.3",
             "ext-dom": "0.0.0",
             "ext-mbstring": "0.0.0"
         },
@@ -21,6 +21,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
+        "codercat/jwk-to-pem": "^1.0",
         "defuse/php-encryption": "^2.2",
         "laminas/laminas-diactoros": " ^2.3",
         "laminas/laminas-httphandlerrunner": "^1.2",
@@ -29,9 +30,9 @@
         "league/flysystem": "^1.0.",
         "league/oauth2-server": "8.1",
         "league/route": "^4.5",
-        "pdsinterop/flysystem-rdf": "dev-tested",
-        "pdsinterop/solid-auth": "dev-tested",
-        "pdsinterop/solid-crud": "dev-tested",
+        "pdsinterop/flysystem-rdf": "dev-master",
+        "pdsinterop/solid-auth": "dev-master",
+        "pdsinterop/solid-crud": "dev-master",
         "php-http/httplug": "^2.1",
         "phptal/phptal": "^1.4"
     },

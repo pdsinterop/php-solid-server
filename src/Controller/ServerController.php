@@ -63,7 +63,7 @@ abstract class ServerController extends AbstractController
 				$this->getOpenIdEndpoints()
 			))->create();
 		} catch(\Throwable $e) {
-			var_dump($e);
+			// var_dump($e);
 		}
 		return $config;
 	}
@@ -132,5 +132,4 @@ abstract class ServerController extends AbstractController
 		}
 		return "token"; // default to token response type;
 	}
-	
 }
