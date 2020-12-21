@@ -1,7 +1,13 @@
 ALICE_WEBID=https://server/profile/card#me
+WEBID_ALICE=https://server/profile/card#me
+WEBID_BOB=https://thirdparty/profile/card#me
 SERVER_ROOT_ESCAPED=https:\/\/server
 SERVER_ROOT=https://server
+OIDC_ISSUER_ALICE=https://server
+OIDC_ISSUER_BOB=https://thirdparty
 STORAGE_ROOT=https://server/storage
+STORAGE_ROOT_ALICE=https://server/storage
+STORAGE_ROOT_BOB=https://thirdparty/storage
 USERNAME=alice
 PASSWORD=alice123
 PUBSUB_URL=http://pubsub:8080

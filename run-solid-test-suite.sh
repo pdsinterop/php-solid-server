@@ -21,6 +21,7 @@ function setup {
 
 function runPss {
   docker run -d --name server --network=testnet --env-file ./env-vars-for-test-image.list standalone-solid-server
+  docker run -d --name thirdparty --network=testnet --env-file ./env-vars-for-third-party.list standalone-solid-server
 
   docker run -d --name pubsub --network=testnet pubsub-server
 
@@ -33,6 +34,7 @@ function runPss {
   done
   docker ps -a
   docker logs server
+  echo Confirmed that https://server is started now, assuming that https://thirdparty will also come online soon
 
   echo Getting cookie...
   export COOKIE="`docker run --rm --cap-add=SYS_ADMIN --network=testnet -e SERVER_TYPE=php-solid-server --env-file ./env-vars-for-test-image.list cookie`"
@@ -42,6 +44,7 @@ function runTests {
   echo "Running webid-provider tests with cookie $COOKIE"
   docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list webid-provider-tests
   docker run --rm --network=testnet --env-file ./env-vars-for-test-image.list solid-crud-tests
+  docker run --rm --network=testnet --env-file ./env-vars-for-test-image.list web-access-control-tests
 }
 
 function teardown {
