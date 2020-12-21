@@ -38,13 +38,14 @@ function runPss {
 
   echo Getting cookie...
   export COOKIE="`docker run --rm --cap-add=SYS_ADMIN --network=testnet -e SERVER_TYPE=php-solid-server --env-file ./env-vars-for-test-image.list cookie`"
+  export COOKIE_BOB="`docker run --rm --cap-add=SYS_ADMIN --network=testnet -e SERVER_TYPE=php-solid-server --env-file ./env-vars-for-third-party.list cookie`"
 }
 
 function runTests {
   echo "Running webid-provider tests with cookie $COOKIE"
   docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list webid-provider-tests
-  docker run --rm --network=testnet --env-file ./env-vars-for-test-image.list solid-crud-tests
-  docker run --rm --network=testnet --env-file ./env-vars-for-test-image.list web-access-control-tests
+  docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list solid-crud-tests
+  docker run --rm --network=testnet --env COOKIE="$COOKIE" --env COOKIE_ALICE="$COOKIE" --env COOKIE_BOB="$COOKIE_BOB" --env-file ./env-vars-for-test-image.list web-access-control-tests
 }
 
 function teardown {
