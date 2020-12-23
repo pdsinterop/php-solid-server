@@ -43,9 +43,6 @@ class ResourceController extends AbstractController
 		} catch(\Exception $e) {
 			return $this->server->getResponse()->withStatus(409, "Invalid token");
 		}
-		$uri = $request->getUri();
-		$uri = $uri->withQuery("");
-		$request = $request->withUri($uri); // FIXME: Why are we getting a 'url' query argument in $request? -> https://server/storage?url=/storage/ 
 
 		if (!$this->WAC->isAllowed($request, $webId)) {
 			return $this->server->getResponse()->withStatus(403, "Access denied");
