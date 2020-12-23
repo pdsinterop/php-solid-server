@@ -1,16 +1,15 @@
-version: '3.3'
-
+version: '3'
 services:
-  solid_php:
-    command: "php --docroot /app/web/ --server 'localhost:80' /app/web/index.php"
-    container_name: solid-php-server
-    # environment variables can be passed from the host straight to a containers by not providing value
-    environment:
-      - ENVIRONMENT=development
-      - PHP_VERSION
-    ports:
-      - "${PORT:-80}:80"
-    image: "php:${PHP_VERSION:-7.1}"
-    network_mode: host
-    volumes:
-      - ".:/app"
+    php-solid-server:
+        build:
+            context: .
+        environment:
+            PUBSUB_URL: http://pubsub:8080
+        ports:
+            - 80:80
+            - 443:443
+    pubsub:
+       build:
+           context: https://github.com/pdsinterop/php-solid-pubsub-server.git#master
+       ports:
+            - 8080:8080
