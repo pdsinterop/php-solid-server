@@ -12,6 +12,7 @@ RUN openssl req -new -x509 -days 365 -nodes \
 RUN docker-php-ext-install mysqli pdo pdo_mysql zip mbstring
 RUN a2enmod rewrite
 RUN a2enmod ssl
+RUN a2enmod headers
 WORKDIR /install
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 RUN php composer-setup.php

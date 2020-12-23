@@ -170,7 +170,9 @@ $router->map('GET', '/', HelloWorldController::class)->setScheme($scheme);
 /*/ Create URI groups /*/
 $router->map('GET', '/.well-known/openid-configuration', OpenidController::class)->setScheme($scheme);
 $router->map('GET', '/jwks', JwksController::class)->setScheme($scheme);
+$router->map('GET', '/login', AddSlashToPathController::class)->setScheme($scheme);
 $router->map('GET', '/login/', LoginPageController::class)->setScheme($scheme);
+$router->map('POST', '/login', LoginController::class)->setScheme($scheme);
 $router->map('POST', '/login/', LoginController::class)->setScheme($scheme);
 $router->map('OPTIONS', '/{path}', CorsController::class)->setScheme($scheme);
 $router->map('POST', '/register', RegisterController::class)->setScheme($scheme);
