@@ -8,12 +8,12 @@
     xmlns:space="http://www.w3.org/ns/pim/space#"
 >
     <foaf:Person rdf:ID="me">
-        <ldp:inbox rdf:resource="/inbox/"/>
+        <ldp:inbox rdf:resource="/storage/inbox/"/>
         <solid:account rdf:resource="/account/"/>
         <space:storage rdf:resource="/storage/"/>
-        <solid:privateTypeIndex rdf:resource="/settings/privateTypeIndex.ttl"/>
-        <solid:publicTypeIndex rdf:resource="/settings/publicTypeIndex.ttl"/>
-        <space:preferencesFile rdf:resource="/settings/preferencesFile.ttl"/>
+        <solid:privateTypeIndex rdf:resource="/storage/settings/privateTypeIndex.ttl"/>
+        <solid:publicTypeIndex rdf:resource="/storage/settings/publicTypeIndex.ttl"/>
+        <space:preferencesFile rdf:resource="/storage/settings/preferencesFile.ttl"/>
         <rdf:type rdf:resource="http://schema.org/Person"/>
         <foaf:depiction rdf:resource="https://www.gravatar.com/avatar/f8d7c4a4899736c59ec1e40c7021d477?s=1024"/>
         <foaf:family_name>Peachey</foaf:family_name>

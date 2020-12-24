@@ -1,0 +1,12 @@
+@prefix : <#>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix c: </profile/card#>.
+@prefix terms: <http://www.w3.org/ns/solid/terms#>.
+@prefix n0: <http://xmlns.com/foaf/0.1/>.
+@prefix sp: <http://www.w3.org/ns/pim/space#>.
+
+c:me
+    a terms:Developer;
+    terms:privateTypeIndex <privateTypeIndex.ttl>;
+    terms:publicTypeIndex <publicTypeIndex.ttl>;
+<> a sp:ConfigurationFile; dct:title "Preferences file".
