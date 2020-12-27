@@ -80,7 +80,7 @@ docker run                 \
    --rm                    \
    --volume "$PWD:/app"    \
    -it                     \
-   php:7.1                 \
+   php:7.3                 \
    php --docroot /app/web/ --server "localhost:${PORT}" /app/web/index.php
 ```
 Or on Mac:
@@ -93,7 +93,7 @@ docker run                 \
    --rm                    \
    --volume "$PWD:/app"    \
    -it                     \
-   php:7.1                 \
+   php:7.3                 \
    php --docroot /app/web/ --server "localhost:${PORT}" /app/web/index.php
 ```
 
@@ -233,7 +233,7 @@ $ ./vendor/bin/phpunit
 
 Questions or feedback can be given by [opening an issue on GitHub](https://github.com/pdsinterop/flysystem-rdf/issues).
 
-All PDS Interop projects are open source and community-friendly. 
+All PDS Interop projects are open source and community-friendly.
 Any contribution is welcome!
 For more details read the [contribution guidelines](CONTRIBUTING.md).
 
