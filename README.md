@@ -231,7 +231,7 @@ $ ./vendor/bin/phpunit
 
 ## Contributing
 
-Questions or feedback can be given by [opening an issue on GitHub](https://github.com/pdsinterop/flysystem-rdf/issues).
+Questions or feedback can be given by [opening an issue on GitHub](https://github.com/pdsinterop/php-solid-server/issues).
 
 All PDS Interop projects are open source and community-friendly.
 Any contribution is welcome!
@@ -248,9 +248,9 @@ For a list of changes see the [CHANGELOG](CHANGELOG.md) or the GitHub releases p
 
 All code created by PDS Interop is licensed under the [MIT License][license-link].
 
-[contributors-page]:  https://github.com/pdsinterop/flysystem-rdf/contributors
+[contributors-page]:  https://github.com/pdsinterop/php-solid-server/contributors
 [license-link]: ./LICENSE
-[license-shield]: https://img.shields.io/github/license/pdsinterop/flysystem-rdf.svg
+[license-shield]: https://img.shields.io/github/license/pdsinterop/php-solid-server.svg
 [maintained-shield]: https://img.shields.io/maintenance/yes/2020
 [pdsinterop-shield]: https://img.shields.io/badge/-PDS%20Interop-gray.svg?logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii01IC01IDExMCAxMTAiIGZpbGw9IiNGRkYiIHN0cm9rZS13aWR0aD0iMCI+CiAgICA8cGF0aCBkPSJNLTEgNTJoMTdhMzcuNSAzNC41IDAgMDAyNS41IDMxLjE1di0xMy43NWEyMC43NSAyMSAwIDAxOC41LTQwLjI1IDIwLjc1IDIxIDAgMDE4LjUgNDAuMjV2MTMuNzVhMzcgMzQuNSAwIDAwMjUuNS0zMS4xNWgxN2EyMiAyMS4xNSAwIDAxLTEwMiAweiIvPgogICAgPHBhdGggZD0iTSAxMDEgNDhhMi43NyAyLjY3IDAgMDAtMTAyIDBoIDE3YTIuOTcgMi44IDAgMDE2OCAweiIvPgo8L3N2Zz4K
 [pdsinterop-site]: https://pdsinterop.org/
@@ -258,5 +258,5 @@ All code created by PDS Interop is licensed under the [MIT License][license-link
 [project-stage-page]: https://blog.pother.ca/project-stages/
 [standard-readme-link]: https://github.com/RichardLitt/standard-readme
 [standard-readme-shield]: https://img.shields.io/badge/readme%20style-standard-brightgreen.svg
-[version-link]: https://packagist.org/packages/pdsinterop/flysystem-rdf
-[version-shield]: https://img.shields.io/github/v/release/pdsinterop/flysystem-rdf?sort=semver
+[version-link]: https://packagist.org/packages/pdsinterop/php-solid-server
+[version-shield]: https://img.shields.io/github/v/release/pdsinterop/php-solid-server?sort=semver
