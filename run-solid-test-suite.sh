@@ -11,12 +11,12 @@ function setup {
   docker build -t cookie         https://github.com/pdsinterop/test-suites.git#master:servers/php-solid-server/cookie
   docker build -t pubsub-server  https://github.com/pdsinterop/php-solid-pubsub-server.git#master
 
-  docker pull solidtestsuite/webid-provider-tests:latest
-  docker tag solidtestsuite/webid-provider-tests:latest webid-provider-tests
-  docker pull solidtestsuite/solid-crud-tests:latest
-  docker tag solidtestsuite/solid-crud-tests:latest solid-crud-tests
-  docker pull solidtestsuite/web-access-control-tests:latest
-  docker tag solidtestsuite/web-access-control-tests:latest web-access-control-tests
+  docker pull solidtestsuite/webid-provider-tests:v2.0.3
+  docker tag solidtestsuite/webid-provider-tests:v2.0.3 webid-provider-tests
+  docker pull solidtestsuite/solid-crud-tests:v3.1.0
+  docker tag solidtestsuite/solid-crud-tests:v3.1.0 solid-crud-tests
+  docker pull solidtestsuite/web-access-control-tests:v4.0.0
+  docker tag solidtestsuite/web-access-control-tests:v4.0.0 web-access-control-tests
 }
 
 function runPss {
