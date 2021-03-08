@@ -9,7 +9,7 @@ RUN openssl req -new -x509 -days 365 -nodes \
   -out server.cert \
   -keyout server.key \
   -subj "/C=RO/ST=Bucharest/L=Bucharest/O=IT/CN=www.example.ro"
-RUN docker-php-ext-install mysqli pdo pdo_mysql zip mbstring
+RUN docker-php-ext-install mysqli pdo pdo_mysql zip mbstring bcmath
 RUN a2enmod rewrite
 RUN a2enmod ssl
 RUN a2enmod headers
