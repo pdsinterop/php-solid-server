@@ -8,8 +8,8 @@ function setup {
   # Build and start Nextcloud server with code from current repo contents:
   docker build -t standalone-solid-server .
 
-  docker build -t cookie         https://github.com/pdsinterop/test-suites.git#master:servers/php-solid-server/cookie
-  docker build -t pubsub-server  https://github.com/pdsinterop/php-solid-pubsub-server.git#master
+  docker build -t cookie         https://github.com/pdsinterop/test-suites.git#main:servers/php-solid-server/cookie
+  docker build -t pubsub-server  https://github.com/pdsinterop/php-solid-pubsub-server.git#main
 
   docker pull solidtestsuite/webid-provider-tests:v2.0.3
   docker tag solidtestsuite/webid-provider-tests:v2.0.3 webid-provider-tests
