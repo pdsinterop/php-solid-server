@@ -12,6 +12,6 @@ services:
             - 443:443
     pubsub:
        build:
-           context: https://github.com/pdsinterop/php-solid-pubsub-server.git#master
+           context: https://github.com/pdsinterop/php-solid-pubsub-server.git#main
        ports:
             - 8080:8080
