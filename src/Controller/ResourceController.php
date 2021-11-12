@@ -10,6 +10,42 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Pdsinterop\Solid\Auth\Utils\DPop as DPop;
 use Pdsinterop\Solid\Auth\WAC as WAC;
 
+class idToken {
+	public function getWebId($request) {
+		$auth = explode(" ", $request->getServerParams()['HTTP_AUTHORIZATION']);
+		$jwt = $auth[1];
+		
+		if (strtolower($auth[0]) == "dpop") {
+			return DPop::getWebId($request);
+		}
+		
+		if ($jwt) {
+			$webId = $this->getSubjectFromJwt($jwt);
+		} else {
+			$webId = "public";
+		}
+
+		return $webId;
+	}
+	
+	public function getSubjectFromJwt($jwt) {
+		$parser = new \Lcobucci\JWT\Parser();
+		try {
+			$jwt = $parser->parse($jwt);
+		} catch(\Exception $e) {
+			return $this->server->getResponse()->withStatus(409, "Invalid JWT token");
+		}
+
+		if ($jwt->getClaim("token_type") == "pop") {
+			$idToken = $jwt->getClaim("id_token");
+			$idt = $parser->parse($idToken);
+			return $idt->getClaim("sub");
+		} else {
+			return $jwt->getClaim("sub");
+		}
+	}	
+}
+
 class ResourceController extends AbstractController
 {
     ////////////////////////////// CLASS PROPERTIES \\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -26,6 +62,7 @@ class ResourceController extends AbstractController
 		$this->baseUrl = isset($_ENV['SERVER_ROOT']) ? $_ENV['SERVER_ROOT'] : "https://localhost";
         $this->server = $server;
 		$this->DPop = new DPop();
+		$this->idToken = new idToken();
 		$this->WAC = new WAC($server->getFilesystem());
 
 		// Make sure the root folder has an acl file, as is required by the spec;
@@ -39,7 +76,7 @@ class ResourceController extends AbstractController
     final public function __invoke(Request $request, array $args) : Response
     {
 		try {
-			$webId = $this->DPop->getWebId($request);
+			$webId = $this->idToken->getWebId($request);
 		} catch(\Exception $e) {
 			return $this->server->getResponse()->withStatus(409, "Invalid token");
 		}
