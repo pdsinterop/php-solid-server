@@ -36,10 +36,26 @@ function runPss {
   docker logs server
   echo Confirmed that https://server is started now, assuming that https://thirdparty will also come online soon
 
-  echo Getting cookie...
+  echo Getting cookie for Alice...
   export COOKIE="`docker run --rm --cap-add=SYS_ADMIN --network=testnet -e SERVER_TYPE=php-solid-server --env-file ./env-vars-for-test-image.list cookie`"
+  if [[ $COOKIE == PHPSESSID* ]]
+  then
+	  echo Successfully obtained cookie for Alice: $COOKIE
+  else
+	  echo Error obtaining cookie for Alice, stopping.
+	  exit 1
+  fi
+
+  echo Getting cookie for Bob...
   export COOKIE_BOB="`docker run --rm --cap-add=SYS_ADMIN --network=testnet -e SERVER_TYPE=php-solid-server --env-file ./env-vars-for-third-party.list cookie`"
-}
+  if [[ $COOKIE_BOB == PHPSESSID* ]]
+  then
+	  echo Successfully obtained cookie for Bob: $COOKIE_BOB
+  else
+	  echo Error obtaining cookie for Bob, stopping.
+	  exit 1
+  fi
+ }
 
 function runTests {
   echo "Running webid-provider tests with cookie $COOKIE"
