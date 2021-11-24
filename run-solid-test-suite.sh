@@ -13,8 +13,8 @@ function setup {
 
   docker pull solidtestsuite/webid-provider-tests:v2.0.3
   docker tag solidtestsuite/webid-provider-tests:v2.0.3 webid-provider-tests
-  docker pull solidtestsuite/solid-crud-tests:v5.1.0
-  docker tag solidtestsuite/solid-crud-tests:v5.1.0 solid-crud-tests
+  docker pull solidtestsuite/solid-crud-tests:v5.2.0
+  docker tag solidtestsuite/solid-crud-tests:v5.2.0 solid-crud-tests
   docker pull solidtestsuite/web-access-control-tests:v6.0.0
   docker tag solidtestsuite/web-access-control-tests:v6.0.0 web-access-control-tests
 }
