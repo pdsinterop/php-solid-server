@@ -34,7 +34,7 @@ function runPss {
   done
   docker ps -a
   docker logs server
-  echo Confirmed that https://server is started now, assuming that https://thirdparty will also come online soon
+  echo Confirmed that https://server is started now
 
   echo Getting cookie for Alice...
   export COOKIE="`docker run --rm --cap-add=SYS_ADMIN --network=testnet -e SERVER_TYPE=php-solid-server --env-file ./env-vars-for-test-image.list cookie`"
@@ -45,6 +45,17 @@ function runPss {
 	  echo Error obtaining cookie for Alice, stopping.
 	  exit 1
   fi
+
+  until docker run --rm --network=testnet webid-provider-tests curl -kI https://thirdparty 2> /dev/null > /dev/null
+  do
+    echo Waiting for thirdparty to start, this can take up to a minute ...
+    docker ps -a
+    docker logs thirdparty
+    sleep 1
+  done
+  docker ps -a
+  docker logs thirdparty
+  echo Confirmed that https://thirdparty is started now
 
   echo Getting cookie for Bob...
   export COOKIE_BOB="`docker run --rm --cap-add=SYS_ADMIN --network=testnet -e SERVER_TYPE=php-solid-server --env-file ./env-vars-for-third-party.list cookie`"
