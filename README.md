@@ -179,27 +179,33 @@ The current `dev` branch of php-solid-server should pass roughly 7 out of 17 tes
 
 ## Available Features
 
-Based on the specifications, the following features are available:
+Based on the specifications, the features listed below _should_ be available.
+
+The checkboxes show which features _are_, and which ones _are not_.
+
+The underlying functionality for these features is provided by:
+
+- <sup>[auth]</sup> = [`pdsinterop/solid-auth`](https://github.com/pdsinterop/php-solid-auth)
+- <sup>[crud]</sup> = [`pdsinterop/solid-crud`](https://github.com/pdsinterop/php-solid-crud)
+- <sup>[p/s]</sup> = [`pdsinterop/solid-pubsub-server`](https://github.com/pdsinterop/php-solid-pubsub-server)
+- <sup>[rdf]</sup> = [`pdsinterop/flysystem-rdf`](https://github.com/pdsinterop/flysystem-rdf)
 
 1. User
-   - [ ] Authentication
-   - [ ] Identity
-   - [ ] Profiles
+   - [x] Authentication <sup>[auth]</sup> (since **v0.3**)
+   - [x] Identity (since **v0.2**)
+   - [x] Profiles (since **v0.2**)
 2. Data storage
-   - [ ] Content representation
-   - [ ] Resource API
-     - [ ] HTTP REST API
-     - [ ] Websocket API
+   - [x] Content representation <sup>[rdf]</sup> (since **v0.4**)
+   - [x] Resource API
+     - [x] HTTP REST API <sup>[crud]</sup> (since **v0.4**)
+     - [x] Websocket API <sup>[p/s]</sup> (since **v0.6**)
 3. Web Acces Control List
-   - [ ] Authorization (and Access Control)
+   - [x] Authorization (and Access Control) <sup>[crud]</sup> (since **v0.6**)
 4. Social web apps
    - [ ] Calendar
    - [ ] Contacts
    - [ ] Friends Lists (Followers, Following)
    - [ ] Notifications
-
-The checkboxes show which features are available, and which ones are not.
-
 
 ## Development
 
