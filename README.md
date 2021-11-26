@@ -12,6 +12,23 @@ _Standalone Solid Server written in PHP by PDS Interop_
 ## Table of Contents
 
 <!-- toc -->
+
+- [Background](#background)
+  * [Installation](#installation)
+- [Usage](#usage)
+  * [Docker images](#docker-images)
+  * [Local environment](#local-environment)
+    + [Built-in PHP HTTP server](#built-in-php-http-server)
+- [Security](#security)
+- [Running solid/webid-provider-tests](#running-solidwebid-provider-tests)
+- [Available Features](#available-features)
+- [Development](#development)
+  * [Project structure](#project-structure)
+  * [Coding conventions](#coding-conventions)
+  * [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
+
 <!-- tocstop -->
 
 ## Background
@@ -32,7 +49,7 @@ they define:
 To read more about Solid, and which IETF and W3C specifications are used, visit: https://pdsinterop.org/solid-specs-overview/
 -->
 
-### Installation
+## Installation
 
 To install the project, clone it from GitHub and install the PHP dependencies
 using Composer:
