@@ -11,7 +11,7 @@ use Pdsinterop\Solid\Auth\Utils\DPop as DPop;
 class TokenController extends ServerController
 {    
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
-    {	
+    {
 		$code = $request->getParsedBody()['code'];
 		$clientId = $request->getParsedBody()['client_id'];
 		$DPop = new DPop();
@@ -21,16 +21,25 @@ class TokenController extends ServerController
 		} catch(\Exception $e) {
 			return $this->getResponse()->withStatus(409, "Invalid token");
 		}
-		
-		$response = new \Laminas\Diactoros\Response();
-		$server	= new \Pdsinterop\Solid\Auth\Server($this->authServerFactory, $this->authServerConfig, $response);
+
+		$server = new \Pdsinterop\Solid\Auth\Server(
+            $this->authServerFactory,
+            $this->authServerConfig,
+            new \Laminas\Diactoros\Response()
+        );
+
 		$response = $server->respondToAccessTokenRequest($request);
 
 		// FIXME: not sure if decoding this here is the way to go.
 		// FIXME: because this is a public page, the nonce from the session is not available here.
 		$codeInfo = $this->tokenGenerator->getCodeInfo($code);
-		$response = $this->tokenGenerator->addIdTokenToResponse($response, $clientId, $codeInfo['user_id'], $_SESSION['nonce'], $this->config->getPrivateKey(), $dpopKey);
 
-		return $response;
+        return $this->tokenGenerator->addIdTokenToResponse($response,
+            $clientId,
+            $codeInfo['user_id'],
+            $_SESSION['nonce'],
+            $this->config->getPrivateKey(),
+            $dpopKey
+        );
     }
 }

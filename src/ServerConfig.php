@@ -116,6 +116,7 @@ class ServerConfig {
 		$this->userConfig['allowedClients'] = array_unique($this->userConfig['allowedClients']);
 		$this->saveUserConfig();
 	}
+
 	public function removeAllowedClient($userId, $clientId) {
 		$this->userConfig['allowedClients'] = array_diff($this->userConfig['allowedClients'], array($clientId));
 		$this->saveUserConfig();
