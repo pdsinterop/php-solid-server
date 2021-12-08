@@ -39,16 +39,14 @@ class RouterService
         $strategy->setContainer($container);
         $router->setStrategy($strategy);
 
-        /*/ Make sure HTTPS is always used in production /*/
-        $scheme = 'http';
-        if (getenv('ENVIRONMENT') !== 'development') {
-            $router->map('GET', '/{page:(?:.|/)*}', HttpToHttpsController::class)->setScheme($scheme);
-            $scheme = 'https';
+        /*/ Redirect all HTTP requests to HTTPS, unless we are behind a proxy /*/
+        if ( ! getenv('PROXY_MODE')) {
+            $router->map('GET', '/{page:(?:.|/)*}', HttpToHttpsController::class)->setScheme('http');
         }
 
         /*/ Map routes and groups /*/
-        $router->map('GET', '/', HelloWorldController::class)->setScheme($scheme);
-        $router->group('/profile', $this->createProfileGroup())->setScheme($scheme);
+        $router->map('GET', '/', HelloWorldController::class);
+        $router->group('/profile', $this->createProfileGroup());
 
         return $router;
     }

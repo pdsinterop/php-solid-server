@@ -158,33 +158,35 @@ $strategy->setContainer($container);
 /*/ Default output is HTML, should return a Response object /*/
 $router->setStrategy($strategy);
 
-/*/ Make sure HTTPS is always used in production /*/
-$scheme = 'http';
-if (getenv('ENVIRONMENT') !== 'development') {
-    $router->map('GET', '/{page:(?:.|/)*}', HttpToHttpsController::class)->setScheme($scheme);
-    $scheme = 'https';
+/*/ Redirect all HTTP requests to HTTPS, unless we are behind a proxy /*/
+if ( ! getenv('PROXY_MODE')) {
+    $router->map('GET', '/{page:(?:.|/)*}', HttpToHttpsController::class)->setScheme('http');
 }
 
-$router->map('GET', '/', HelloWorldController::class)->setScheme($scheme);
+$router->map('GET', '/', HelloWorldController::class);
+
+// @FIXME: CORS handling, slash-adding (and possibly others?) should be added as middleware instead of "catchall" URLs map
 
 /*/ Create URI groups /*/
-$router->map('GET', '/.well-known/openid-configuration', OpenidController::class)->setScheme($scheme);
-$router->map('GET', '/jwks', JwksController::class)->setScheme($scheme);
-$router->map('GET', '/login', AddSlashToPathController::class)->setScheme($scheme);
-$router->map('GET', '/login/', LoginPageController::class)->setScheme($scheme);
-$router->map('POST', '/login', LoginController::class)->setScheme($scheme);
-$router->map('POST', '/login/', LoginController::class)->setScheme($scheme);
-$router->map('OPTIONS', '/{path}', CorsController::class)->setScheme($scheme);
-$router->map('POST', '/register', RegisterController::class)->setScheme($scheme);
-$router->map('GET', '/profile', AddSlashToPathController::class)->setScheme($scheme);
-$router->map('GET', '/profile/', ProfileController::class)->setScheme($scheme);
-$router->map('GET', '/profile/card', CardController::class)->setScheme($scheme);
-$router->map('GET', '/profile/card{extension}', CardController::class)->setScheme($scheme);
-$router->map('GET', '/authorize', AuthorizeController::class)->setScheme($scheme);
-$router->map('GET', '/sharing/{clientId}/', ApprovalController::class)->setScheme($scheme);
-$router->map('POST', '/sharing/{clientId}/', HandleApprovalController::class)->setScheme($scheme);
-$router->map('POST', '/token', TokenController::class)->setScheme($scheme);
-$router->map('POST', '/token/', TokenController::class)->setScheme($scheme);
+$router->map('GET', '/login', AddSlashToPathController::class);
+$router->map('GET', '/profile', AddSlashToPathController::class);
+
+$router->map('OPTIONS', '/{path:.*}', CorsController::class);
+$router->map('GET', '/.well-known/openid-configuration', OpenidController::class);
+$router->map('GET', '/jwks', JwksController::class);
+$router->map('GET', '/login/', LoginPageController::class);
+$router->map('POST', '/login', LoginController::class);
+$router->map('POST', '/login/', LoginController::class);
+$router->map('POST', '/register', RegisterController::class);
+$router->map('GET', '/profile/', ProfileController::class);
+$router->map('GET', '/profile/card', CardController::class);
+$router->map('GET', '/profile/card{extension}', CardController::class);
+$router->map('GET', '/authorize', AuthorizeController::class);
+$router->map('GET', '/sharing/{clientId}/', ApprovalController::class);
+$router->map('POST', '/sharing/{clientId}/', HandleApprovalController::class);
+$router->map('POST', '/token', TokenController::class);
+$router->map('POST', '/token/', TokenController::class);
+
 $router->group('/storage', static function (\League\Route\RouteGroup $group) {
     $methods = [
         'DELETE',
@@ -201,7 +203,7 @@ $router->group('/storage', static function (\League\Route\RouteGroup $group) {
 //        $group->map($method, '//', StorageController::class);
         $group->map($method, '{path:.*}', ResourceController::class);
     });
-})->setScheme($scheme);
+});
 
 try {
     $response = $router->dispatch($request);
