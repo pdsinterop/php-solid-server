@@ -41,18 +41,26 @@ class ResourceController extends AbstractController
 		try {
 			$webId = $this->DPop->getWebId($request);
 		} catch(\Exception $e) {
-			return $this->server->getResponse()->withStatus(409, "Invalid token");
+            return $this->server->getResponse()->withStatus(409, 'Invalid token');
 		}
 
-		$origin = $request->getHeader("Origin");
-		if (!$this->WAC->isAllowed($request, $webId, $origin)) {
-			return $this->server->getResponse()->withStatus(403, "Access denied");
-		}
+        $origins = $request->getHeader('Origin');
+
+        $isAllowed = false;
+        foreach ($origins as $origin) {
+            if ($this->WAC->isAllowed($request, $webId, $origin)) {
+                $isAllowed = true;
+                break;
+            }
+        }
+
+        if (! $isAllowed) {
+            return $this->server->getResponse()->withStatus(403, 'Access denied');
+        }
 
 		$response = $this->server->respondToRequest($request);
-		$response = $this->WAC->addWACHeaders($request, $response, $webId);
-		
-        return $response;
+
+        return $this->WAC->addWACHeaders($request, $response, $webId);
     }
 
 	private function generateDefaultAcl() {
