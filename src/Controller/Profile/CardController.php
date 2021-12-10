@@ -47,8 +47,10 @@ class CardController extends AbstractController
 
         $contentType = $this->getContentTypeForFormat($format);
 
+        $serverParams = $request->getServerParams();
+        $url = $serverParams["REQUEST_URI"] ?? '';
+
         /** @noinspection PhpUndefinedMethodInspection */ // Method `readRdf` is defined by plugin
-        $url = $request->getServerParams()["REQUEST_URI"];
         $content = $filesystem->readRdf($filePath, $format, $url);
 
         return $this->createTextResponse($content)->withHeader('Content-Type', $contentType);
