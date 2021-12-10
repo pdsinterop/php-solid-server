@@ -119,7 +119,7 @@ abstract class ServerController extends AbstractController
 	}
 	
 	public function getResponseType() {
-		$responseTypes = explode(" ", $_GET['response_type']);
+        $responseTypes = explode(" ", $_GET['response_type'] ?? '');
 		foreach ($responseTypes as $responseType) {
 			switch ($responseType) {
 				case "token":
