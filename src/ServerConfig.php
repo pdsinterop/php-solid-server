@@ -15,6 +15,23 @@ class ServerConfig {
 		$this->userConfig = $this->loadUserConfig();
 		
 	}
+
+    public function getAllowedOrigins()
+    {
+        $allowedOrigins = [];
+
+        $serverConfig = $this->serverConfig;
+        foreach ($serverConfig as $value) {
+            if (isset($value['redirect_uris'])) {
+                foreach($value['redirect_uris'] as $url) {
+                    $allowedOrigins[] = parse_url($url)['host'];
+                }
+            }
+        }
+
+        return array_unique($allowedOrigins);
+    }
+
 	private function loadConfig() {
 		if (!file_exists($this->serverConfigFile)) {
 			$keySet = $this->generateKeySet();
@@ -124,4 +141,3 @@ class ServerConfig {
 		return $result;
 	}
 }
-?>

@@ -2,20 +2,17 @@
 
 namespace Pdsinterop\Solid\Controller;
 
+use Pdsinterop\Solid\Auth\Utils\DPop;
+use Pdsinterop\Solid\Auth\WAC;
 use Pdsinterop\Solid\Resources\Server;
-use Pdsinterop\Solid\Controller\AbstractController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-use Pdsinterop\Solid\Auth\Utils\DPop as DPop;
-use Pdsinterop\Solid\Auth\WAC as WAC;
-
-class ResourceController extends AbstractController
+class ResourceController extends ServerController
 {
     ////////////////////////////// CLASS PROPERTIES \\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
     /** @var Server */
-	private $baseUrl;
     private $server;
 	private $DPop;
 	private $WAC;
@@ -23,7 +20,8 @@ class ResourceController extends AbstractController
 
     final public function __construct(Server $server)
     {
-		$this->baseUrl = isset($_ENV['SERVER_ROOT']) ? $_ENV['SERVER_ROOT'] : "https://localhost";
+        parent::__construct();
+
         $this->server = $server;
 		$this->DPop = new DPop();
 		$this->WAC = new WAC($server->getFilesystem());
@@ -44,11 +42,12 @@ class ResourceController extends AbstractController
             return $this->server->getResponse()->withStatus(409, 'Invalid token');
 		}
 
+        $allowedOrigins = $this->config->getAllowedOrigins();
         $origins = $request->getHeader('Origin');
 
         $isAllowed = false;
         foreach ($origins as $origin) {
-            if ($this->WAC->isAllowed($request, $webId, $origin)) {
+            if ($this->WAC->isAllowed($request, $webId, $origin, $allowedOrigins)) {
                 $isAllowed = true;
                 break;
             }

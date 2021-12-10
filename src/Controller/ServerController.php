@@ -2,19 +2,20 @@
 
 namespace Pdsinterop\Solid\Controller;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-
 abstract class ServerController extends AbstractController
-{    
-//    public $config;
-//	public $baseUrl;
-//	public $authServerConfig;
-//	public $authServerFactory;
-//	public $tokenGenerator;
-    public function __construct() {
-        // parent::__construct();
-        require_once(__DIR__.'/../../vendor/autoload.php');
+{
+    protected $authServerConfig;
+    protected $authServerFactory;
+    protected $baseUrl;
+    protected $config;
+    protected $openIdConfiguration;
+    protected $tokenGenerator;
+    protected $userId;
+
+    private $keys = [];
+
+    public function __construct()
+    {
 		$this->config = new \Pdsinterop\Solid\ServerConfig(__DIR__.'/../../config/');
 		
 		$this->authServerConfig = $this->createAuthServerConfig(); 
