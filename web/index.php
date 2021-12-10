@@ -220,7 +220,7 @@ try {
     }
 
     $response = new HtmlResponse($html, $status, $exception->getHeaders());
-} catch (\Exception $exception) {
+} catch (\Throwable $exception) {
     $html = "<h1>Oh-no! The developers messed up!</h1><p>{$exception->getMessage()}</p>";
 
     if (getenv('ENVIRONMENT') === 'development') {
