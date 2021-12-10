@@ -12,13 +12,18 @@ use Psr\Http\Message\ServerRequestInterface;
 class ProfileController extends AbstractController
 {
     ////////////////////////////// CLASS PROPERTIES \\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
     use HasFilesystemTrait;
+
+    /** @var ServerRequestInterface */
+    private $request;
 
     //////////////////////////////// PUBLIC API \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
+
     public function __invoke(ServerRequestInterface $request, array $args) : ResponseInterface
     {
+        $this->request = $request;
+
         $filesystem = $this->getFilesystem();
 
         $formats = Format::keys();
@@ -42,9 +47,12 @@ class ProfileController extends AbstractController
     {
         $contents = [];
 
-        array_walk($formats, static function ($format, $index) use (&$contents, $filesystem) {
+        $serverParams = $this->request->getServerParams();
+        $url = $serverParams["REQUEST_URI"] ?? '';
+
+        array_walk($formats, static function ($format, $index) use (&$contents, $filesystem, $url) {
             /** @noinspection PhpUndefinedMethodInspection */ // Method `readRdf` is defined by plugin
-            $contents[$index] = $filesystem->readRdf('/foaf.rdf', $format);
+            $contents[$index] = $filesystem->readRdf('/foaf.rdf', $format, $url);
         });
 
         return $contents;
