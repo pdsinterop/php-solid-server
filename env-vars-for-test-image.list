@@ -11,3 +11,4 @@ STORAGE_ROOT_BOB=https://thirdparty/storage
 USERNAME=alice
 PASSWORD=alice123
 PUBSUB_URL=http://pubsub:8080
+SKIP_CONC=1

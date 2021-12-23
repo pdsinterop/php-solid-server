@@ -13,10 +13,10 @@ function setup {
 
   docker pull solidtestsuite/webid-provider-tests:v2.0.3
   docker tag solidtestsuite/webid-provider-tests:v2.0.3 webid-provider-tests
-  docker pull solidtestsuite/solid-crud-tests:pss-skips
-  docker tag solidtestsuite/solid-crud-tests:pss-skips solid-crud-tests
-  docker pull solidtestsuite/web-access-control-tests:v5.1.0
-  docker tag solidtestsuite/web-access-control-tests:v5.1.0 web-access-control-tests
+  docker pull solidtestsuite/solid-crud-tests:v5.2.0
+  docker tag solidtestsuite/solid-crud-tests:v5.2.0 solid-crud-tests
+  docker pull solidtestsuite/web-access-control-tests:v6.0.0
+  docker tag solidtestsuite/web-access-control-tests:v6.0.0 web-access-control-tests
 }
 
 function runPss {
@@ -34,12 +34,39 @@ function runPss {
   done
   docker ps -a
   docker logs server
-  echo Confirmed that https://server is started now, assuming that https://thirdparty will also come online soon
+  echo Confirmed that https://server is started now
 
-  echo Getting cookie...
+  echo Getting cookie for Alice...
   export COOKIE="`docker run --rm --cap-add=SYS_ADMIN --network=testnet -e SERVER_TYPE=php-solid-server --env-file ./env-vars-for-test-image.list cookie`"
+  if [[ $COOKIE == PHPSESSID* ]]
+  then
+	  echo Successfully obtained cookie for Alice: $COOKIE
+  else
+	  echo Error obtaining cookie for Alice, stopping.
+	  exit 1
+  fi
+
+  until docker run --rm --network=testnet webid-provider-tests curl -kI https://thirdparty 2> /dev/null > /dev/null
+  do
+    echo Waiting for thirdparty to start, this can take up to a minute ...
+    docker ps -a
+    docker logs thirdparty
+    sleep 1
+  done
+  docker ps -a
+  docker logs thirdparty
+  echo Confirmed that https://thirdparty is started now
+
+  echo Getting cookie for Bob...
   export COOKIE_BOB="`docker run --rm --cap-add=SYS_ADMIN --network=testnet -e SERVER_TYPE=php-solid-server --env-file ./env-vars-for-third-party.list cookie`"
-}
+  if [[ $COOKIE_BOB == PHPSESSID* ]]
+  then
+	  echo Successfully obtained cookie for Bob: $COOKIE_BOB
+  else
+	  echo Error obtaining cookie for Bob, stopping.
+	  exit 1
+  fi
+ }
 
 function runTests {
   echo "Running webid-provider tests with cookie $COOKIE"
