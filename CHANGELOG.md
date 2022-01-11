@@ -1,5 +1,20 @@
 # Changelog
 
+## [v0.6.0](https://github.com/pdsinterop/php-solid-server/tree/v0.6.0) (2022-01-11)
+
+[Full Changelog](https://github.com/pdsinterop/php-solid-server/compare/v0.5.2...v0.6.0)
+
+### Closes
+
+- Which features are a available and which are not? [\#46](https://github.com/pdsinterop/php-solid-server/issues/46)
+- Cannot assign requested address [\#26](https://github.com/pdsinterop/php-solid-server/issues/26)
+- when ENVIRONMENT=development is set, the server does not work on https [\#16](https://github.com/pdsinterop/php-solid-server/issues/16)
+
+### Pull request(s) without label
+
+- Cleanup for v0.6 release. [\#58](https://github.com/pdsinterop/php-solid-server/pull/58) (@Potherca)
+- Run latest versions of test suites [\#53](https://github.com/pdsinterop/php-solid-server/pull/53) (@michielbdejong)
+
 ## [v0.5.2](https://github.com/pdsinterop/php-solid-server/tree/v0.5.2) (2021-11-26)
 
 [Full Changelog](https://github.com/pdsinterop/php-solid-server/compare/v0.5.1...v0.5.2)
