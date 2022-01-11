@@ -55,14 +55,6 @@ $container->delegate(new ReflectionContainer());
 $container->add(ServerRequestInterface::class, Request::class);
 $container->add(ResponseInterface::class, Response::class);
 
-/*
-$adapter = new \League\Flysystem\Adapter\Local(__DIR__ . '/../tests/fixtures');
-$filesystem = new \League\Flysystem\Filesystem($adapter);
-$graph = new \EasyRdf_Graph();
-$plugin = new \Pdsinterop\Rdf\Flysystem\Plugin\ReadRdf($graph);
-$filesystem->addPlugin($plugin);
-*/
-
 $container->share(FilesystemInterface::class, function () use ($request) {
     // @FIXME: Filesystem root and the $adapter should be configurable.
     //         Implement this with `$filesystem = \MJRider\FlysystemFactory\create(getenv('STORAGE_ENDPOINT'));`
@@ -129,7 +121,7 @@ $controllers = [
     OpenidController::class,
     ProfileController::class,
     RegisterController::class,
-	StorageController::class,
+    StorageController::class,
     TokenController::class,
 ];
 
@@ -200,7 +192,6 @@ $router->group('/storage', static function (\League\Route\RouteGroup $group) {
 
     array_walk($methods, static function ($method) use (&$group) {
         $group->map($method, '/', AddSlashToPathController::class);
-//        $group->map($method, '//', StorageController::class);
         $group->map($method, '{path:.*}', ResourceController::class);
     });
 });

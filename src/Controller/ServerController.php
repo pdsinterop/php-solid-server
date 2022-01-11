@@ -17,9 +17,9 @@ abstract class ServerController extends AbstractController
     public function __construct()
     {
 		$this->config = new \Pdsinterop\Solid\ServerConfig(__DIR__.'/../../config/');
-		
-		$this->authServerConfig = $this->createAuthServerConfig(); 
-		$this->authServerFactory = (new \Pdsinterop\Solid\Auth\Factory\AuthorizationServerFactory($this->authServerConfig))->create();		
+
+		$this->authServerConfig = $this->createAuthServerConfig();
+		$this->authServerFactory = (new \Pdsinterop\Solid\Auth\Factory\AuthorizationServerFactory($this->authServerConfig))->create();
 		$this->tokenGenerator = (new \Pdsinterop\Solid\Auth\TokenGenerator($this->authServerConfig));
 		$this->baseUrl = isset($_ENV['SERVER_ROOT']) ? $_ENV['SERVER_ROOT'] : "https://localhost";
     }
@@ -39,98 +39,107 @@ abstract class ServerController extends AbstractController
 		];
 	}
 
-	public function getKeys() {
-		$encryptionKey = $this->config->getEncryptionKey();
-		$privateKey    = $this->config->getPrivateKey();		
-		$key           = openssl_pkey_get_private($privateKey);
-		$publicKey     = openssl_pkey_get_details($key)['key'];
-		return [
-			"encryptionKey" => $encryptionKey,
-			"privateKey"    => $privateKey,
-			"publicKey"     => $publicKey
-		];
-	}
+    public function getKeys()
+    {
+        $encryptionKey = $this->config->getEncryptionKey();
+        $privateKey = $this->config->getPrivateKey();
+        $key = openssl_pkey_get_private($privateKey);
+        $publicKey = openssl_pkey_get_details($key)['key'];
 
-	public function createAuthServerConfig() {
-		$clientId = $_GET['client_id']; // FIXME: No request object here to get the client Id from.
-		$client = $this->getClient($clientId);
-		$keys = $this->getKeys();
-		try {
-			$config = (new \Pdsinterop\Solid\Auth\Factory\ConfigFactory(
-				$client,
-				$keys['encryptionKey'],
-				$keys['privateKey'],
-				$keys['publicKey'],
-				$this->getOpenIdEndpoints()
-			))->create();
-		} catch(\Throwable $e) {
-			// var_dump($e);
-		}
-		return $config;
-	}
+        return [
+            "encryptionKey" => $encryptionKey,
+            "privateKey" => $privateKey,
+            "publicKey" => $publicKey,
+        ];
+    }
 
-	public function getClient($clientId) {
-		$clientRegistration = $this->config->getClientRegistration($clientId);
+    public function createAuthServerConfig()
+    {
+        $clientId = $_GET['client_id']; // FIXME: No request object here to get the client Id from.
+        $client = $this->getClient($clientId);
+        $keys = $this->getKeys();
+        try {
+            $config = (new ConfigFactory(
+                $client,
+                $keys['encryptionKey'],
+                $keys['privateKey'],
+                $keys['publicKey'],
+                $this->getOpenIdEndpoints()
+            ))->create();
+        } catch (Throwable $e) {
+            // var_dump($e);
+        }
 
-		if ($clientId && sizeof($clientRegistration)) {
-			return new \Pdsinterop\Solid\Auth\Config\Client(
-				$clientId,
-				$clientRegistration['client_secret'],
-				$clientRegistration['redirect_uris'],
-				$clientRegistration['client_name']
-			);
-		} else {
-			return new \Pdsinterop\Solid\Auth\Config\Client('','',array(),'');
-		}
-	}
+        return $config;
+    }
 
-	public function createConfig($baseUrl) {
-		// if (isset($_GET['client_id'])) {
-		$clientId = $_GET['client_id'];
-		$client = $this->getClient($clientId, $baseUrl);
-		// }
-		try {
-				$config = (new \Pdsinterop\Solid\Auth\Factory\ConfigFactory(
-						$client,
-						$this->keys['encryptionKey'],
-						$this->keys['privateKey'],
-						$this->keys['publicKey'],
-						$this->openIdConfiguration
-				))->create();
-		} catch(\Throwable $e) {
-				var_dump($e);
-		}
-		return $config;
-	}
-	
-	public function checkApproval($clientId) {
-		$allowedClients = $this->config->getAllowedClients($this->userId);
-		if ($clientId == md5("tester")) { // FIXME: Double check that this is not a security issue; It is only here to help the test suite;
-			return \Pdsinterop\Solid\Auth\Enum\Authorization::APPROVED;
-		}
-		if (in_array($clientId, $allowedClients)) {
-			return \Pdsinterop\Solid\Auth\Enum\Authorization::APPROVED;
-		} else {
-			return \Pdsinterop\Solid\Auth\Enum\Authorization::DENIED;
-		}
-	}
-	
-	public function getProfilePage() {
-		return $this->baseUrl . "/profile/card#me"; // FIXME: would be better to base this on the available routes if possible.
-	}
-	
-	public function getResponseType() {
+    public function getClient($clientId)
+    {
+        $clientRegistration = $this->config->getClientRegistration($clientId);
+
+        if ($clientId && count($clientRegistration)) {
+            $client = new Client(
+                $clientId,
+                $clientRegistration['client_secret'],
+                $clientRegistration['redirect_uris'],
+                $clientRegistration['client_name']
+            );
+        } else {
+            $client = new Client('', '', [], '');
+        }
+
+        return $client;
+    }
+
+    public function createConfig()
+    {
+        // if (isset($_GET['client_id'])) {
+        $clientId = $_GET['client_id'];
+        $client = $this->getClient($clientId);
+
+        // }
+        return (new ConfigFactory(
+            $client,
+            $this->keys['encryptionKey'],
+            $this->keys['privateKey'],
+            $this->keys['publicKey'],
+            $this->openIdConfiguration
+        ))->create();
+    }
+    public function checkApproval($clientId)
+    {
+        $approval = Authorization::DENIED;
+
+        $allowedClients = $this->config->getAllowedClients($this->userId);
+
+        if (
+            $clientId === md5("tester") // FIXME: Double check that this is not a security issue; It is only here to help the test suite;
+            || in_array($clientId, $allowedClients, true)
+        ) {
+            $approval = Authorization::APPROVED;
+        }
+
+        return $approval;
+    }
+    public function getProfilePage() : string
+    {
+        return $this->baseUrl . "/profile/card#me"; // FIXME: would be better to base this on the available routes if possible.
+    }
+
+    public function getResponseType() : string
+    {
         $responseTypes = explode(" ", $_GET['response_type'] ?? '');
-		foreach ($responseTypes as $responseType) {
-			switch ($responseType) {
-				case "token":
-					return "token";
-				break;
-				case "code":
-					return "code";
-				break;
-			}
-		}
-		return "token"; // default to token response type;
-	}
+        foreach ($responseTypes as $responseType) {
+            switch ($responseType) {
+                case "token":
+                    return "token";
+                    break;
+                case "code":
+                    return "code";
+                    break;
+            }
+        }
+
+        return "token"; // default to token response type;
+    }
 }

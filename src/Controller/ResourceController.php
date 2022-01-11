@@ -62,7 +62,7 @@ class ResourceController extends ServerController
         return $this->WAC->addWACHeaders($request, $response, $webId);
     }
 
-	private function generateDefaultAcl() {
+    private function generateDefaultAcl() {
 		$defaultProfile = <<< EOF
 # Root ACL resource for the user account
 @prefix acl: <http://www.w3.org/ns/auth/acl#>.
