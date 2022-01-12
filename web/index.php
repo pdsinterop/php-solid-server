@@ -7,6 +7,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\TextResponse;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use League\Container\Container;
@@ -25,7 +26,6 @@ use Pdsinterop\Solid\Controller\HelloWorldController;
 use Pdsinterop\Solid\Controller\HttpToHttpsController;
 use Pdsinterop\Solid\Controller\JwksController;
 use Pdsinterop\Solid\Controller\LoginController;
-use Pdsinterop\Solid\Controller\LoginPageController;
 use Pdsinterop\Solid\Controller\OpenidController;
 use Pdsinterop\Solid\Controller\Profile\CardController;
 use Pdsinterop\Solid\Controller\Profile\ProfileController;
@@ -56,9 +56,9 @@ $container->add(ServerRequestInterface::class, Request::class);
 $container->add(ResponseInterface::class, Response::class);
 
 $container->share(FilesystemInterface::class, function () use ($request) {
-    // @FIXME: Filesystem root and the $adapter should be configurable.
+    // @FIXME: Filesystem $adapter should be configurable.
     //         Implement this with `$filesystem = \MJRider\FlysystemFactory\create(getenv('STORAGE_ENDPOINT'));`
-    $filesystemRoot = __DIR__ . '/../tests/fixtures';
+    $filesystemRoot = getenv('STORAGE_ENDPOINT') ?: __DIR__ . '/../tests/fixtures';
 
     $adapter = new \League\Flysystem\Adapter\Local($filesystemRoot);
 
@@ -67,7 +67,17 @@ $container->share(FilesystemInterface::class, function () use ($request) {
 	// Create Formats objects
 	$formats = new \Pdsinterop\Rdf\Formats();
 
-	$serverUri = "https://" . $request->getServerParams()["SERVER_NAME"] . $request->getServerParams()["REQUEST_URI"]; // FIXME: doublecheck that this is the correct url;
+    $serverParams = $request->getServerParams();
+
+    $serverUri = '';
+    if (isset($serverParams['SERVER_NAME'])) {
+        $serverUri = vsprintf("%s://%s%s", [
+            // FIXME: doublecheck that this is the correct url;
+            getenv('PROXY_MODE') ? 'http' : 'https',
+            $serverParams['SERVER_NAME'],
+            $serverParams['REQUEST_URI'] ?? '',
+        ]);
+    }
 
 	// Create the RDF Adapter
 	$rdfAdapter = new \Pdsinterop\Rdf\Flysystem\Adapter\Rdf(
@@ -76,11 +86,11 @@ $container->share(FilesystemInterface::class, function () use ($request) {
 		$formats,
 		$serverUri
 	);
-	
+
     $filesystem = new \League\Flysystem\Filesystem($rdfAdapter);
 
 	$filesystem->addPlugin(new \Pdsinterop\Rdf\Flysystem\Plugin\AsMime($formats));
-	
+
     $plugin = new \Pdsinterop\Rdf\Flysystem\Plugin\ReadRdf($graph);
     $filesystem->addPlugin($plugin);
 
@@ -89,7 +99,7 @@ $container->share(FilesystemInterface::class, function () use ($request) {
 
 $container->share(\PHPTAL::class, function () {
     $template = new \PHPTAL();
-    $template->setTemplateRepository(__DIR__.'/../src/Template');
+    $template->setTemplateRepository(__DIR__ . '/../src/Template');
     return $template;
 });
 
@@ -117,7 +127,6 @@ $controllers = [
     HttpToHttpsController::class,
     JwksController::class,
     LoginController::class,
-    LoginPageController::class,
     OpenidController::class,
     ProfileController::class,
     RegisterController::class,
@@ -133,12 +142,12 @@ $traits = [
 
 $traitMethods = array_keys($traits);
 
-array_walk($controllers, function ($controller) use ($container, $traits, $traitMethods) {
+array_walk($controllers, static function ($controller) use ($container, $traits, $traitMethods) {
     $definition = $container->add($controller);
 
     $methods = get_class_methods($controller);
 
-    array_walk ($methods, function ($method) use ($definition, $traitMethods, $traits) {
+    array_walk ($methods, static function ($method) use ($definition, $traitMethods, $traits) {
         if (in_array($method, $traitMethods, true)) {
             $definition->addMethodCall($method, $traits[$method]);
         }
@@ -155,18 +164,31 @@ if ( ! getenv('PROXY_MODE')) {
     $router->map('GET', '/{page:(?:.|/)*}', HttpToHttpsController::class)->setScheme('http');
 }
 
+/*/ To prevent "405 Method Not Allowed" from the Router we only map `/*` to
+ *  OPTIONS when OPTIONS are actually requested.
+/*/
+if ($request->getMethod() === 'OPTIONS') {
+    $router->map('OPTIONS', '/{path:.*}', CorsController::class);
+}
+
 $router->map('GET', '/', HelloWorldController::class);
 
 // @FIXME: CORS handling, slash-adding (and possibly others?) should be added as middleware instead of "catchall" URLs map
 
 /*/ Create URI groups /*/
+if (file_exists(__DIR__. '/favicon.ico') === false) {
+    $router->map('GET', '/favicon.ico', static function () {
+        return (new TextResponse(
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><circle cx="1" cy="1" r="1" fill="#FFFF00"/></svg>',
+        ))->withHeader('Content-type', 'image/svg+xml');
+    });
+}
+
 $router->map('GET', '/login', AddSlashToPathController::class);
 $router->map('GET', '/profile', AddSlashToPathController::class);
-
-$router->map('OPTIONS', '/{path:.*}', CorsController::class);
 $router->map('GET', '/.well-known/openid-configuration', OpenidController::class);
 $router->map('GET', '/jwks', JwksController::class);
-$router->map('GET', '/login/', LoginPageController::class);
+$router->map('GET', '/login/', LoginController::class);
 $router->map('POST', '/login', LoginController::class);
 $router->map('POST', '/login/', LoginController::class);
 $router->map('POST', '/register', RegisterController::class);
@@ -214,7 +236,8 @@ try {
 
     $response = new HtmlResponse($html, $status, $exception->getHeaders());
 } catch (\Throwable $exception) {
-    $html = "<h1>Oh-no! The developers messed up!</h1><p>{$exception->getMessage()}</p>";
+    $class = get_class($exception);
+    $html = "<h1>Oh-no! The developers messed up!</h1><p>{$exception->getMessage()} ($class)</p>";
 
     if (getenv('ENVIRONMENT') === 'development') {
         $html .=

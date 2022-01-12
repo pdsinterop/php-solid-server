@@ -2,6 +2,10 @@
 
 namespace Pdsinterop\Solid\Controller;
 
+use Pdsinterop\Solid\Auth\Config\Client;
+use Pdsinterop\Solid\Auth\Enum\Authorization;
+use Pdsinterop\Solid\Auth\Factory\ConfigFactory;
+
 abstract class ServerController extends AbstractController
 {
     protected $authServerConfig;
@@ -58,20 +62,15 @@ abstract class ServerController extends AbstractController
         $clientId = $_GET['client_id']; // FIXME: No request object here to get the client Id from.
         $client = $this->getClient($clientId);
         $keys = $this->getKeys();
-        try {
-            $config = (new ConfigFactory(
-                $client,
-                $keys['encryptionKey'],
-                $keys['privateKey'],
-                $keys['publicKey'],
-                $this->getOpenIdEndpoints()
-            ))->create();
-        } catch (Throwable $e) {
-            // var_dump($e);
-        }
 
-        return $config;
-    }
+        return (new ConfigFactory(
+				$client,
+				$keys['encryptionKey'],
+				$keys['privateKey'],
+				$keys['publicKey'],
+				$this->getOpenIdEndpoints()
+			))->create();
+	}
 
     public function getClient($clientId)
     {
@@ -93,11 +92,9 @@ abstract class ServerController extends AbstractController
 
     public function createConfig()
     {
-        // if (isset($_GET['client_id'])) {
         $clientId = $_GET['client_id'];
         $client = $this->getClient($clientId);
 
-        // }
         return (new ConfigFactory(
             $client,
             $this->keys['encryptionKey'],
@@ -106,6 +103,7 @@ abstract class ServerController extends AbstractController
             $this->openIdConfiguration
         ))->create();
     }
+
     public function checkApproval($clientId)
     {
         $approval = Authorization::DENIED;
@@ -121,14 +119,16 @@ abstract class ServerController extends AbstractController
 
         return $approval;
     }
+
     public function getProfilePage() : string
     {
         return $this->baseUrl . "/profile/card#me"; // FIXME: would be better to base this on the available routes if possible.
     }
 
-    public function getResponseType() : string
+    public function getResponseType($params) : string
     {
-        $responseTypes = explode(" ", $_GET['response_type'] ?? '');
+        $responseTypes = explode(" ", $params['response_type'] ?? '');
+
         foreach ($responseTypes as $responseType) {
             switch ($responseType) {
                 case "token":

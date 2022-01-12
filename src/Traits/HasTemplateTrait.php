@@ -48,9 +48,9 @@ trait HasTemplateTrait
     {
         return <<<"TAL"
 <tal:block metal:use-macro="default.html/default">
-    <section class="section" metal:fill-slot="content">
+    <main class="container section content box" metal:fill-slot="content">
     {$template}
-    </section>
+    </main>
 </tal:block>
 TAL;
     }

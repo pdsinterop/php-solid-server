@@ -12,37 +12,46 @@ class LoginController extends AbstractController
         $postBody = $request->getParsedBody();
         $response = $this->getResponse();
 
-        // var_dump($_SESSION);
-        if (isset($_SESSION['userid'])) {
-          $user = $_SESSION['userid'];
-		  if ($request->getQueryParams()['returnUrl']) {
-			$response = $response->withStatus(302, "Redirecting");
-			$response = $response->withHeader("Location", $request->getQueryParams()['returnUrl']);
-			return $response;
-		  }
-          $response->getBody()->write("<h1>Already logged in as $user</h1>");
-        } else if (
-			($postBody['username'] == $_ENV['USERNAME'] && $postBody['password'] == $_ENV['PASSWORD']) ||
-			($postBody['username'] == $_SERVER['USERNAME'] && $postBody['password'] == $_SERVER['PASSWORD'])
-		) {
-          $user = $postBody['username'];
-          $_SESSION['userid'] =  $user;
-		  if ($request->getQueryParams()['returnUrl']) {
-			$response = $response->withStatus(302, "Redirecting");
-			$response = $response->withHeader("Location", $request->getQueryParams()['returnUrl']);
-			return $response;
-		  }
-          $response->getBody()->write("<h1>Welcome $user</h1>\n");
-          // echo("session started\n");
-          //var_dump($_SESSION);
+        if ($request->getMethod() === 'POST') {
+            if (isset($_SESSION['userid'])) {
+              $user = $_SESSION['userid'];
+
+              if (isset($request->getQueryParams()['returnUrl'])) {
+                return $response
+                    ->withHeader("Location", $request->getQueryParams()['returnUrl'])
+                    ->withStatus(302)
+                ;
+              }
+
+              $response->getBody()->write("<h1>Already logged in as $user</h1>");
+            } elseif ($postBody['username'] && $postBody['password']) {
+                $user = $postBody['username'];
+                $password = $postBody['password'];
+
+                if (
+                    ($user === $_ENV['USERNAME'] && $password === $_ENV['PASSWORD'])
+                    || ($user === $_SERVER['USERNAME'] && $password === $_SERVER['PASSWORD'])
+                ) {
+                    $_SESSION['userid'] =  $user;
+
+                    if (isset($request->getQueryParams()['returnUrl'])) {
+                        return $response
+                            ->withHeader("Location", $request->getQueryParams()['returnUrl'])
+                            ->withStatus(302)
+                        ;
+                    }
+
+                    $response->getBody()->write("<h1>Welcome $user</h1>\n");
+                } else {
+                    $response->getBody()->write("<h1>Login as $user failed</h1>\n");
+                }
+            } else {
+              $response->getBody()->write("<h1>Login failed</h1>\n");
+            }
         } else {
-          // var_dump($postBody);
-          //echo("cookie:\n");
-          //var_dump($_COOKIE);
-          //echo("session:\n");
-          //var_dump($_SESSION);
-          $response->getBody()->write("<h1>No (try posting username=alice&password=alice123)</h1>\n");
+            return $this->createTemplateResponse('login.html');
         }
+
         return $response;
     }
 }

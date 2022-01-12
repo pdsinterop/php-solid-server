@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html
-  lang="en"
-  metal:use-macro="default.html/default"
-  xmlns:metal="http://xml.zope.org/namespaces/metal"
-  xmlns:tal="http://xml.zope.org/namespaces/tal"
->
-<head>
-  <style class="section" metal:fill-slot="page-style">
+<tal:block metal:use-macro="default.html/default">
+  <style metal:fill-slot="page-style">
     .tabs.is-toggle a:active:hover,
     a:active {
       background-color: #f2e205;
@@ -28,15 +21,9 @@
       display: initial;
     }
   </style>
-</head>
-<body>
-<section class="section" metal:fill-slot="content">
-  <div class="container">
-    <h1 class="title">
-      <title>Profile in various RDF formats</title>
-    </h1>
-
-    <div class="tabs is-centered is-toggle">
+  <main class="section block" metal:fill-slot="content">
+    <h1 class="title">Profile in various RDF formats</h1>
+    <div class="container box is-half tabs is-centered is-toggle mb-0">
       <ul>
         <li tal:repeat="format formats">
           <label for="tab-${repeat/format/key}">
@@ -45,18 +32,16 @@
         </li>
       </ul>
     </div>
-  </div>
 
-  <div class="container section">
-    <tal:block tal:repeat="contents files">
-      <input id="tab-${repeat/contents/key}" name="tabs" type="radio" class="tab-selector is-hidden"/>
-      <div class="content">
-        <h3 tal:content="repeat/contents/key">RDF Format</h3>
-        <pre><code tal:content="contents"></code></pre>
-      </div>
-    </tal:block>
-  </div>
-</section>
-</body>
-</html>
+    <div class="container box section">
+      <tal:block tal:repeat="contents files">
+        <input id="tab-${repeat/contents/key}" name="tabs" type="radio" class="tab-selector is-hidden" />
+        <div class="content">
+          <h3 tal:content="repeat/contents/key">RDF Format</h3>
+          <pre><code tal:content="contents"></code></pre>
+        </div>
+      </tal:block>
+    </div>
+  </main>
+</tal:block>
 
