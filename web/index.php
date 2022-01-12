@@ -214,7 +214,8 @@ try {
 
     $response = new HtmlResponse($html, $status, $exception->getHeaders());
 } catch (\Throwable $exception) {
-    $html = "<h1>Oh-no! The developers messed up!</h1><p>{$exception->getMessage()}</p>";
+    $class = get_class($exception);
+    $html = "<h1>Oh-no! The developers messed up!</h1><p>{$exception->getMessage()} ($class)</p>";
 
     if (getenv('ENVIRONMENT') === 'development') {
         $html .=
