@@ -27,7 +27,7 @@ class CardController extends AbstractController
      */
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        // @FIXME: Target file is hard-coded for not, replace with path from $request->getRequestTarget()
+        // @FIXME: Target file is hard-coded for now, replace with path from $request->getRequestTarget()
         $filePath = '/foaf.rdf';
         $filesystem = $this->getFilesystem();
         $extension = '.ttl';
@@ -47,11 +47,19 @@ class CardController extends AbstractController
 
         $contentType = $this->getContentTypeForFormat($format);
 
-        $serverParams = $request->getServerParams();
-        $url = $serverParams["REQUEST_URI"] ?? '';
+        $url = (string) $request->getUri();
 
-        /** @noinspection PhpUndefinedMethodInspection */ // Method `readRdf` is defined by plugin
-        $content = $filesystem->readRdf($filePath, $format, $url);
+        if (substr($url, -strlen($extension))  === $extension) {
+            $url = substr($url, 0, -strlen($extension));
+        }
+
+        try {
+            $content = $filesystem->readRdf($filePath, $format, $url);
+        } catch (\Pdsinterop\Rdf\Flysystem\Exception $exception) {
+            $content = $exception->getMessage();
+
+            return $this->createTextResponse($content)->withStatus(500);
+        }
 
         return $this->createTextResponse($content)->withHeader('Content-Type', $contentType);
     }
@@ -105,6 +113,7 @@ class CardController extends AbstractController
         $format = '';
 
         switch ($extension) {
+            case '.json':
             case '.jsonld':
                 $format = Format::JSON_LD;
                 break;
@@ -117,6 +126,7 @@ class CardController extends AbstractController
                 $format = Format::NOTATION_3;
                 break;
 
+            case '.xml':
             case '.rdf':
                 $format = Format::RDF_XML;
                 break;
@@ -130,5 +140,5 @@ class CardController extends AbstractController
         }
 
         return $format;
-}
+    }
 }
