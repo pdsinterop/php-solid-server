@@ -10,6 +10,10 @@ services:
         ports:
             - 80:80
             - 443:443
+        volumes:
+          - .:/app/
+          # @TODO: The storage directory should be mounted separately
+          #        as it really _should_ live outside the code directory
     pubsub:
        build:
            context: https://github.com/pdsinterop/php-solid-pubsub-server.git#main
