@@ -126,9 +126,10 @@ abstract class ServerController extends AbstractController
         return $this->baseUrl . "/profile/card#me"; // FIXME: would be better to base this on the available routes if possible.
     }
 
-    public function getResponseType() : string
+    public function getResponseType($params) : string
     {
-        $responseTypes = explode(" ", $_GET['response_type'] ?? '');
+        $responseTypes = explode(" ", $params['response_type'] ?? '');
+
         foreach ($responseTypes as $responseType) {
             switch ($responseType) {
                 case "token":
