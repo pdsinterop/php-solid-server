@@ -156,6 +156,13 @@ if ( ! getenv('PROXY_MODE')) {
     $router->map('GET', '/{page:(?:.|/)*}', HttpToHttpsController::class)->setScheme('http');
 }
 
+/*/ To prevent "405 Method Not Allowed" from the Router we only map `/*` to
+ *  OPTIONS when OPTIONS are actually requested.
+/*/
+if ($request->getMethod() === 'OPTIONS') {
+    $router->map('OPTIONS', '/{path:.*}', CorsController::class);
+}
+
 $router->map('GET', '/', HelloWorldController::class);
 
 // @FIXME: CORS handling, slash-adding (and possibly others?) should be added as middleware instead of "catchall" URLs map
@@ -171,8 +178,6 @@ if (file_exists(__DIR__. '/favicon.ico') === false) {
 
 $router->map('GET', '/login', AddSlashToPathController::class);
 $router->map('GET', '/profile', AddSlashToPathController::class);
-
-$router->map('OPTIONS', '/{path:.*}', CorsController::class);
 $router->map('GET', '/.well-known/openid-configuration', OpenidController::class);
 $router->map('GET', '/jwks', JwksController::class);
 $router->map('GET', '/login/', LoginPageController::class);
