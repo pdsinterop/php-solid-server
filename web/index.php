@@ -7,6 +7,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\TextResponse;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use League\Container\Container;
@@ -160,6 +161,14 @@ $router->map('GET', '/', HelloWorldController::class);
 // @FIXME: CORS handling, slash-adding (and possibly others?) should be added as middleware instead of "catchall" URLs map
 
 /*/ Create URI groups /*/
+if (file_exists(__DIR__. '/favicon.ico') === false) {
+    $router->map('GET', '/favicon.ico', static function () {
+        return (new TextResponse(
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><circle cx="1" cy="1" r="1" fill="#FFFF00"/></svg>',
+        ))->withHeader('Content-type', 'image/svg+xml');
+    });
+}
+
 $router->map('GET', '/login', AddSlashToPathController::class);
 $router->map('GET', '/profile', AddSlashToPathController::class);
 
