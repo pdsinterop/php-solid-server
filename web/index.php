@@ -26,7 +26,6 @@ use Pdsinterop\Solid\Controller\HelloWorldController;
 use Pdsinterop\Solid\Controller\HttpToHttpsController;
 use Pdsinterop\Solid\Controller\JwksController;
 use Pdsinterop\Solid\Controller\LoginController;
-use Pdsinterop\Solid\Controller\LoginPageController;
 use Pdsinterop\Solid\Controller\OpenidController;
 use Pdsinterop\Solid\Controller\Profile\CardController;
 use Pdsinterop\Solid\Controller\Profile\ProfileController;
@@ -128,7 +127,6 @@ $controllers = [
     HttpToHttpsController::class,
     JwksController::class,
     LoginController::class,
-    LoginPageController::class,
     OpenidController::class,
     ProfileController::class,
     RegisterController::class,
@@ -190,7 +188,7 @@ $router->map('GET', '/login', AddSlashToPathController::class);
 $router->map('GET', '/profile', AddSlashToPathController::class);
 $router->map('GET', '/.well-known/openid-configuration', OpenidController::class);
 $router->map('GET', '/jwks', JwksController::class);
-$router->map('GET', '/login/', LoginPageController::class);
+$router->map('GET', '/login/', LoginController::class);
 $router->map('POST', '/login', LoginController::class);
 $router->map('POST', '/login/', LoginController::class);
 $router->map('POST', '/register', RegisterController::class);
