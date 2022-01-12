@@ -14,8 +14,11 @@ class ResourceController extends ServerController
 
     /** @var Server */
     private $server;
-	private $DPop;
-	private $WAC;
+    /** @var DPop */
+    private $DPop;
+    /** @var WAC */
+    private $WAC;
+
     //////////////////////////////// PUBLIC API \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
     final public function __construct(Server $server)
@@ -45,25 +48,27 @@ class ResourceController extends ServerController
         $allowedOrigins = $this->config->getAllowedOrigins();
         $origins = $request->getHeader('Origin');
 
-        $isAllowed = false;
-        foreach ($origins as $origin) {
-            if ($this->WAC->isAllowed($request, $webId, $origin, $allowedOrigins)) {
-                $isAllowed = true;
-                break;
+        if ($origins !== []) {
+            foreach ($origins as $origin) {
+                if ($this->WAC->isAllowed($request, $webId, $origin, $allowedOrigins)) {
+                    $response = $this->server->respondToRequest($request);
+
+                    return $this->WAC->addWACHeaders($request, $response, $webId);
+                }
             }
-        }
-
-        if (! $isAllowed) {
             return $this->server->getResponse()->withStatus(403, 'Access denied');
+        } else {
+            $response = $this->server->respondToRequest($request);
+
+            return $this->WAC->addWACHeaders($request, $response, $webId);
         }
-
-		$response = $this->server->respondToRequest($request);
-
-        return $this->WAC->addWACHeaders($request, $response, $webId);
     }
 
-    private function generateDefaultAcl() {
-		$defaultProfile = <<< EOF
+    ////////////////////////////// UTILITY METHODS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+    private function generateDefaultAcl()
+    {
+        $defaultProfile = <<< EOF
 # Root ACL resource for the user account
 @prefix acl: <http://www.w3.org/ns/auth/acl#>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
@@ -74,26 +79,26 @@ class ResourceController extends ServerController
         acl:accessTo </>;
         acl:default </>;
         acl:mode
-				acl:Read.
+                acl:Read.
 
 # The owner has full access to every resource in their pod.
 # Other agents have no access rights,
 # unless specifically authorized in other .acl resources.
 <#owner>
-	a acl:Authorization;
-	acl:agent <{user-profile-uri}>;
-	# Set the access to the root storage folder itself
-	acl:accessTo </>;
-	# All resources will inherit this authorization, by default
-	acl:default </>;
-	# The owner has all of the access modes allowed
-	acl:mode
-		acl:Read, acl:Write, acl:Control.
+    a acl:Authorization;
+    acl:agent <{user-profile-uri}>;
+    # Set the access to the root storage folder itself
+    acl:accessTo </>;
+    # All resources will inherit this authorization, by default
+    acl:default </>;
+    # The owner has all of the access modes allowed
+    acl:mode
+        acl:Read, acl:Write, acl:Control.
 EOF;
 
-		$profileUri = $this->getUserProfile();
-		$defaultProfile = str_replace("{user-profile-uri}", $profileUri, $defaultProfile);
-		return $defaultProfile;
+        $profileUri = $this->getUserProfile();
+
+        return str_replace("{user-profile-uri}", $profileUri, $defaultProfile);
 	}
 
 	private function getUserProfile() {
