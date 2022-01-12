@@ -8,7 +8,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class StorageController extends ServerController
 {    
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
-    {	
+    {
 $body = <<< EOF
 @prefix : <#>.
 @prefix inbox: <>.
@@ -23,10 +23,7 @@ inbox:
     st:mtime 1576853574.389;
     st:size 4096.
 EOF;
-		$response = $this->getResponse();
-		
-		$response->getBody()->write($body);
-		return $response
-			->withHeader("Content-type", "text/turtle");
+
+        return $this->createTextResponse($body)->withHeader("Content-type", "text/turtle");
     }
 }
