@@ -68,7 +68,17 @@ $container->share(FilesystemInterface::class, function () use ($request) {
 	// Create Formats objects
 	$formats = new \Pdsinterop\Rdf\Formats();
 
-	$serverUri = "https://" . $request->getServerParams()["SERVER_NAME"] . $request->getServerParams()["REQUEST_URI"]; // FIXME: doublecheck that this is the correct url;
+    $serverParams = $request->getServerParams();
+
+    $serverUri = '';
+    if (isset($serverParams['SERVER_NAME'])) {
+        $serverUri = vsprintf("%s://%s%s", [
+            // FIXME: doublecheck that this is the correct url;
+            getenv('PROXY_MODE') ? 'http' : 'https',
+            $serverParams['SERVER_NAME'],
+            $serverParams['REQUEST_URI'] ?? '',
+        ]);
+    }
 
 	// Create the RDF Adapter
 	$rdfAdapter = new \Pdsinterop\Rdf\Flysystem\Adapter\Rdf(
@@ -77,11 +87,11 @@ $container->share(FilesystemInterface::class, function () use ($request) {
 		$formats,
 		$serverUri
 	);
-	
+
     $filesystem = new \League\Flysystem\Filesystem($rdfAdapter);
 
 	$filesystem->addPlugin(new \Pdsinterop\Rdf\Flysystem\Plugin\AsMime($formats));
-	
+
     $plugin = new \Pdsinterop\Rdf\Flysystem\Plugin\ReadRdf($graph);
     $filesystem->addPlugin($plugin);
 
@@ -90,7 +100,7 @@ $container->share(FilesystemInterface::class, function () use ($request) {
 
 $container->share(\PHPTAL::class, function () {
     $template = new \PHPTAL();
-    $template->setTemplateRepository(__DIR__.'/../src/Template');
+    $template->setTemplateRepository(__DIR__ . '/../src/Template');
     return $template;
 });
 
@@ -134,12 +144,12 @@ $traits = [
 
 $traitMethods = array_keys($traits);
 
-array_walk($controllers, function ($controller) use ($container, $traits, $traitMethods) {
+array_walk($controllers, static function ($controller) use ($container, $traits, $traitMethods) {
     $definition = $container->add($controller);
 
     $methods = get_class_methods($controller);
 
-    array_walk ($methods, function ($method) use ($definition, $traitMethods, $traits) {
+    array_walk ($methods, static function ($method) use ($definition, $traitMethods, $traits) {
         if (in_array($method, $traitMethods, true)) {
             $definition->addMethodCall($method, $traits[$method]);
         }
