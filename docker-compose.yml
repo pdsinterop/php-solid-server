@@ -4,8 +4,13 @@ services:
         build:
             context: .
         environment:
+            # During development it can be useful to set the ENVIRONMENT to "development"
+            # in order to see more details about the errors.
+            # ENVIRONMENT: development
             USERNAME: alice
             PASSWORD: alice123
+            # to run in HTTP mode, set PROXY_MODE
+            # PROXY_MODE: true
             PUBSUB_URL: http://pubsub:8080
         ports:
             - 80:80

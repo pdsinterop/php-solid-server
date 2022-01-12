@@ -68,8 +68,9 @@ only advised in development.
 
 For security reasons, the server expects to run on HTTPS (also known as HTTP+TLS).
 
-To run insecure, set the environment variable `ENVIRONMENT` to `develop`. This
-will prohibit the application from running in production mode.
+To run insecure, for instance when the application is run behind a proxy or in a
+PHP-FPM (or similar) setup, set the environment variable `PROXY_MODE`.
+This will allow the application to accept HTTP requests.
 
 ### Docker images
 
@@ -196,6 +197,11 @@ The underlying functionality for these features is provided by:
    - [ ] Notifications
 
 ## Development
+
+The easiest way to develop this project is by running the environment provided
+by the `docker-compose.yml` file. This can be done by running `docker-compose up`.
+
+This will start the application and a pubsub server in separate docker containers.
 
 ### Project structure
 
