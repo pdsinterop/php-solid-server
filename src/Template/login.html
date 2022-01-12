@@ -1,11 +1,12 @@
-<!doctype html>
-<html>
-<body>
-	<h1>Please login</h1>
-	<form method="post" action="">
-		<label>Username: <input type="text" name="username" /></label>
-		<label>Password: <input type="password" name="password" /></label>
-		<input type="submit" value="Login" />
-	</form>
-</body>
-</html>
+<tal:block metal:use-macro="default.html/default">
+  <main class="section block columns" metal:fill-slot="content">
+    <form method="post" action=""  class="container column field box is-half">
+        <h1 class="p-1 title has-background-primary has-text-white">Please login</h1>
+        <label class="label">Username: <input class="input" type="text" name="username" /></label>
+        <label class="label">Password: <input class="input" type="password" name="password" /></label>
+
+        <input class="button" type="submit" value="Login" />
+    </form>
+  </main>
+</tal:block>
+
