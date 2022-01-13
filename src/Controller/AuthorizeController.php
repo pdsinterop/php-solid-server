@@ -21,32 +21,13 @@ class AuthorizeController extends ServerController
 
         $queryParams = $request->getQueryParams();
 
-        if (! isset($queryParams['request'])) {
-            return $this->getResponse()
-                ->withStatus(400, "Bad request, missing request")
-            ;
-        }
-
 		$parser = new \Lcobucci\JWT\Parser();
 
-        try {
-            $token = $parser->parse($queryParams['request']);
-        } catch (\Exception $exception) {
-            return $this->getResponse()
-                ->withStatus(400, $exception->getMessage())
-            ;
-        }
-
 		try {
+			$token = $parser->parse($request->getQueryParams()['request']);
 			$_SESSION["nonce"] = $token->getClaim('nonce');
-		} catch(\OutOfBoundsException $e) {
-            if (! isset($queryParams['nonce'])) {
-                return $this->getResponse()
-                    ->withStatus(400, "Bad request, missing nonce")
-                    ;
-            }
-
-			$_SESSION["nonce"] = $queryParams['nonce'];
+		} catch(\Exception $e) {
+			$_SESSION["nonce"] = $request->getQueryParams()['nonce'];
 		}
 
         /*/ Prepare GET parameters for OAUTH server request /*/
