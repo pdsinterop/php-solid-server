@@ -3,12 +3,15 @@ services:
     php-solid-server:
         build:
             context: .
+        container_name: php-solid-server
         environment:
             # During development it can be useful to set the ENVIRONMENT to "development"
             # in order to see more details about the errors.
             # ENVIRONMENT: development
             USERNAME: alice
             PASSWORD: alice123
+            # To change the root from https://localhost to something sensible , set SERVER_ROOT, for example:
+            # SERVER_ROOT: https://nextcloud.local
             # to run in HTTP mode, set PROXY_MODE
             # PROXY_MODE: true
             PUBSUB_URL: http://pubsub:8080
@@ -19,6 +22,7 @@ services:
           - .:/app/
           # @TODO: The storage directory should be mounted separately
           #        as it really _should_ live outside the code directory
+
     pubsub:
        build:
            context: https://github.com/pdsinterop/php-solid-pubsub-server.git#main
