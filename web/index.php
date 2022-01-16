@@ -64,6 +64,8 @@ $container->share(FilesystemInterface::class, function () use ($request) {
 
     $graph = new \EasyRdf_Graph();
 
+    \EasyRdf_Namespace::set('lm', 'https://purl.org/pdsinterop/link-metadata#');
+
 	// Create Formats objects
 	$formats = new \Pdsinterop\Rdf\Formats();
 
