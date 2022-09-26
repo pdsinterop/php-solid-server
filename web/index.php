@@ -62,7 +62,7 @@ $container->share(FilesystemInterface::class, function () use ($request) {
 
     $adapter = new \League\Flysystem\Adapter\Local($filesystemRoot);
 
-    $graph = new \EasyRdf_Graph();
+    $graph = new \EasyRdf\Graph();
 
 	// Create Formats objects
 	$formats = new \Pdsinterop\Rdf\Formats();

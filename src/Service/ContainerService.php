@@ -2,7 +2,7 @@
 
 namespace Pdsinterop\Solid\Service;
 
-use EasyRdf_Graph;
+use EasyRdf\Graph;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
 use League\Container\Container;
@@ -96,7 +96,7 @@ class ContainerService
             $adapter = new Local($filesystemRoot);
 
             $filesystem = new Filesystem($adapter);
-            $graph = new EasyRdf_Graph();
+            $graph = new EasyRdf\Graph();
             $plugin = new ReadRdf($graph);
             $filesystem->addPlugin($plugin);
 
