@@ -59,7 +59,11 @@ abstract class ServerController extends AbstractController
 
     public function createAuthServerConfig()
     {
-        $clientId = $_GET['client_id']; // FIXME: No request object here to get the client Id from.
+        if (isset($_GET['client_id'])) {
+            $clientId = $_GET['client_id']; // FIXME: No request object here to get the client Id from.
+        } else {
+            $clientId = '';
+        }
         $client = $this->getClient($clientId);
         $keys = $this->getKeys();
 
