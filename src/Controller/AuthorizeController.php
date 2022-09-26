@@ -5,6 +5,10 @@ namespace Pdsinterop\Solid\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Signer\Key\InMemory;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
+
 class AuthorizeController extends ServerController
 {
     final public function __invoke(ServerRequestInterface $request, array $args): ResponseInterface
@@ -21,11 +25,11 @@ class AuthorizeController extends ServerController
 
         $queryParams = $request->getQueryParams();
 
-		$parser = new \Lcobucci\JWT\Parser();
+		$jwtConfig = Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText($this->config->getPrivateKey()));
 
 		try {
-			$token = $parser->parse($request->getQueryParams()['request']);
-			$_SESSION["nonce"] = $token->getClaim('nonce');
+			$token = $jwtConfig->parser()->parse($request->getQueryParams()['request']);
+			$_SESSION["nonce"] = $token->claims()->get('nonce');
 		} catch(\Exception $e) {
 			$_SESSION["nonce"] = $request->getQueryParams()['nonce'];
 		}
@@ -42,7 +46,7 @@ class AuthorizeController extends ServerController
 
 		if (!isset($getVars['redirect_uri'])) {
 			try {
-				$getVars['redirect_uri'] = $token->getClaim("redirect_uri");
+				$getVars['redirect_uri'] = $token->claims()->get("redirect_uri");
 			} catch(\Exception $e) {
 				return $this->getResponse()
                     ->withStatus(400, "Bad request, missing redirect uri")
