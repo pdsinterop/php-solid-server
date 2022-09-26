@@ -1,4 +1,4 @@
-FROM php:7.3-apache
+FROM php:8.0-apache
 
 # ==============================================================================
 # Set up the machine
@@ -11,6 +11,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update && \
     apt-get install -y --no-install-recommends \
         git \
+        libonig-dev \
         libzip-dev \
         zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
