@@ -38,6 +38,8 @@ WORKDIR /app
 EXPOSE 443
 # ==============================================================================
 
+# For debugging, remove this before merging the PR:
+RUN apt-get update && apt-get install -yq vim
 
 # ==============================================================================
 # Add the source code
