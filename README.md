@@ -195,6 +195,10 @@ The underlying functionality for these features is provided by:
    - [ ] Contacts
    - [ ] Friends Lists (Followers, Following)
    - [ ] Notifications
+5. Extra / Non-specification features
+   - [x] Solid [link-metadata] <sup>[crud]</sup> (since **v0.7**)
+
+[link-metadata]: https://github.com/pdsinterop/solid-link-metadata/
 
 ## Development
 
