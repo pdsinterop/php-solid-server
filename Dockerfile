@@ -22,7 +22,6 @@ RUN mkdir /tls && openssl req -new -x509 -days 365 -nodes \
 
 RUN docker-php-ext-install \
     bcmath \
-    mbstring \
     mysqli \
     pdo \
     pdo_mysql \
