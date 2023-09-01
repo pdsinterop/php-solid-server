@@ -2,12 +2,16 @@
 
 namespace Pdsinterop\Solid\Controller;
 
+use Pdsinterop\Solid\DpopFactoryTrait;
 use Pdsinterop\Solid\Auth\Config\Client;
 use Pdsinterop\Solid\Auth\Enum\Authorization;
 use Pdsinterop\Solid\Auth\Factory\ConfigFactory;
 
 abstract class ServerController extends AbstractController
 {
+
+	use DpopFactoryTrait;
+
     protected $authServerConfig;
     protected $authServerFactory;
     protected $baseUrl;
@@ -24,7 +28,11 @@ abstract class ServerController extends AbstractController
 
 		$this->authServerConfig = $this->createAuthServerConfig();
 		$this->authServerFactory = (new \Pdsinterop\Solid\Auth\Factory\AuthorizationServerFactory($this->authServerConfig))->create();
-		$this->tokenGenerator = (new \Pdsinterop\Solid\Auth\TokenGenerator($this->authServerConfig));
+		$this->tokenGenerator = (new \Pdsinterop\Solid\Auth\TokenGenerator(
+            $this->authServerConfig,
+			$this->getDpopValidFor(),
+			$this->getDpop()
+        ));
 		$this->baseUrl = isset($_ENV['SERVER_ROOT']) ? $_ENV['SERVER_ROOT'] : "https://localhost";
     }
 
@@ -59,7 +67,7 @@ abstract class ServerController extends AbstractController
 
     public function createAuthServerConfig()
     {
-        $clientId = $_GET['client_id']; // FIXME: No request object here to get the client Id from.
+        $clientId = ''; // $_GET['client_id']; // FIXME: No request object here to get the client Id from.
         $client = $this->getClient($clientId);
         $keys = $this->getKeys();
 

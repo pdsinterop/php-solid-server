@@ -20,8 +20,8 @@ function setup {
 }
 
 function runPss {
-  docker run -d --name server --network=testnet --env-file ./env-vars-for-test-image.list standalone-solid-server
-  docker run -d --name thirdparty --network=testnet --env-file ./env-vars-for-third-party.list standalone-solid-server
+  docker run -d --name server --network=testnet --env-file ./env-vars-for-test-image.list -v `pwd`/src:/app/src standalone-solid-server
+  docker run -d --name thirdparty --network=testnet --env-file ./env-vars-for-third-party.list -v `pwd`/src:/app/src standalone-solid-server
 
   docker run -d --name pubsub --network=testnet pubsub-server
 
@@ -71,7 +71,7 @@ function runPss {
 function runTests {
   echo "Running webid-provider tests with cookie $COOKIE"
   docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list webid-provider-tests
-  docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list solid-crud-tests
+  docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list solid-crud-tests npm run jest
   docker run --rm --network=testnet --env COOKIE="$COOKIE" --env COOKIE_ALICE="$COOKIE" --env COOKIE_BOB="$COOKIE_BOB" --env-file ./env-vars-for-test-image.list web-access-control-tests
 }
 
