@@ -60,7 +60,7 @@ class JtiReplayDetector implements ReplayDetectorInterface
 
         // $cursor->closeCursor();
 
-        return false ; // FIXME! REPLAY PROTECTION DISABLED!! ! empty($row);
+        return false ; // FIXME! REPLAY PROTECTION DISABLED!! See https://github.com/pdsinterop/php-solid-server/issues/68 ! empty($row);
     }
 
     private function store(string $jti, string $uri): void
