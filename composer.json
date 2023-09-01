@@ -19,6 +19,7 @@
         "ext-openssl": "*",
         "codercat/jwk-to-pem": "^1.1",
         "defuse/php-encryption": "^2.3",
+        "easyrdf/easyrdf": "^1.1.1",
         "laminas/laminas-diactoros": " ^2.8",
         "laminas/laminas-httphandlerrunner": "^1.5",
         "lcobucci/jwt": "4.1",
