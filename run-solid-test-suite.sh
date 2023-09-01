@@ -71,7 +71,7 @@ function runPss {
 function runTests {
   echo "Running webid-provider tests with cookie $COOKIE"
   docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list webid-provider-tests
-  docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list solid-crud-tests
+  docker run --rm --network=testnet --env COOKIE="$COOKIE" --env-file ./env-vars-for-test-image.list solid-crud-tests npm run jest
   docker run --rm --network=testnet --env COOKIE="$COOKIE" --env COOKIE_ALICE="$COOKIE" --env COOKIE_BOB="$COOKIE_BOB" --env-file ./env-vars-for-test-image.list web-access-control-tests
 }
 
