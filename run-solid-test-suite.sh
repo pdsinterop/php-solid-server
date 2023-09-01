@@ -20,8 +20,8 @@ function setup {
 }
 
 function runPss {
-  docker run -d --name server --network=testnet --env-file ./env-vars-for-test-image.list standalone-solid-server
-  docker run -d --name thirdparty --network=testnet --env-file ./env-vars-for-third-party.list standalone-solid-server
+  docker run -d --name server --network=testnet --env-file ./env-vars-for-test-image.list -v `pwd`/src:/app/src standalone-solid-server
+  docker run -d --name thirdparty --network=testnet --env-file ./env-vars-for-third-party.list -v `pwd`/src:/app/src standalone-solid-server
 
   docker run -d --name pubsub --network=testnet pubsub-server
 
