@@ -19,6 +19,6 @@ jobs:
         os: [ubuntu-latest]
 
     steps:
-    - uses: actions/checkout@v4
-    # Run the Solid test-suite
-    - run: bash ./run-solid-test-suite.sh
+      - uses: actions/checkout@v4
+      # Run the Solid test-suite
+      - run: bash ./run-solid-test-suite.sh
