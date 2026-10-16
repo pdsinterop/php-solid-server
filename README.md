@@ -166,6 +166,9 @@ SERVER_ROOT=http://localhost:8080 ./node_modules/.bin/jest test/surface/fetch-op
 ```
 The current `dev` branch of php-solid-server should pass roughly 7 out of 17 tests.
 
+## Tests running in Github actions
+Inside the github actions we have solid-test-suite to test on each PR.
+
 ## Available Features
 
 Based on the specifications, the features listed below _should_ be available.
