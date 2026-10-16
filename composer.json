@@ -37,7 +37,7 @@
     },
     "scripts": {
         "lint":"",
-        "serve-dev":"USERNAME=alice PASSWORD=alice123 ENVIRONMENT=development SERVER_ROOT=\"http://${HOST:-localhost}:${PORT:-8080}\" php -S \"${HOST:-localhost}:${PORT:-8080}\" -t web/ web/index.php",
+        "serve-dev":"USERNAME=alice PASSWORD=alice123 PROXY_MODE=true SERVER_ROOT=\"http://${HOST:-localhost}:${PORT:-8080}\" PHP_CLI_SERVER_WORKERS=3 php -S \"${HOST:-localhost}:${PORT:-8080}\" -t web/ web/index.php",
         "serve-dev-docker":"bash ./bin/serve-docker-dev.sh",
         "test":"phpunit"
     },
