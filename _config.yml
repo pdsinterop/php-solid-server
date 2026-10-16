@@ -34,7 +34,7 @@ nav:
   exclude:
     - /
     - /404.html
-  favicon_ico : /favicon.ico
+  favicon_ico: /favicon.ico
   main_title:
     link: '/'
   recurse: true
